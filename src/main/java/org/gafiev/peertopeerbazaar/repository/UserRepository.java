@@ -1,8 +1,5 @@
 package org.gafiev.peertopeerbazaar.repository;
 
-import jakarta.validation.constraints.Email;
-import lombok.NonNull;
-import org.gafiev.peertopeerbazaar.entity.user.Role;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Репозиторий для работы с сущностью User
@@ -39,32 +35,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * связанными сущностями, если он существует, или пустой объект {@link Optional},
      * если пользователь не найден.
      */
-    @EntityGraph(attributePaths = {"products", "sellerOrders", "buyerOrders", "paymentAccounts"})
+    @EntityGraph(attributePaths = {"productSet", "sellerOrderSet", "buyerOrderSet", "paymentAccountSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdFull(Long id);
-
-
-    /**
-     * Находит пользователя по его идентификатору и загружает связанные продукты.
-     *
-     * <p>
-     * Этот метод использует JPQL для выполнения запроса, который выбирает пользователя
-     * с указанным идентификатором и загружает его связанные продукты с помощью
-     * операции JOIN FETCH.
-     * </p>
-     *
-     * @param id идентификатор пользователя, которого нужно найти
-     * @return {@link Optional<User>} объект, содержащий найденного пользователя с его продуктами,
-     * если он существует, или пустой объект {@link Optional}, если пользователь не найден
-     */
-    @Query("SELECT u FROM User u JOIN FETCH u.productSet WHERE u.id = :id")
-    Optional<User> findByIdWithProducts(@Param("id") Long id); //TODO обновить методы
-
 
 
     @EntityGraph(attributePaths = {"buyerOrderSet","sellerOfferSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithBuyerOrdersAndSellerOffers(@Param("id") Long id);
+
 
     /**
      * Получает сущность User по её ID вместе с ассоциированными платежными аккаунтами.
@@ -76,7 +55,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional, содержащий пользователя, если он найден, или пустой Optional,
      * если пользователь с указанным ID не существует
      */
-    @EntityGraph(attributePaths = {"paymentAccounts"})
+    @EntityGraph(attributePaths = {"paymentAccountSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithPaymentAccounts(Long id); //TODO обновить методы
 

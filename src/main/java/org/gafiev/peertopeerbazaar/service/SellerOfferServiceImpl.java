@@ -14,10 +14,13 @@ import org.gafiev.peertopeerbazaar.repository.AddressRepository;
 import org.gafiev.peertopeerbazaar.repository.ProductRepository;
 import org.gafiev.peertopeerbazaar.repository.SellerOfferRepository;
 import org.gafiev.peertopeerbazaar.repository.UserRepository;
+import org.gafiev.peertopeerbazaar.repository.specification.SellerOfferSpecifications;
 import org.gafiev.peertopeerbazaar.service.interfaces.SellerOfferService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,7 +67,7 @@ public class SellerOfferServiceImpl implements SellerOfferService {
      */
     @Override
     public Set<SellerOfferResponse> getAllMySellerOffers(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findByIdWithBuyerOrdersAndSellerOffers(userId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(userId))));
         return sellerOfferMapper.toSellerOfferResponseSet(user.getSellerOfferSet());
     }
@@ -76,25 +79,28 @@ public class SellerOfferServiceImpl implements SellerOfferService {
      */
     @Override
     public Set<SellerOfferResponse> getAllSellerOffers(SellerOfferFilterRequest filterRequest) {
-        return Set.of();
+        List<SellerOffer> sellerOfferList =  sellerOfferRepository.findAll(SellerOfferSpecifications.filterByParams(filterRequest));
+
+        return sellerOfferMapper.toSellerOfferResponseSet(new HashSet<>(sellerOfferList));
     }
 
     /**
      * создание нового оффера продавца
      *
+     * @param sellerId идентификатор пользователя
      * @param sellerOfferCreate информация от продавца на создание оффера
      * @return DTO оффера
      */
     @Override
     @Transactional
-    public SellerOfferResponse createSellerOffer(SellerOfferCreateRequest sellerOfferCreate) {
-        User seller = userRepository.findById(sellerOfferCreate.sellerId())
-                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(sellerOfferCreate.sellerId()))));
+    public SellerOfferResponse createSellerOffer(Long sellerId,SellerOfferCreateRequest sellerOfferCreate) {
+        User seller = userRepository.findByIdWithBuyerOrdersAndSellerOffers(sellerId)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(sellerId))));
 
-        Product product = productRepository.findById(sellerOfferCreate.productId())
+        Product product = productRepository.findByIdWithSellerOffers(sellerOfferCreate.productId())
                 .orElseThrow(() -> new EntityNotFoundException(Product.class, Map.of("id", String.valueOf(sellerOfferCreate.productId()))));
 
-        Address address = addressRepository.findById(sellerOfferCreate.addressId())
+        Address address = addressRepository.findByIdWithSellerOffersAndDeliveries(sellerOfferCreate.addressId())
                 .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(sellerOfferCreate.addressId()))));
 
         SellerOffer sellerOffer = new SellerOffer();
@@ -103,12 +109,11 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         sellerOffer.setComment(sellerOfferCreate.comment());
         sellerOffer.setCreationDateTime(sellerOfferCreate.creationDateTime());
         sellerOffer.setFinishDateTime(sellerOfferCreate.finishedDateTime());
-        sellerOffer.setProduct(product);
-        sellerOffer.setAddress(address);
-        sellerOffer.setSeller(seller);
-        //  sellerOffer.setPartOfferToBuySet(); можно сделать?
+        product.addSellerOffer(sellerOffer);
+        address.addSellerOffer(sellerOffer);
+        seller.addSellerOffer(sellerOffer);
 
-        sellerOfferRepository.save(sellerOffer);
+       sellerOffer = sellerOfferRepository.save(sellerOffer);
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
@@ -121,12 +126,12 @@ public class SellerOfferServiceImpl implements SellerOfferService {
      */
     @Override
     @Transactional
-    public SellerOfferResponse updateMySellerOffer(Long id, SellerOfferCreateRequest sellerOfferNew) {
+    public SellerOfferResponse updateMySellerOffer(Long sellerId,Long id, SellerOfferCreateRequest sellerOfferNew) {
         SellerOffer sellerOffer = sellerOfferRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(SellerOffer.class, Map.of("id", String.valueOf(id))));
 
-        User seller = userRepository.findById(sellerOfferNew.sellerId())
-                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(sellerOfferNew.sellerId()))));
+        User seller = userRepository.findByIdWithBuyerOrdersAndSellerOffers(sellerId)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(sellerId))));
 
         Product product = productRepository.findById(sellerOfferNew.productId())
                 .orElseThrow(() -> new EntityNotFoundException(Product.class, Map.of("id", String.valueOf(sellerOfferNew.productId()))));
@@ -148,6 +153,7 @@ public class SellerOfferServiceImpl implements SellerOfferService {
 
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
+    //TODO сделать все исправления что и в create
 
     /**
      * удаление оффера из БД по его Id

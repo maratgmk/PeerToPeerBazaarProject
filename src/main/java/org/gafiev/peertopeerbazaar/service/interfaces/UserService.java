@@ -3,8 +3,6 @@ package org.gafiev.peertopeerbazaar.service.interfaces;
 import org.gafiev.peertopeerbazaar.dto.request.UserCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.request.UserFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.response.UserResponse;
-import org.gafiev.peertopeerbazaar.entity.user.Role;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 
@@ -27,11 +25,9 @@ public interface UserService {
 
     UserResponse getUserByIdWithBuyerOrdersAndSellerOffers(Long id);
 
-    UserResponse findByIdWithPaymentAccounts(Long id);
+    UserResponse getUserByIdWithBasket(Long id);
 
-    UserResponse findByIdWithBasket(Long id);
-
-    UserResponse findByIdWithProducts(Long id);
+    UserResponse getUserByIdWithPaymentAccounts(Long id);
 
     UserResponse findByIdFull(Long id);
 

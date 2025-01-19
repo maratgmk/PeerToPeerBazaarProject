@@ -197,7 +197,7 @@ public class User {
      *
      * @param sellerOffer предложение продавца, которое нужно добавить
      */
-    public void addSellerOrder(@NonNull SellerOffer sellerOffer){
+    public void addSellerOffer(@NonNull SellerOffer sellerOffer){
         sellerOfferSet.add(sellerOffer);
         sellerOffer.setSeller(this);
     }

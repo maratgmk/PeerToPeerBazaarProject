@@ -22,9 +22,9 @@ public interface SellerOfferService {
 
     Set<SellerOfferResponse> getAllSellerOffers(SellerOfferFilterRequest filterRequest);
 
-    SellerOfferResponse createSellerOffer(SellerOfferCreateRequest sellerOfferCreate);
+    SellerOfferResponse createSellerOffer(Long sellerId, SellerOfferCreateRequest sellerOfferCreate);
 
-    SellerOfferResponse updateMySellerOffer(Long id, SellerOfferCreateRequest sellerOfferNew);
+    SellerOfferResponse updateMySellerOffer(Long sellerId, Long id,  SellerOfferCreateRequest sellerOfferNew);
 
     void deleteSellerOffer(Long id);
 

@@ -5,7 +5,7 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.gafiev.peertopeerbazaar.dto.request.SellerOfferFilterRequest;
-import org.gafiev.peertopeerbazaar.entity.product.Product;
+import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -16,10 +16,11 @@ import java.util.List;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SellerOfferSpecifications {
-    public static Specification<Product> filterByParams(@Nullable SellerOfferFilterRequest request) {
+    public static Specification<SellerOffer> filterByParams(@Nullable SellerOfferFilterRequest request) {
 
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
             if (request == null) return criteriaBuilder.conjunction();
 
             if (request.ids() != null && !request.ids().isEmpty()) {
@@ -114,3 +115,4 @@ public class SellerOfferSpecifications {
         };
     }
 }
+//TODO проверить и оставить один метод проверки по датам
