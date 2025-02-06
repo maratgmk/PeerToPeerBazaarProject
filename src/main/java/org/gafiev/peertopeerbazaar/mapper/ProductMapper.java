@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.ProductResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.ProductResponse;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +20,8 @@ public class ProductMapper {
                 .description(product.getDescription())
                 .category(product.getCategory())
                 .portionUnit(product.getPortionUnit())
-                .weight(product.getWeight())
-                .volume(product.getVolume())
+                .weight(product.getWeightKg())
+                .volume(product.getVolumeLtr())
                 .price(product.getPrice())
                 .imageURI(product.getImageURI())
                 .qrCode(product.getQrCode())

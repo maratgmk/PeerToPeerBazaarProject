@@ -1,10 +1,8 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.request.DeliveryCreateRequest;
-import org.gafiev.peertopeerbazaar.dto.response.DeliveryResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.DeliveryResponse;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
-import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

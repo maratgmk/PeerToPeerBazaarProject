@@ -21,6 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "seller_offer")
 public class SellerOffer {
 
@@ -65,24 +66,35 @@ public class SellerOffer {
 
     /**
      * продукт созданный данным продавцом
+     * fetch = FetchType.LAZY значит что при загрузке sellerOffer продукт загружаться не будет,
+     * но productId по умолчанию доступен, так как это внешний ключ для SellerOffer
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     /**
      * продавец - создатель оффера
+     * fetch = FetchType.LAZY значит что при загрузке sellerOffer продавец загружаться не будет,
+     * но userId по умолчанию доступен, так как это внешний ключ для SellerOffer
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User seller;
 
     /**
      * адрес, откуда дрон заберёт часть оффера (заказ)
+     * fetch = FetchType.LAZY значит что при загрузке sellerOffer адрес загружаться не будет,
+     * но addressId по умолчанию доступен, так как это внешний ключ для SellerOffer
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
 
     /**
-     * множество частей предложения продавца, которые можно выбрать
+     * partOfferToBuySet множество частей предложения продавца, которые можно выбрать.
+     * является владеющей стороной, PartOfferToBuy содержит внешний ключ от SellerOffer,
+     * что отражено в mappedBy = "sellerOffer". SellerOffer есть родительская сущность и управляет жизненным циклом PartOfferToBuy,
+     * то есть все изменения в SellerOffer каскадом переходят в PartOfferToBuy (cascade = CascadeType.ALL).
+     * orphanRemoval = true означает, что при методе partOfferToBuySet.remove(partOfferToBuy),
+     * автоматом удаляется partOfferToBuy из БД. Это заслуга Hibernate.
      */
     @OneToMany(mappedBy = "sellerOffer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartOfferToBuy> partOfferToBuySet = new HashSet<>();
@@ -91,7 +103,7 @@ public class SellerOffer {
      * метод добавления заказанной части оффера к множеству всех заказанных частей данного оффера
      * @param partOfferToBuy часть оффера продавца, заказанного покупателем
      */
-    public void addPartOfferToBuySet(PartOfferToBuy partOfferToBuy){
+    public void addPartOfferToBuySet(@NonNull PartOfferToBuy partOfferToBuy){
         partOfferToBuySet.add(partOfferToBuy);
         partOfferToBuy.setSellerOffer(this);
     }
@@ -100,7 +112,7 @@ public class SellerOffer {
      * метод удаления заказанной части оффера из множества всех заказанных частей данного оффера
      * @param partOfferToBuy часть оффера продавца, заказанного покупателем
      */
-    public void removePartOfferToBuySet(PartOfferToBuy partOfferToBuy){
+    public void removePartOfferToBuySet(@NonNull PartOfferToBuy partOfferToBuy){
         partOfferToBuySet.remove(partOfferToBuy);
         partOfferToBuy.setSellerOffer(null);
     }

@@ -17,6 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@Table(name = "basket")
 public class Basket {
     /**
      * id уникальный идентификатор корзины, который совпадает с id покупателя
@@ -38,6 +39,7 @@ public class Basket {
      * partOfferToBuy это части любых офферов от любых продавцов
      * параметр FetchType.LAZY означает, что при загрузке корзины partOfferToBuySet загружаться не будет
      * чтобы это обойти создаётся кастомный метод в репозитории с помощью JPQL запроса
+     * по умолчанию будет доступен basketId = userId
      */
     @OneToMany(mappedBy = "basket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<PartOfferToBuy> partOfferToBuySet = new HashSet<>();

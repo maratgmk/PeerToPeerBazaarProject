@@ -5,10 +5,9 @@ import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
- * Сущность Delivery отражает факт доставки заказа от указанного адреса к указанному адресу конкретным дроном
+ * Сущность Delivery отражает факт доставки заказа от указанного адреса к другому указанному адресу конкретным дроном
  */
 @Getter
 @Setter
@@ -17,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Entity
+@Builder
 @Table(name = "delivery")
 public class Delivery {
     /**
@@ -31,16 +31,17 @@ public class Delivery {
      * deliveryStatus показывает соcтояние доставки заказа
      */
     @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
 
     /**
-     *  dateTime есть показывает время доставки заказа
+     *  expectedDateTime показывает ожидаемое время доставки заказа
      */
     @Column(name = "expected_date_time")
     private LocalDateTime expectedDateTime;
 
     /**
-     * buyerOrder это заказ покупателя, который доставляется от продавца к покупателю,
+     * buyerOrder 
      * связь - много доставок по одному заказу покупателя
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})

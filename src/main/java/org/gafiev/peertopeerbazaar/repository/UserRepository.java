@@ -3,6 +3,7 @@ package org.gafiev.peertopeerbazaar.repository;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -20,7 +21,7 @@ import java.util.Optional;
  */
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
 
     Optional<User> findByEmail(String email);
@@ -30,6 +31,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Этот метод использует аннотацию EntityGraph для загрузки связанных
      * сущностей, таких как продукты, заказы продавца, заказы покупателя и платежные
      * аккаунты, что позволяет избежать проблемы N+1 при доступе к связанным данным.
+     *
      * @param id идентификатор пользователя, которого нужно найти.
      * @return {@link Optional<User>} объект, содержащий найденного пользователя с его
      * связанными сущностями, если он существует, или пустой объект {@link Optional},
@@ -40,7 +42,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdFull(Long id);
 
 
-    @EntityGraph(attributePaths = {"buyerOrderSet","sellerOfferSet"})
+    @EntityGraph(attributePaths = {"buyerOrderSet", "sellerOfferSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithBuyerOrdersAndSellerOffers(@Param("id") Long id);
 
@@ -57,17 +59,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @EntityGraph(attributePaths = {"paymentAccountSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
-    Optional<User> findByIdWithPaymentAccounts(Long id); //TODO обновить методы
+    Optional<User> findByIdWithPaymentAccounts(Long id);
 
     /**
      * метод использует аннотацию EntityGraph
      * метод получения покупателя вместе с корзиной, и вместе со множеством частей оффера,
      * и вместе с самим оффером, и вместе с адресом, откуда надо забрать оффер
+     *
      * @param id ID пользователя, которого нужно получить
      * @return Optional, содержащий пользователя, если он найден, или пустой Optional,
      * если пользователь с указанным ID не существует
      */
-    @EntityGraph(attributePaths = {"basket","basket.partOfferToBuySet","basket.partOfferToBuySet.sellerOffer", "basket.partOfferToBuySet.sellerOffer.address"})
+    @EntityGraph(attributePaths = {
+            "basket",
+            "basket.partOfferToBuySet",
+            "basket.partOfferToBuySet.sellerOffer",
+            "basket.partOfferToBuySet.sellerOffer.address",
+            "basket.partOfferToBuySet.sellerOffer.product"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithBasket(Long id);
 

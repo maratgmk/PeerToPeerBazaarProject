@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.BuyerOrderResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.BuyerOrderResponse;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.request.PartOfferToBuyRequest;
-import org.gafiev.peertopeerbazaar.dto.response.PartOfferToBuyResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.PartOfferToBuyResponse;
 import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuy;
 import org.springframework.stereotype.Component;
 

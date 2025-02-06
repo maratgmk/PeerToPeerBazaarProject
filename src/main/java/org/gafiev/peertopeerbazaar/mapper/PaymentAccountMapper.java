@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.PaymentAccountResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.PaymentAccountResponse;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentAccount;
 import org.springframework.stereotype.Component;
 
@@ -20,9 +20,9 @@ public class PaymentAccountMapper {
                 .accountLimit(account.getAccountLimit())
                 .paymentStatus(account.getPaymentStatus())
                 .bankCode(account.getBankCode())
-                .modePay(account.getPaymentMode())
-                .createdDate(account.getCreatedDate())
-                .updatedDate(account.getUpdatedDate())
+                .paymentMode(account.getPaymentMode())
+                .createdDate(account.getCreatedAccountDate())
+                .updatedDate(account.getUpdatedAccountDate())
                 .isVerified(account.getIsVerified())
                 .userId(account.getUser() == null ? null : account.getUser().getId()) //если нет user, то нет и paymentAccount?
                 .build();

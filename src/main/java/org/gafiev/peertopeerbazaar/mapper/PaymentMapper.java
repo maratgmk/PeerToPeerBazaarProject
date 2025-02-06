@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.PaymentResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.PaymentResponse;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
 import org.springframework.stereotype.Component;
 

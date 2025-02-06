@@ -1,7 +1,8 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.DroneResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.DroneResponse;
+import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
 import org.gafiev.peertopeerbazaar.entity.delivery.Drone;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +16,7 @@ public class DroneMapper {
     public DroneResponse toDroneResponse(Drone drone) {
         return DroneResponse.builder()
                 .id(drone.getId())
-                .droneStatus(drone.getDroneStatus())
-                .deliveryId(drone.getDelivery().getId())
+                .deliveryIds(drone.getDeliverySet().stream().map(Delivery::getId).collect(Collectors.toSet()))
                 .build();
     }
 
@@ -25,4 +25,6 @@ public class DroneMapper {
                 .map(this::toDroneResponse)
                 .collect(Collectors.toSet());
     }
+
+
 }

@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Сущность Drone осуществляет обмен заказов между пользователями
+ * Сущность Drone осуществляет доставку заказов между пользователями
  */
 @EqualsAndHashCode(exclude = "deliverySet")
 @ToString(exclude = "deliverySet")
@@ -16,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = "drone")
 public class Drone {
     /**
@@ -26,11 +27,6 @@ public class Drone {
     @Column(name = "id")
     private Long id;
 
-    /**
-     * droneStatus показывает состояние полёта дрона
-     */
-    @Enumerated(EnumType.STRING)
-    private DroneStatus droneStatus;
 
     /**
      * droneServiceId id переданное сторонним сервисом

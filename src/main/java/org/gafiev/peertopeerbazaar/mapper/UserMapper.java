@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.UserResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.UserResponse;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.springframework.stereotype.Component;
 

@@ -58,13 +58,13 @@ public class Product {
      * weight это вес одной порции продукта
      */
     @Column(name = "weight")
-    private Double weight;
+    private Double weightKg;
 
     /**
      * volume это объём одной порции продукта
      */
     @Column(name = "volume")
-    private Double volume;
+    private Double volumeLtr;
 
     /**
      * price есть цена за порцию продукта
