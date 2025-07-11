@@ -1,5 +1,6 @@
 package org.gafiev.peertopeerbazaar.entity.payment;
 
+import com.neovisionaries.i18n.CurrencyCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
@@ -14,15 +15,15 @@ import java.util.Set;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "buyerOrderSet")
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = "buyerOrderSet")
 @Entity
 @Table(name = "payment")
 public class Payment {
     /**
-     * id есть идентификатор платежа
+     * id есть идентификатор платежа.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,27 +31,34 @@ public class Payment {
     private Long id;
 
     /**
-     * amount есть полная сумма платежа за заказ
+     * amount есть полная сумма платежа за заказ.
      */
     @Column(name = "amount")
     private BigDecimal amount;
 
     /**
-     * paymentMode это способ оплаты
+     * валюта.
+     */
+    @Column(name = "currency")
+    @Enumerated(EnumType.STRING)
+    private CurrencyCode currency;
+
+    /**
+     * способ оплаты.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_mode")
     private PaymentMode paymentMode;
 
     /**
-     * paymentStatus показывает состояние оплаты
+     * состояние платежа.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
     /**
-     * completionDateTime отражает дату и время подтверждения оплаты
+     * дата и время подтверждения оплаты.
      */
     @Column(name = "completion_date_time")
     private LocalDateTime completionDateTime;

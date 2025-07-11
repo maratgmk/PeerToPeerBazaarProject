@@ -3,24 +3,23 @@ package org.gafiev.peertopeerbazaar.entity.delivery;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
-
-import java.time.LocalDateTime;
+import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 
 /**
- * Сущность Delivery отражает факт доставки заказа от указанного адреса к другому указанному адресу конкретным дроном
+ * Доставка заказа покупателя от адреса продавца на адрес покупателя конкретным дроном.
  */
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"buyerOrder", "drone","toAddress","fromAddress"})
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"buyerOrder", "drone","toAddress","fromAddress"})
 @Entity
 @Builder
 @Table(name = "delivery")
 public class Delivery {
     /**
-     * id есть уникальный номер доставки заказа
+     * идентификатор доставки заказа.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,42 +27,45 @@ public class Delivery {
     private Long id;
 
     /**
-     * deliveryStatus показывает соcтояние доставки заказа
+     * соcтояние доставки заказа.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
 
     /**
-     *  expectedDateTime показывает ожидаемое время доставки заказа
+     * Временной диапазон доставки заказа.
+     * в таблице @Table(name = "delivery") столбец time_slot может указывать на нулевую ссылку.
      */
-    @Column(name = "expected_date_time")
-    private LocalDateTime expectedDateTime;
+    @Embedded
+    @Column(name = "time_slot",nullable = true)
+    private TimeSlot timeSlot;
 
     /**
-     * buyerOrder 
-     * связь - много доставок по одному заказу покупателя
+     * заказ покупателя.
+     * связь - много доставок по одному заказу покупателя.
+     * fetch = FetchType.LAZY относится к полю BuyerOrder, что означает, что при загрузке из БД доставки заказ покупателя загружаться не будет.
+     * cascade = {CascadeType.MERGE, CascadeType.PERSIST} это относится к полю BuyerOrder, при обновлении и сохранении заказа каскадно будет обновляться связанный заказ покупателя.
      */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private BuyerOrder buyerOrder;
 
     /**
-     * Адрес куда доставлять
+     * Адрес покупателя.
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private Address toAddress;
 
     /**
-     * Адрес откуда забирать
+     * Адрес продавца.
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private Address fromAddress;
 
-
     /**
-     * один drone совершает множество доставок
+     * дрон осуществляющий доставку.
+     * один drone совершает множество доставок.
      */
-    @ManyToOne (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne (fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private Drone drone;
-
 }

@@ -2,16 +2,18 @@ package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
 import org.gafiev.peertopeerbazaar.dto.api.response.BuyerOrderResponse;
+import org.gafiev.peertopeerbazaar.dto.integreation.request.BuyerOrderDroneRequest;
+import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
 public class BuyerOrderMapper {
-    private final DeliveryMapper deliveryMapper;
     private final PartOfferToBuyMapper partOfferToBuyMapper;
 
     public BuyerOrderResponse toBuyerOrderResponse(BuyerOrder buyerOrder) {
@@ -20,8 +22,8 @@ public class BuyerOrderMapper {
                 .buyerId(buyerOrder.getBuyer().getId())
                 .status(buyerOrder.getBuyerOrderStatus())
                 .paymentId(buyerOrder.getPayment().getId())
-                .partOfferToBuyResponseSet(partOfferToBuyMapper.toPartOfferToBuyResponseSet(buyerOrder.getPartOfferToBuySet()))
-                .deliverySet(deliveryMapper.toDeliveryResponseSet(buyerOrder.getDeliverySet()))
+                .partOfferToBuyResponseSet(new HashSet<>(partOfferToBuyMapper.toPartOfferToBuyResponseList(buyerOrder.getPartOfferToBuySet().stream().toList())))
+                .deliveryIds(buyerOrder.getDeliverySet().stream().map(Delivery::getId).collect(Collectors.toSet()))
                 .build();
     }
 
@@ -29,5 +31,11 @@ public class BuyerOrderMapper {
         return buyerOrderSet == null ? null : buyerOrderSet.stream()
                 .map(this::toBuyerOrderResponse)
                 .collect(Collectors.toSet());
+    }
+    public BuyerOrderDroneRequest toBuyerOrderDroneRequest(BuyerOrder buyerOrder){
+        return BuyerOrderDroneRequest.builder()
+                .weightKg(buyerOrder.getWeightKg())
+                .volumeLtr(buyerOrder.getVolumeLtr())
+                .build();
     }
 }

@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AddressMapper {
     private final SellerOfferMapper sellerOfferMapper;
-    private final DeliveryMapper deliveryMapper;
 
 
     public AddressResponse toAddressResponse(Address address){
@@ -26,8 +25,6 @@ public class AddressMapper {
                 .latitude(address.getLatitude())
                 .longitude(address.getLongitude())
                 .accuracy(address.getAccuracy())
-                .sellerOfferResponseSet(sellerOfferMapper.toSellerOfferResponseSet(address.getSellerOfferSet()))
-                .deliveryResponseSet(deliveryMapper.toDeliveryResponseSet(address.getDeliverySet()))
                 .build();
     }
 

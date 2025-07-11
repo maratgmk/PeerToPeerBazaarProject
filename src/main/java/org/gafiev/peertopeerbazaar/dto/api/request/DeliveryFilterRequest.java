@@ -3,8 +3,8 @@ package org.gafiev.peertopeerbazaar.dto.api.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
+import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -22,16 +22,16 @@ public record DeliveryFilterRequest(
         DeliveryStatus deliveryStatus,
 
         /**
-         * expectedDateTimeEarlier верхняя временная граница,
-         * для поиска событий до этой даты
+         * timeSlotEarlier верхняя временная граница,
+         * для поиска событий до этой временной метки
          */
-        LocalDateTime expectedDateTimeEarlier,
+        TimeSlot timeSlotEarlier,
 
         /**
-         * expectedDateTimeLater нижняя временная граница,
-         * для поиска событий после этой даты
+         * timeSlotTimeLater нижняя временная граница,
+         * для поиска событий после этой временной метки
          */
-        LocalDateTime expectedDateTimeLater,
+        TimeSlot timeSlotTimeLater,
 
         /**
          * идентификатор заказа покупателя, по которому происходит фильтрация

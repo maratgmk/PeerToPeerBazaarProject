@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface DroneRepository extends JpaRepository<Drone,Long>, JpaSpecificationExecutor<Drone> {
 
     /**
-     * Получает сущность Drone по её ID вместе с ассоциированными доставками.
+     * Получает сущность Drone по её ID со связанными доставками.
      * Этот метод использует аннотацию @EntityGraph для жадной загрузки
      * коллекции deliverySet, что позволяет избежать проблемы N+1
      * при извлечении данных.
@@ -20,13 +20,13 @@ public interface DroneRepository extends JpaRepository<Drone,Long>, JpaSpecifica
      * @return Optional, содержащий дрон, если он найден,
      * или пустой Optional, если пользователь с указанным ID не существует
      */
-    @EntityGraph(attributePaths = {"deliverySet"})
+    @EntityGraph(attributePaths = {"deliverySet","deliverySet.buyerOrder"})
     @Query("SELECT d FROM Drone d  WHERE d.id = :id")
-    Optional<Drone> findByIdWithDeliveries(Long id);
+    Optional<Drone> findByIdWithDeliveriesAndBuyerOrders(Long id);
 
-    @EntityGraph(attributePaths = {"deliverySet"})
-    @Query("SELECT d FROM Drone d  WHERE d.droneServiceId = :droneServiceId")
-    Optional<Drone> findByDroneServiceIdWithDeliveries(Long droneServiceId);
+
+
+
 
 
 }

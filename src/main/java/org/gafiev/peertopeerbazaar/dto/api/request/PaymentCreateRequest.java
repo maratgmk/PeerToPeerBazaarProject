@@ -5,12 +5,13 @@ import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentMode;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.util.Set;
-
+@Builder(toBuilder = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record PaymentCreateRequest(
 

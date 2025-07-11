@@ -15,11 +15,10 @@ public record UserResponse(
         String lastName,
         String email,
         String phone,
-        Role role,
+        Set<Role> roles,
         Integer ratingSeller,
         Integer ratingBuyer,
         Set<ProductResponse> productSet,
         Set<SellerOfferResponse> sellerOfferResponseSet,
-        Set<BuyerOrderResponse> buyerOrderResponseSet,
-        Set<PaymentAccountResponse> paymentAccountSet) {
+        Set<BuyerOrderResponse> buyerOrderResponseSet) {
 }

@@ -5,10 +5,14 @@ import org.gafiev.peertopeerbazaar.dto.api.request.SellerOfferCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.SellerOfferFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.SellerOfferResponse;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
+import org.gafiev.peertopeerbazaar.entity.order.OfferStatus;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuy;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuyStatus;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
+import org.gafiev.peertopeerbazaar.exception.IllegalBusinessStateException;
 import org.gafiev.peertopeerbazaar.mapper.SellerOfferMapper;
 import org.gafiev.peertopeerbazaar.repository.AddressRepository;
 import org.gafiev.peertopeerbazaar.repository.ProductRepository;
@@ -19,10 +23,7 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.SellerOfferService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -36,6 +37,7 @@ public class SellerOfferServiceImpl implements SellerOfferService {
 
     /**
      * получение предложения продавца по его Id
+     *
      * @param id идентификатор предложения продавца
      * @return DTO оффера
      */
@@ -49,6 +51,7 @@ public class SellerOfferServiceImpl implements SellerOfferService {
     /**
      * получение предложения продавца по его Id вместе с подтягиванием всех выбранных уже частей данного заказа покупателя,
      * подтягивание ленивой части,
+     *
      * @param id идентификатор предложения продавца
      * @return DTO оффера
      */
@@ -62,24 +65,25 @@ public class SellerOfferServiceImpl implements SellerOfferService {
     /**
      * получения множества всех офферов продавца по клиентскому Id
      *
-     * @param userId идентификатор пользователя
+     * @param sellerId идентификатор пользователя
      * @return DTO sellerOfferSet
      */
     @Override
-    public Set<SellerOfferResponse> getAllMySellerOffers(Long userId) {
-        User user = userRepository.findByIdWithBuyerOrdersAndSellerOffers(userId)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(userId))));
+    public Set<SellerOfferResponse> getAllMySellerOffers(Long sellerId) {
+        User user = userRepository.findByIdWithBuyerOrdersAndSellerOffers(sellerId)
+                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(sellerId))));
         return sellerOfferMapper.toSellerOfferResponseSet(user.getSellerOfferSet());
     }
 
     /**
      * получение множества офферов всех продавцов из БД согласно настроенного фильтра
+     *
      * @param filterRequest фильтр определяющий условия и параметры поиска
      * @return DTO sellerOfferSet
      */
     @Override
     public Set<SellerOfferResponse> getAllSellerOffers(SellerOfferFilterRequest filterRequest) {
-        List<SellerOffer> sellerOfferList =  sellerOfferRepository.findAll(SellerOfferSpecifications.filterByParams(filterRequest));
+        List<SellerOffer> sellerOfferList = sellerOfferRepository.findAll(SellerOfferSpecifications.filterByParams(filterRequest));
         return sellerOfferMapper.toSellerOfferResponseSet(new HashSet<>(sellerOfferList));
     }
 
@@ -102,8 +106,12 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         Address address = addressRepository.findByIdWithSellerOffersAndDeliveries(sellerOfferCreate.addressId())
                 .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(sellerOfferCreate.addressId()))));
 
+
         SellerOffer sellerOffer = new SellerOffer();
-        sellerOffer.setUnitCount(sellerOfferCreate.unitCount());
+        for (int i = 0; i < sellerOfferCreate.unitCount(); i++) {
+            PartOfferToBuy partOfferToBuy = PartOfferToBuy.builder().build();
+            sellerOffer.addPartOfferToBuy(partOfferToBuy);
+        }
         sellerOffer.setOfferStatus(sellerOfferCreate.offerStatus());
         sellerOffer.setComment(sellerOfferCreate.comment());
         sellerOffer.setCreationDateTime(sellerOfferCreate.creationDateTime());
@@ -112,54 +120,79 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         address.addSellerOffer(sellerOffer);
         seller.addSellerOffer(sellerOffer);
 
-       sellerOffer = sellerOfferRepository.save(sellerOffer);
+        sellerOffer = sellerOfferRepository.save(sellerOffer);
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
     /**
-     * обновление существующего оффера продавца
+     * обновление существующего оффера продавца.
+     * обновление рейтинга продавца при отмене оффера.
      *
-     * @param id             идентификатор существующего оффера
+     * @param id идентификатор существующего оффера
      * @param sellerOfferNew информация от продавца, что необходимо поменять
      * @return DTO оффера
      */
     @Override
     @Transactional
-    public SellerOfferResponse updateMySellerOffer(Long sellerId,Long id, SellerOfferCreateRequest sellerOfferNew) {
+    public SellerOfferResponse updateMySellerOffer(Long sellerId, Long id, SellerOfferCreateRequest sellerOfferNew) {
         SellerOffer sellerOffer = sellerOfferRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(SellerOffer.class, Map.of("id", String.valueOf(id))));
 
-        User seller = userRepository.findByIdWithBuyerOrdersAndSellerOffers(sellerId)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(sellerId))));
+        // Проверка, принадлежит ли оффер этому продавцу
+        if (!sellerOffer.getSeller().getId().equals(sellerId)) {
+            throw new IllegalBusinessStateException("You do not have permission to update this offer.");
+        }
 
-        Product product = productRepository.findById(sellerOfferNew.productId())
-                .orElseThrow(() -> new EntityNotFoundException(Product.class, Map.of("id", String.valueOf(sellerOfferNew.productId()))));
-
-        Address address = addressRepository.findById(sellerOfferNew.addressId())
-                .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(sellerOfferNew.addressId()))));
-
-        sellerOffer.setUnitCount(sellerOfferNew.unitCount());
+        //TODO написать логику проверки частей: если частей стало больше, то досоздать PartOfferToBuy и добавить их в SellerOffer, если частей стало меньше, то удалить незарезервированные части из оффера
+        int partSize = sellerOffer.getPartOfferToBuyList().size();
+        if (sellerOfferNew.unitCount() > partSize) {
+            for (int i = 0; i < sellerOfferNew.unitCount() - partSize; i++) {
+                PartOfferToBuy partOfferToBuy = PartOfferToBuy.builder().build();
+                sellerOffer.addPartOfferToBuy(partOfferToBuy);
+            }
+        } else {
+            Iterator<PartOfferToBuy> it = sellerOffer.getPartOfferToBuyList().iterator();
+            int countRemove = partSize - sellerOfferNew.unitCount();
+            while (it.hasNext() || countRemove > 0) {
+                PartOfferToBuy part = it.next();
+                if (part.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED)) {
+                    it.remove();
+                    countRemove--;
+                }
+            }
+        }
         sellerOffer.setOfferStatus(sellerOfferNew.offerStatus());
         sellerOffer.setComment(sellerOfferNew.comment());
         sellerOffer.setCreationDateTime(sellerOfferNew.creationDateTime());
         sellerOffer.setFinishDateTime(sellerOfferNew.finishedDateTime());
-        product.addSellerOffer(sellerOffer);
-        address.addSellerOffer(sellerOffer);
-        seller.addSellerOffer(sellerOffer);
 
-        sellerOffer =  sellerOfferRepository.save(sellerOffer);
+        // Логика по изменению рейтинга продавца при отмене оффера
+        if (sellerOfferNew.offerStatus() == OfferStatus.CANCELLED) {
+            int currentRating = sellerOffer.getSeller().getRatingSeller() != null ? sellerOffer.getSeller().getRatingSeller() : 0;
+            sellerOffer.getSeller().setRatingSeller(Math.max(0, currentRating - 1));
+            userRepository.save(sellerOffer.getSeller());
+        }
+
+        sellerOffer = sellerOfferRepository.save(sellerOffer);
 
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
-
     /**
      * удаление оффера из БД по его Id
+     *
      * @param id идентификатор оффера
      */
     @Override
     @Transactional
     public void deleteSellerOffer(Long id) {
         sellerOfferRepository.deleteById(id);
+    }
+
+    @Override
+    public Integer getActualUnitCount(Long id) {
+        SellerOffer sellerOffer = sellerOfferRepository.findByIdWithPartOfferToBuy(id)
+                .orElseThrow(() -> new EntityNotFoundException(SellerOffer.class, Map.of("id", String.valueOf(id))));
+        return sellerOffer.getActualUnitCount();
     }
 }

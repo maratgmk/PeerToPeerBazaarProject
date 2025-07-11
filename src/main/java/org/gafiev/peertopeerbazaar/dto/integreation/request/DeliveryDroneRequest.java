@@ -2,12 +2,11 @@ package org.gafiev.peertopeerbazaar.dto.integreation.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-
-import java.time.LocalDateTime;
+import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 
 /**
- * запрос дрона из внешнего сервиса по DTO данным о доставке.
- * @param dateTime  ожидаемое время доставки заказа
+ * запрос приложением PTPB дрона из внешнего сервиса по DTO данным о доставке.
+ * @param timeSlot  ожидаемое время доставки заказа
  * @param buyerOrder  DTO послание про заказ во внешний сервис для оформления вызова дрона
  * @param toAddress  адрес доставки заказа до покупателя
  * @param fromAddress  адрес забора заказа от продавца
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record DeliveryDroneRequest(
-        LocalDateTime dateTime,
+        TimeSlotResponse timeSlot,
         BuyerOrderDroneRequest buyerOrder,
         AddressDroneRequest toAddress,
         AddressDroneRequest fromAddress) {

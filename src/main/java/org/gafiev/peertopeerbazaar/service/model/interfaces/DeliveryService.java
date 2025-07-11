@@ -2,11 +2,14 @@ package org.gafiev.peertopeerbazaar.service.model.interfaces;
 
 import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryUpdateTime;
 import org.gafiev.peertopeerbazaar.dto.api.response.DeliveryResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
+import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 
@@ -32,15 +35,13 @@ public interface DeliveryService {
      * @param deliveryStatus статус доставки
      * @param toAddress адрес получения доставки
      * @param fromAddress адрес забора доставки
-     * @param start начальное время временного диапазона
-     * @param end конечное время временного диапазона
+     * @param timeSlot  временной диапазон доставок
      * @return подмножество из множества всех доставок, выбранное по указанным параметрам
      */
     Set<DeliveryResponse> getAllDeliveries(DeliveryStatus deliveryStatus,
-                                             Address toAddress,
-                                             Address fromAddress,
-                                             LocalDateTime start,
-                                             LocalDateTime end);
+                                           Address toAddress,
+                                           Address fromAddress,
+                                           TimeSlot timeSlot);
 
     /**
      * получение DTO доставок по заданному клиентом в запросе фильтру.
@@ -49,12 +50,20 @@ public interface DeliveryService {
      */
     Set<DeliveryResponse> getAllDeliveriesByFilter(DeliveryFilterRequest filterRequest);
 
+
     /**
-     * создание новой доставки.
-     * @param delivery DTO информация от покупателя на доставку заказа
-     * @return DTO созданной доставки
+     * создать доставку.
+     * @param request данные от покупателя для доставки.
+     * @return доставка до покупателя.
      */
-    DeliveryResponse createDelivery(DeliveryCreateRequest delivery);
+    DeliveryResponse create(DeliveryCreateRequest request);
+
+    /**
+     * запрос покупателем доступного времени доставки от внешнего сервиса.
+     * @param id идентификатор доставки.
+     * @return список временных диапазонов.
+     */
+    List<TimeSlotResponse> takeTimeSlots(Long id);
 
     /**
      * создание новой доставки вместо неудавшейся.
@@ -65,22 +74,28 @@ public interface DeliveryService {
     DeliveryResponse createDeliveryDependsOnFail(Long failDeliveryId);
 
     /**
-     * обновление существующей доставки по требованию администратора.
+     * Установка требуемого временного интервала для существующей (созданной) доставки.
      * @param id идентификатор доставки, которую следует обновить
-     * @param deliveryNew DTO информация от администратора на изменения доставки
+     * @param updateRequest DTO информация от покупателя на установку временного интервала
      * @return DTO обновленной доставки
      */
-    DeliveryResponse updateDeliveryDetails(Long id, DeliveryCreateRequest deliveryNew);
+    DeliveryResponse assignDroneForDelivery(Long id, DeliveryUpdateTime updateRequest);
 
     /**
-     * обновление существующей доставки по требованию покупателя.
+     * метод обновления статуса у delivery и изменения рейтинга продавца и покупателя.
+     * @param id идентификатор delivery
+     * @param status доставки
+     * @return DTO доставки
+     */
+    DeliveryResponse updateStatus(Long id, DeliveryStatus status);
+
+    /**
+     * отмена существующей доставки по требованию покупателя.
      *
      * @param id идентификатор доставки покупателя
-     * @param userId идентификатор покупателя
-     * @param deliveryNew DTO информация от покупателя, которую надо внедрить для обновления существующего заказа
      * @return DTO обновленной доставки
      */
-    DeliveryResponse updateMyDeliveryDetails(Long id, Long userId, DeliveryCreateRequest deliveryNew);
+    DeliveryResponse cancelMyDelivery(Long id);
 
     /**
      * удаление доставки по идентификатору из БД.

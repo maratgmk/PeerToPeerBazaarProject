@@ -14,5 +14,5 @@ public record BuyerOrderResponse(
         BuyerOrderStatus status,
         Long paymentId,
         Set<PartOfferToBuyResponse> partOfferToBuyResponseSet,
-        Set<DeliveryResponse> deliverySet) {
+        Set<Long> deliveryIds) {
 }

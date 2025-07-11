@@ -8,7 +8,7 @@ import org.gafiev.peertopeerbazaar.entity.delivery.DroneStatus;
 import java.util.Set;
 
 /**
- *
+ * DTO запроса параметров фильтра во внешнем сервисе
  * @param droneServiceIds
  * @param droneStatusSet
  */

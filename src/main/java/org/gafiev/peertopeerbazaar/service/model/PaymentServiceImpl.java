@@ -1,34 +1,37 @@
 package org.gafiev.peertopeerbazaar.service.model;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.api.request.PaymentCreateRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.dto.api.request.PaymentFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.PaymentUpdateRequest;
+import org.gafiev.peertopeerbazaar.dto.api.response.PaymentRedirectResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.PaymentResponse;
+import org.gafiev.peertopeerbazaar.dto.integreation.response.ExternalPaymentResponse;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
+import org.gafiev.peertopeerbazaar.entity.payment.PaymentStatus;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
-import org.gafiev.peertopeerbazaar.mapper.BuyerOrderMapper;
+import org.gafiev.peertopeerbazaar.exception.PaymentStatusException;
 import org.gafiev.peertopeerbazaar.mapper.PaymentMapper;
 import org.gafiev.peertopeerbazaar.repository.BuyerOrderRepository;
 import org.gafiev.peertopeerbazaar.repository.PaymentRepository;
 import org.gafiev.peertopeerbazaar.repository.specification.PaymentSpecification;
+import org.gafiev.peertopeerbazaar.service.integration.interfaces.ExternalPaymentService;
 import org.gafiev.peertopeerbazaar.service.model.interfaces.PaymentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final BuyerOrderRepository buyerOrderRepository;
     private final PaymentMapper paymentMapper;
-    private final BuyerOrderMapper buyerOrderMapper;
+    private final ExternalPaymentService externalPaymentService;
 
     /**
      * получение DTO платежа из БД по его Id
@@ -44,7 +47,8 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     /**
-     * получение DTO платежа из БД по его Id вместе с его ленивой частью
+     * получение DTO платежа из БД по его Id вместе
+     * с его ленивой частью BuyerOrder.
      *
      * @param id идентификатор платежа
      * @return DTO платежа вместе с множеством заказов, оплаченных этим платежом
@@ -69,35 +73,10 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toPaymentResponseSet(paymentSet);
     }
 
-    /**
-     * создание нового DTO платежа по известным параметрам, переданных покупателем
-     *
-     * @param paymentCreate данные присланные клиентом для создания нового платежа
-     * @return DTO платежа
-     */
-    @Override
-    @Transactional
-    public PaymentResponse createPayment(PaymentCreateRequest paymentCreate) {
-
-        Set<BuyerOrder> buyerOrderSet = paymentCreate.buyerOrderIds().stream()
-                .map(buyerOrderId -> buyerOrderRepository.findById(buyerOrderId)
-                        .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId)))))
-                .collect(Collectors.toSet());
-
-        Payment payment = new Payment();
-        payment.setAmount(paymentCreate.amount());
-        payment.setPaymentMode(paymentCreate.paymentMode());
-        payment.setPaymentStatus(paymentCreate.paymentStatus());
-        payment.setBuyerOrderSet(buyerOrderSet);
-
-        payment =  paymentRepository.save(payment);
-
-        return paymentMapper.toPaymentResponse(payment);
-    }
 
     /**
      * исправление или замена данных в уже существующем платеже на информацию,
-     * которую передаёт клиент в запросе
+     * которую передаёт клиент или внешнее платежное приложение в запросе callback notify.
      *
      * @param id         идентификатор существующего платежа
      * @param paymentNew информация, переданная клиентом, которую надо внести для исправления существующего платежа
@@ -105,26 +84,76 @@ public class PaymentServiceImpl implements PaymentService {
      */
     @Override
     @Transactional
-    public PaymentResponse updatePayment(Long id, PaymentCreateRequest paymentNew) {
+    public PaymentResponse updatePayment(Long id, PaymentUpdateRequest paymentNew) {
         Payment payment = paymentRepository.findByIdWithBuyerOrder(id)
                 .orElseThrow(() -> new EntityNotFoundException(Payment.class, Map.of("id", String.valueOf(id))));
 
-        Set<BuyerOrder> buyerOrderSet = paymentNew.buyerOrderIds().stream()
-                .map(buyerOrderId -> buyerOrderRepository.findById(buyerOrderId)
-                        .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId)))))
-                .collect(Collectors.toSet());
+        if(paymentNew.amount() != null){
+            payment.setAmount(paymentNew.amount());
+        }
 
-        payment.setAmount(paymentNew.amount());
-        payment.setPaymentMode(paymentNew.paymentMode());
-        payment.setPaymentStatus(paymentNew.paymentStatus());
-        payment.setBuyerOrderSet(buyerOrderSet);
+        if(paymentNew.buyerOrderIdsToAdd() != null && !paymentNew.buyerOrderIdsToAdd().isEmpty()){
+            Set<BuyerOrder> buyerOrderSet = Objects.requireNonNullElse(paymentNew.buyerOrderIdsToAdd(),Set.<Long>of()).stream()
+                    .map(buyerOrderId -> buyerOrderRepository.findById(buyerOrderId)
+                            .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId)))))
+                    .collect(Collectors.toSet());
+            payment.setBuyerOrderSet(buyerOrderSet);
+        }
+
+        if(paymentNew.buyerOrderIdsToRemove() != null && !paymentNew.buyerOrderIdsToRemove().isEmpty()){
+            Set<BuyerOrder> buyerOrderSet = Objects.requireNonNullElse(paymentNew.buyerOrderIdsToRemove(),Set.<Long>of()).stream()
+                    .map(buyerOrderId -> buyerOrderRepository.findById(buyerOrderId)
+                    .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class,Map.of("id", String.valueOf(buyerOrderId)))))
+                    .collect(Collectors.toSet());
+            payment.setBuyerOrderSet(buyerOrderSet);
+        }
+
+        if(paymentNew.paymentMode() != null){
+            payment.setPaymentMode(paymentNew.paymentMode());
+        }
+
+        if(paymentNew.paymentStatus() != null){
+            payment.setPaymentStatus(paymentNew.paymentStatus());
+        }
+        if(paymentNew.completionDateTime() != null){
+            payment.setCompletionDateTime(paymentNew.completionDateTime());
+        }
 
         payment = paymentRepository.save(payment);
 
         return paymentMapper.toPaymentResponse(payment);
     }
 
+
+    @Override
     @Transactional
+    public PaymentRedirectResponse completePayment(Long id) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Payment.class, Map.of("id", String.valueOf(id))));
+
+        ExternalPaymentResponse paymentResponse = externalPaymentService.createTransaction(paymentMapper.toExternalPaymentRequest(payment));
+        if (paymentResponse.error() != null) {
+            String message = "Can not get payment page Uri from External Payment Service : paymentId =%s, reason = %s".formatted(id, paymentResponse.error());
+            log.error(message);
+            throw new PaymentStatusException(message);
+        }
+        if (paymentResponse.status() == PaymentStatus.DENIED) {
+            String message = "Unsuccessful status  : paymentId =%s, status = %s".formatted(id, paymentResponse.status());
+            log.error(message);
+            throw new PaymentStatusException(message);
+        }
+        payment.setPaymentStatus(paymentResponse.status());
+        payment.setCompletionDateTime(paymentResponse.completionDateTime());
+        payment = paymentRepository.save(payment);
+
+        return PaymentRedirectResponse.builder()
+                .id(payment.getId())
+                .paymentPageUri(paymentResponse.paymentUri())
+                .build();
+    }
+
+    @Transactional
+    @Override
     public void deletePayment(Long id) {
         paymentRepository.deleteById(id);
     }

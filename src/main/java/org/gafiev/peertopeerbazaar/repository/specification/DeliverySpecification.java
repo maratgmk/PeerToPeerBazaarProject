@@ -29,40 +29,40 @@ public class DeliverySpecification {
                 predicates.add(criteriaBuilder.equal(root.get("delivery_status"), filterRequest.deliveryStatus().name()));
             }
 
-            if (filterRequest.expectedDateTimeEarlier() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("expected_date_time"), filterRequest.expectedDateTimeEarlier()));
+            if (filterRequest.timeSlotEarlier() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("timeSlot").get("start"), filterRequest.timeSlotEarlier().getStart()));
             }
 
-            if (filterRequest.expectedDateTimeLater() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("expected_date_time"), filterRequest.expectedDateTimeLater()));
+            if (filterRequest.timeSlotTimeLater() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("timeSlot").get("end"), filterRequest.timeSlotTimeLater().getEnd()));
             }
 
-            if (filterRequest.expectedDateTimeEarlier() != null && filterRequest.expectedDateTimeLater() != null) {
-                if (filterRequest.expectedDateTimeLater().isAfter(filterRequest.expectedDateTimeEarlier())) {
+            if (filterRequest.timeSlotEarlier() != null && filterRequest.timeSlotTimeLater() != null) {
+                // Проверяем, что временные метки корректны
+                if (filterRequest.timeSlotTimeLater().getStart().isAfter(filterRequest.timeSlotEarlier().getEnd())) {
                     return criteriaBuilder.conjunction(); // Возвращаем пустой предикат
                 } else {
-                    predicates.add(criteriaBuilder.between(
-                            root.get("expected_date_time"),
-                            filterRequest.expectedDateTimeLater(),
-                            filterRequest.expectedDateTimeLater()
+                    predicates.add(criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(root.get("timeSlot").get("end"), filterRequest.timeSlotTimeLater().getEnd()),
+                            criteriaBuilder.greaterThanOrEqualTo(root.get("timeSlot").get("start"), filterRequest.timeSlotEarlier().getStart())
                     ));
                 }
             }
 
             if (filterRequest.buyerOrderId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), filterRequest.buyerOrderId()));
+                predicates.add(criteriaBuilder.equal(root.get("buyerOrder").get("id"), filterRequest.buyerOrderId()));
             }
 
             if (filterRequest.droneId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), filterRequest.droneId()));
+                predicates.add(criteriaBuilder.equal(root.get("drone").get("id"), filterRequest.droneId()));
             }
 
             if (filterRequest.fromAddressId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), filterRequest.fromAddressId()));
+                predicates.add(criteriaBuilder.equal(root.get("fromAddress").get("id"), filterRequest.fromAddressId()));
             }
 
             if (filterRequest.toAddressId() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), filterRequest.toAddressId()));
+                predicates.add(criteriaBuilder.equal(root.get("toAddress").get("id"), filterRequest.toAddressId()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

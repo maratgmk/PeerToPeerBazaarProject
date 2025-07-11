@@ -28,4 +28,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @EntityGraph(attributePaths = {"sellerOfferSet"})
     @Query("SELECT p FROM Product p  WHERE p.id = :id")
     Optional<Product> findByIdWithSellerOffers(Long id);
+
+    @EntityGraph(attributePaths = {"author","author.productSet"})
+    @Query("SELECT p FROM Product p  WHERE p.id = :id")
+    Optional<Product> findByIdWithAuthor(Long id);
 }

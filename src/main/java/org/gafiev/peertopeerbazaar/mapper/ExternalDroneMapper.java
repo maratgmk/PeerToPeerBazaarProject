@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryCreateRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryUpdateTime;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.BuyerOrderDroneRequest;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.DeliveryDroneRequest;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 public class ExternalDroneMapper {
     private final AddressMapper addressMapper;
 
-    public DeliveryDroneRequest toDeliveryDroneRequest(DeliveryCreateRequest deliveryCreateRequest, Address toAddress, Address fromAddress, BuyerOrder buyerOrder){
+    public DeliveryDroneRequest toDeliveryDroneRequest(DeliveryUpdateTime updateRequest, Address toAddress, Address fromAddress, BuyerOrder buyerOrder){
         return DeliveryDroneRequest.builder()
-                .dateTime(deliveryCreateRequest.expectedDateTime())
+                .timeSlot(updateRequest.timeSlot())
                 .toAddress(addressMapper.toAddressDroneRequest(toAddress))
                 .fromAddress(addressMapper.toAddressDroneRequest(fromAddress))
                 .buyerOrder(BuyerOrderDroneRequest.builder()
@@ -24,5 +24,4 @@ public class ExternalDroneMapper {
                         .build())
                 .build();
     }
-
 }

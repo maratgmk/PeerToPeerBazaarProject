@@ -5,7 +5,6 @@ import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.Basket;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
-import org.gafiev.peertopeerbazaar.entity.payment.PaymentAccount;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
 
 import java.util.HashSet;
@@ -19,10 +18,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"sellerOfferSet","buyerOrderSet","paymentAccountSet","productSet"})
-@ToString(exclude = {"sellerOfferSet","buyerOrderSet","paymentAccountSet","productSet"})
+@EqualsAndHashCode(exclude = {"sellerOfferSet", "buyerOrderSet", "productSet", "basket"})
+@ToString(exclude = {"sellerOfferSet", "buyerOrderSet",  "productSet", "basket","password"})
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
     /**
      * id является уникальным идентификатором пользователя
@@ -35,19 +34,19 @@ public class User {
     /**
      * firstName есть имя пользователя
      */
-    @Column(name="first_name")
+    @Column(name = "first_name")
     private String firstName;
 
     /**
      * lastName есть фамилия пользователя
      */
-    @Column(name="last_name")
+    @Column(name = "last_name")
     private String lastName;
 
     /**
      * email электронная почта пользователя
      */
-    @Column(name = "email",unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     /**
@@ -63,10 +62,12 @@ public class User {
     private String phone;
 
     /**
-     * role указывает как приложение отождествляет пользователя
+     * roles указывает, что у пользователя может быть множество ролей.
      */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Set<Role> roles = new HashSet<>();
 
     /**
      * ratingSeller показывает рейтинг продавца от 0 до 100;
@@ -84,11 +85,12 @@ public class User {
      * basket устанавливает связь с покупателем, который заполняет корзину
      */
     @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+
     private Basket basket;
 
-     /**
+    /**
      * productSet является коллекцией дочерних сущностей, которая содержит внешний ключ (id) продавца (автора).
-     *  mappedBy = "author" указывает, что в классе Product есть поле author, которое является родительской сущностью.
+     * mappedBy = "author" указывает, что в классе Product есть поле author, которое является родительской сущностью.
      * User является управляющей (родительской) стороной, управляет жизненным циклом связанных сущностей Product в контексте каскадирования (персистентности).
      * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
      * все связанные Product также будут затронуты каскадно.
@@ -98,6 +100,8 @@ public class User {
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> productSet = new HashSet<>();
+
+
 
     /**
      * buyerOrderSet представляет собой множество заказов, созданных покупателем
@@ -131,72 +135,57 @@ public class User {
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
-    /**
-     * paymentAccountSet является множеством платежных счетов пользователя
-     * PaymentAccount владеющей стороной, владеет ключом пользователя,
-     * атрибут mappedBy = "user" означает, что в классе PaymentAccount есть поле "user",
-     * атрибут CascadeType.ALL относится к paymentAccountSet и означает, что
-     * при всех изменениях в сущности пользователя, каскадом изменятся пользователи в
-     * таблице "payment_account", атрибут orphanRemoval = true означает,
-     * что означает, если paymentAccount будет удален из коллекции paymentAccountSet методом paymentAccountSet.remove(paymentAccount),
-     * paymentAccount также будет удален из базы данных. Это заслуга Hibernate.
-     */
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PaymentAccount> paymentAccountSet = new HashSet<>();
 
 
     /**
      * метод добавляет указанный продукт в коллекцию продуктов
      * и устанавливает автора для данного продукта.
+     *
      * @param product продукт, который нужно добавить
      */
-    public void addProduct(@NonNull Product product){
-        this.productSet.add(product);
+    public void addProduct(@NonNull Product product) {
+        productSet.add(product);
         product.setAuthor(this);
     }
+
+
 
     /**
      * Этот метод удаляет указанный продукт из коллекции продуктов
      * и сбрасывает автора для данного продукта.
+     *
      * @param product продукт, который нужно удалить
      */
-    public void removeProduct(@NonNull Product product){
-        this.productSet.remove(product);
+    public void removeProduct(@NonNull Product product) {
+        productSet.remove(product);
         product.setAuthor(null);
     }
 
-    /**
-     * Добавляет платежный аккаунт в коллекцию аккаунтов пользователя.
-     * @param paymentAccount платежный аккаунт, который нужно добавить
-     */
-    public void addPaymentAccount(@NonNull PaymentAccount paymentAccount){
-        paymentAccountSet.add(paymentAccount);
-        paymentAccount.setUser(this);
+    public void addRole(@NonNull Role role){
+        roles.add(role);
     }
 
-    /**
-     * Удаляет платежный аккаунт из коллекции аккаунтов пользователя.
-     * @param paymentAccount платежный аккаунт, который нужно удалить
-     */
-    public void removePaymentAccount(@NonNull PaymentAccount paymentAccount){
-        paymentAccountSet.remove(paymentAccount);
-        paymentAccount.setUser(null);
+    public void removeRole(@NonNull Role role){
+        roles.remove(role);
     }
+
 
     /**
      * метод добавления предложение продавца в коллекцию sellerOfferSet
+     *
      * @param sellerOffer предложение продавца, которое нужно добавить
      */
-    public void addSellerOffer(@NonNull SellerOffer sellerOffer){
+    public void addSellerOffer(@NonNull SellerOffer sellerOffer) {
         sellerOfferSet.add(sellerOffer);
         sellerOffer.setSeller(this);
     }
 
     /**
      * метод удаления предложения продавца из коллекции sellerOfferSet
+     *
      * @param sellerOffer предложение, который нужно удалить
      */
-    public void removeSellerOrder(@NonNull SellerOffer sellerOffer){
+    public void removeSellerOrder(@NonNull SellerOffer sellerOffer) {
         sellerOfferSet.remove(sellerOffer);
         sellerOffer.setSeller(null);
     }
@@ -204,9 +193,10 @@ public class User {
     /**
      * метод добавляет указанный заказ в коллекцию заказов покупателя
      * и устанавливает покупателя для данного заказа.
+     *
      * @param buyerOrder заказ, который нужно добавить
      */
-    public void addBuyerOrder(@NonNull BuyerOrder buyerOrder){
+    public void addBuyerOrder(@NonNull BuyerOrder buyerOrder) {
         buyerOrderSet.add(buyerOrder);
         buyerOrder.setBuyer(this);
     }
@@ -214,9 +204,10 @@ public class User {
     /**
      * метод удаляет указанный заказ из коллекции заказов покупателя
      * и сбрасывает покупателя для данного заказа
+     *
      * @param buyerOrder заказ, который нужно удалить
      */
-    public void removeBuyerOrder(@NonNull BuyerOrder buyerOrder){
+    public void removeBuyerOrder(@NonNull BuyerOrder buyerOrder) {
         buyerOrderSet.remove(buyerOrder);
         buyerOrder.setBuyer(null);
     }

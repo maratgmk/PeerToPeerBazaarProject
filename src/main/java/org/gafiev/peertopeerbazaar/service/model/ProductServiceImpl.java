@@ -5,6 +5,7 @@ import org.gafiev.peertopeerbazaar.dto.api.request.ProductCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.ProductFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.ProductResponse;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
+import org.gafiev.peertopeerbazaar.entity.user.Role;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
 import org.gafiev.peertopeerbazaar.mapper.ProductMapper;
@@ -74,6 +75,9 @@ public class ProductServiceImpl implements ProductService {
         product.setQrCode(candidate.qrCode());
         product.setImageURI(candidate.imageURI());
         product.setAuthor(user);
+        if(!user.getRoles().contains(Role.SELLER)){
+            user.addRole(Role.SELLER);
+        }
 
         product =  productRepository.save(product);
 
@@ -119,18 +123,25 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public void deleteProduct(Long id) {
+        Product product = productRepository.findByIdWithAuthor(id)
+                .orElseThrow(() -> new EntityNotFoundException(Product.class, Map.of("id", String.valueOf(id))));
+        User author = product.getAuthor();
+        author.removeProduct(product);
+       if(author.getProductSet().isEmpty()) {
+           author.removeRole(Role.SELLER);
+       }
+        userRepository.save(author);
         productRepository.deleteById(id);
     }
 
     /**
-     * получение множества всех DTO продуктов созданных одним автором
-     *
-     * @param user_id идентификатор клиента
+     * получение множества всех DTO продуктов созданных одним автором.
+     * @param userid идентификатор клиента
      * @return DTO productSet
      */
     @Override
-    public Set<ProductResponse> getProductByAuthorId(Long user_id) {
-        Set<Product> productSet = productRepository.findByAuthorId(user_id);
+    public Set<ProductResponse> getProductByAuthorId(Long userid) {
+        Set<Product> productSet = productRepository.findByAuthorId(userid);
         return productMapper.toProductResponseSet(productSet);
     }
 }

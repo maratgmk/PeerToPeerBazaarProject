@@ -1,6 +1,7 @@
 package org.gafiev.peertopeerbazaar.dto.api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.neovisionaries.i18n.CurrencyCode;
 import lombok.Builder;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentMode;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentStatus;
@@ -15,6 +16,7 @@ public record PaymentResponse(
         Long id,
         BigDecimal amount,
         PaymentMode paymentMode,
+        CurrencyCode currency,
         PaymentStatus paymentStatus,
         LocalDateTime completionDateTime,
         Set<BuyerOrderResponse> buyerOrderResponseSet ){

@@ -5,13 +5,12 @@ import lombok.Builder;
 import org.gafiev.peertopeerbazaar.entity.order.OfferStatus;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SellerOfferResponse(
         Long id,
-        Integer unitCount,
         OfferStatus offerStatus,
         String comment,
         LocalDateTime creationDateTime,
@@ -19,5 +18,5 @@ public record SellerOfferResponse(
         Long productId,
         Long userId,
         Long addressId,
-        Set<PartOfferToBuyResponse> partOfferToBuyResponseSet) {
+        List<PartOfferToBuyResponse> partOfferToBuyResponseList) {
 }

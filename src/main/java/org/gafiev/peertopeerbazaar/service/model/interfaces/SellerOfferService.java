@@ -1,5 +1,7 @@
 package org.gafiev.peertopeerbazaar.service.model.interfaces;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.gafiev.peertopeerbazaar.dto.api.request.SellerOfferCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.SellerOfferFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.SellerOfferResponse;
@@ -27,5 +29,7 @@ public interface SellerOfferService {
     SellerOfferResponse updateMySellerOffer(Long sellerId, Long id,  SellerOfferCreateRequest sellerOfferNew);
 
     void deleteSellerOffer(Long id);
+
+    Integer getActualUnitCount(@NotNull @Positive Long id);
 
 }

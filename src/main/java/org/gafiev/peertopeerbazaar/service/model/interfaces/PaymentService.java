@@ -1,7 +1,8 @@
 package org.gafiev.peertopeerbazaar.service.model.interfaces;
 
-import org.gafiev.peertopeerbazaar.dto.api.request.PaymentCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.PaymentFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.PaymentUpdateRequest;
+import org.gafiev.peertopeerbazaar.dto.api.response.PaymentRedirectResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.PaymentResponse;
 
 import java.util.Set;
@@ -20,9 +21,9 @@ public interface PaymentService {
 
     Set<PaymentResponse> getAllPaymentSet(PaymentFilterRequest filterRequest);
 
-    PaymentResponse createPayment(PaymentCreateRequest paymentCreate);
+    PaymentResponse updatePayment(Long id, PaymentUpdateRequest paymentNew);
 
-    PaymentResponse updatePayment(Long id, PaymentCreateRequest paymentNew);
+    PaymentRedirectResponse completePayment(Long id);
 
     void deletePayment(Long id);
 }

@@ -17,6 +17,7 @@ import org.gafiev.peertopeerbazaar.repository.UserRepository;
 import org.gafiev.peertopeerbazaar.repository.specification.AddressSpecifications;
 import org.gafiev.peertopeerbazaar.service.integration.interfaces.ExternalDroneService;
 import org.gafiev.peertopeerbazaar.service.model.interfaces.AddressService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,11 +33,11 @@ public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
-    private final AddressMapper addressMapper;
+    private final @Lazy AddressMapper addressMapper;
     private final ExternalDroneService externalDroneService;
 
     /**
-     * получение DTO адреса по его идентификатору
+     * получение DTO адреса по его идентификатору.
      *
      * @param id идентификатор адреса
      * @return DTO адрес
@@ -49,7 +50,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     /**
-     * получение множества адресов из БД согласно настроенного фильтра
+     * получение множества адресов из БД согласно настроенного фильтра.
      *
      * @param filterRequest фильтр определяющий условия и параметры поиска
      * @return DTO addressSet
@@ -62,7 +63,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     /**
-     * получение всех адресов, связанных с одним пользователем
+     * получение всех адресов, связанных с данным пользователем.
      *
      * @param userId идентификатор пользователя
      * @return DTO addressSet
@@ -87,8 +88,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     /**
-     * создание нового адреса
-     *
+     * создание нового адреса для проверки возможности обслуживания и
+     * сохранения в БД.
+     * производится приватный запрос во внешний сервис для проверки возможности обслуживания.
      * @param candidate информация введённая пользователем
      * @return DTO адрес
      */
@@ -112,8 +114,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     /**
-     * изменение существующего адреса
-     *
+     * изменение существующего адреса.
+     * производится приватный запрос во внешний сервис для проверки возможности обслуживания.
      * @param id         идентификатор существующего адреса
      * @param userId     идентификатор пользователя
      * @param addressNew информация введённая пользователем
@@ -136,7 +138,6 @@ public class AddressServiceImpl implements AddressService {
         address.setAttitude(addressNew.attitude());
         address.setAccuracy(addressNew.accuracy());
 
-
         address = addressRepository.save(address);
         return addressMapper.toAddressResponse(address);
     }
@@ -152,8 +153,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     /**
-     * метод проверка на возможность вызова дрона по данному адресу
-     * @param addressCreateRequest  запрос на DTO Address для создания или обновления адреса
+     * приватный метод проверки на возможность вызова дрона по данному адресу.
+     * @param addressCreateRequest  DTO запрос для создания или обновления адреса
      */
     private void checkAddress(AddressCreateRequest addressCreateRequest) {
         String code = externalDroneService.getCode(addressCreateRequest);

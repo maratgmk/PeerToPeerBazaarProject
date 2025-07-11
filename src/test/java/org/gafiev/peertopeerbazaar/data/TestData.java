@@ -7,6 +7,7 @@ import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
 import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
 import org.gafiev.peertopeerbazaar.entity.order.OfferStatus;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
+import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 
 import java.time.LocalDateTime;
 
@@ -57,12 +58,14 @@ public class TestData {
     public static final Delivery DELIVERY1 = Delivery.builder()
 //            .id(25L)
             .deliveryStatus(DeliveryStatus.CREATED)
-            .expectedDateTime(LocalDateTime.now().plusMinutes(68))
+            .timeSlot(new TimeSlot(LocalDateTime.of(2025,3,15,11,30,00),
+                    LocalDateTime.of(2025,3,15,11,30,00).plusMinutes(30)))
             .build();
 
     public static final Delivery DELIVERY2 = Delivery.builder()
 //            .id(11L)
             .deliveryStatus(DeliveryStatus.DELIVERED)
-            .expectedDateTime(LocalDateTime.of(2024,10,23,10,38))
+            .timeSlot(new TimeSlot(LocalDateTime.of(2025,3,15,12,00,00),
+                    LocalDateTime.of(2025,3,15,12,00,00).plusMinutes(30)))
             .build();
 }

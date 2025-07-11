@@ -35,32 +35,35 @@ public class Basket {
     private User buyer;
 
     /**
-     * Множество частей офферов всех продавцов, которые выбрал покупатель и положил в корзину,
-     * partOfferToBuy это части любых офферов от любых продавцов
+     * Множество частей офферов всех продавцов, которые выбрал покупатель и положил в корзину.
+     * partOfferToBuy это часть любого оффера от любого продавца.
      * параметр FetchType.LAZY означает, что при загрузке корзины partOfferToBuySet загружаться не будет
      * чтобы это обойти создаётся кастомный метод в репозитории с помощью JPQL запроса
-     * по умолчанию будет доступен basketId = userId
      */
-    @OneToMany(mappedBy = "basket", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "basket_part",
+            joinColumns = @JoinColumn(name = "buyer_id"),
+            inverseJoinColumns = @JoinColumn(name = "part_id")
+    )
     private Set<PartOfferToBuy> partOfferToBuySet = new HashSet<>();
 
     /**
-     * Метод добавления partOfferToBuy во множество partOfferToBuySet
+     * Метод добавления части предложения в корзину.
      *
      * @param partOfferToBuy выбранная покупателем часть предложения продавца
      */
     public void addPartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.add(partOfferToBuy);
-        partOfferToBuy.setBasket(this);
+        partOfferToBuy.getBasketSet().add(this);
     }
 
     /**
-     * Метод удаления partOfferToBuy из множества partOfferToBuySet
+     * Метод удаления части предложения из корзины.
      *
      * @param partOfferToBuy выбранная покупателем часть предложения продавца
      */
     public void removePartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.remove(partOfferToBuy);
-        partOfferToBuy.setBasket(null);
+        partOfferToBuy.getBasketSet().remove(this);
     }
 }

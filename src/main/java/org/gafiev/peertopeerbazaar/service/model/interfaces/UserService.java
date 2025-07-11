@@ -27,16 +27,14 @@ public interface UserService {
 
     UserResponse getUserByIdWithBasket(Long id);
 
-    UserResponse getUserByIdWithPaymentAccounts(Long id);
-
     UserResponse findByIdFull(Long id);
 
     UserResponse createUser(UserCreateRequest candidate);
 
     UserResponse updateUser(Long id, UserCreateRequest updatedUser);
 
+    UserResponse confirmUser(Long id);
+
     void deleteUserById(Long id);
-
-
 
 }

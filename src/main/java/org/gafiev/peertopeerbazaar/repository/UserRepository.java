@@ -37,9 +37,13 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
      * связанными сущностями, если он существует, или пустой объект {@link Optional},
      * если пользователь не найден.
      */
-    @EntityGraph(attributePaths = {"productSet", "sellerOrderSet", "buyerOrderSet", "paymentAccountSet"})
+    @EntityGraph(attributePaths = {"productSet", "sellerOfferSet", "buyerOrderSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdFull(Long id);
+
+    @EntityGraph(attributePaths = {"productSet"})
+    @Query("SELECT u FROM User u  WHERE u.id = :id")
+    Optional<User> findByIdWithProducts(Long id);
 
 
     @EntityGraph(attributePaths = {"buyerOrderSet", "sellerOfferSet"})
@@ -47,19 +51,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     Optional<User> findByIdWithBuyerOrdersAndSellerOffers(@Param("id") Long id);
 
 
-    /**
-     * Получает сущность User по её ID вместе с ассоциированными платежными аккаунтами.
-     * Этот метод использует аннотацию @EntityGraph для жадной загрузки
-     * коллекции paymentAccounts, что позволяет избежать проблемы N+1
-     * при извлечении данных.
-     *
-     * @param id ID пользователя, которого нужно получить; не должен быть null
-     * @return Optional, содержащий пользователя, если он найден, или пустой Optional,
-     * если пользователь с указанным ID не существует
-     */
-    @EntityGraph(attributePaths = {"paymentAccountSet"})
-    @Query("SELECT u FROM User u  WHERE u.id = :id")
-    Optional<User> findByIdWithPaymentAccounts(Long id);
 
     /**
      * метод использует аннотацию EntityGraph

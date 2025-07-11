@@ -10,8 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Сущность Product есть продукт, который создаётся продавцом (автором)
- * для реализации покупателям с помощью данного приложения
+ * Продукт, создаётся продавцом (автором) для продажи покупателям.
  */
 @Getter
 @Setter
@@ -23,7 +22,7 @@ import java.util.Set;
 @Table(name = "product")
 public class Product {
     /**
-     * id есть уникальный идентификатор продукта
+     * id идентификатор продукта
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,25 +30,25 @@ public class Product {
     private Long id;
 
     /**
-     * name есть название продукта
+     * название продукта
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * description есть описание продукта
+     * описание продукта
      */
     @Column(name = "description")
     private String description;
 
     /**
-     * category сообщает какова обобщенная характеристика продукта
+     * обобщенная характеристика продукта
      */
     @Enumerated(EnumType.STRING)
     private Category category;
 
     /**
-     * portionUnit сообщает единицу измерения одной порции продукта
+     * единица измерения одной порции продукта
      */
     @Enumerated(EnumType.STRING)
     private PortionUnit portionUnit;
@@ -85,8 +84,7 @@ public class Product {
     private String qrCode; //TODO сделать интеграцию с базой QR
 
     /**
-     * author указывает на создателя продукта
-     *
+     * создатель продукта
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private User author;
@@ -98,8 +96,7 @@ public class Product {
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
     /**
-     * добавление предложения продавца во множество предложений
-     * и внедрение данного продукта в это предложение
+     * добавление предложения продавца во множество предложений, связанных с данным продуктом
      * @param sellerOffer предложение продавца
      */
     public void addSellerOffer(SellerOffer sellerOffer){
@@ -108,8 +105,7 @@ public class Product {
     }
 
     /**
-     * удаление предложения продавца из множества предложений
-     * и установки отсутствия продукта в этом предложении
+     * удаление предложения продавца из множества предложений, связанное с данным продуктом
      * @param sellerOffer предложение продавца
      */
     public void removeSellerOffer(SellerOffer sellerOffer){

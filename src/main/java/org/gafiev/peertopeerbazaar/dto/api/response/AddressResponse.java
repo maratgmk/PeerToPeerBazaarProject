@@ -3,8 +3,6 @@ package org.gafiev.peertopeerbazaar.dto.api.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
-import java.util.Set;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record AddressResponse(
@@ -16,7 +14,6 @@ public record AddressResponse(
         Double latitude,
         Double longitude,
         Double attitude,
-        Double accuracy,
-        Set<SellerOfferResponse> sellerOfferResponseSet,
-        Set<DeliveryResponse> deliveryResponseSet) {
+        Double accuracy
+        ) {
 }

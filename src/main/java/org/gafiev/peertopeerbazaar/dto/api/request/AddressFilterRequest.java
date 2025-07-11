@@ -1,6 +1,8 @@
 package org.gafiev.peertopeerbazaar.dto.api.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -22,14 +24,14 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 public record AddressFilterRequest(
-        @Size(min = 1) Set<Long> ids,
-        @Size(min = 1) String town,
-        @Size(min = 1) String street,
-        @Positive Integer numberBuilding,
-        @Positive Double longitudeRight,
-        @Positive Double longitudeLeft,
-        @Positive Double latitudeNorth,
-        @Positive Double latitudeSouth,
-        @Positive Double attitudeHigh,
-        @Positive Double attitudeLow) {
+        @NotNull @Nonnull @Size(min = 1) Set<Long> ids,
+        @NotNull @Nonnull @Size(min = 1) String town,
+        @NotNull @Nonnull @Size(min = 1) String street,
+        @NotNull @Nonnull @Positive Integer numberBuilding,
+        @NotNull @Nonnull @Positive Double longitudeRight,
+        @NotNull @Nonnull @Positive Double longitudeLeft,
+        @NotNull @Nonnull @Positive Double latitudeNorth,
+        @NotNull @Nonnull @Positive Double latitudeSouth,
+        @NotNull @Nonnull @Positive Double attitudeHigh,
+        @NotNull @Nonnull @Positive Double attitudeLow) {
 }

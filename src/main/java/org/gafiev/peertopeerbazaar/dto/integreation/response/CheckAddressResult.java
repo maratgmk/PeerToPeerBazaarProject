@@ -43,7 +43,6 @@ public enum CheckAddressResult {
      * @param code код элемента перечисления
      * @return  элемент перечисления
      */
-
     @Nonnull
     public static Optional<CheckAddressResult> getByCode(@Nullable String code){
         return Optional.ofNullable(code).map(c -> c.toLowerCase(Locale.ROOT)).map(codeToResult::get);

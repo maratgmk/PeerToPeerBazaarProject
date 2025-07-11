@@ -8,7 +8,7 @@ import lombok.Builder;
 import java.util.Set;
 
 /**
- * DTO информация от пользователя для поиска дронов из БД
+ * DTO информация от пользователя для поиска дронов из БД.
  *
  * @param droneServiceIds множество идентификаторов дронов из внешнего сервиса
  * @param droneIds  множество идентификаторов дронов из БД с нашей стороны
@@ -22,3 +22,4 @@ public record DroneFilterRequest(@Nullable Set<Long> droneServiceIds,
                                  Set<@Positive Long> deliveryIdsToRemove,
                                  Set<@Positive Long> deliveryIdsToAdd) {
 }
+

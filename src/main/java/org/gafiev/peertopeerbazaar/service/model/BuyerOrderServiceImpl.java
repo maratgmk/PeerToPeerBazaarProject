@@ -1,27 +1,28 @@
 package org.gafiev.peertopeerbazaar.service.model;
 
+import com.neovisionaries.i18n.CurrencyCode;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.api.request.*;
+import lombok.extern.slf4j.Slf4j;
+import org.gafiev.peertopeerbazaar.dto.api.request.BuyerOrderCreateRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.BuyerOrderFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.BuyerOrderUpdateRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.BuyerOrderResponse;
-import org.gafiev.peertopeerbazaar.dto.integreation.request.DeliveryDroneRequest;
-import org.gafiev.peertopeerbazaar.dto.integreation.response.ExternalDroneResponse;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
-import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
-import org.gafiev.peertopeerbazaar.entity.delivery.Drone;
 import org.gafiev.peertopeerbazaar.entity.order.*;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentMode;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentStatus;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.gafiev.peertopeerbazaar.exception.ClosedOfferException;
-import org.gafiev.peertopeerbazaar.exception.DroneException;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
 import org.gafiev.peertopeerbazaar.exception.IllegalBusinessStateException;
 import org.gafiev.peertopeerbazaar.mapper.BuyerOrderMapper;
 import org.gafiev.peertopeerbazaar.mapper.ExternalDroneMapper;
+import org.gafiev.peertopeerbazaar.mapper.TimeSlotMapper;
 import org.gafiev.peertopeerbazaar.repository.*;
 import org.gafiev.peertopeerbazaar.repository.specification.BuyerOrderSpecification;
 import org.gafiev.peertopeerbazaar.repository.specification.DeliverySpecification;
@@ -33,18 +34,23 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class BuyerOrderServiceImpl implements BuyerOrderService {
     private final BuyerOrderRepository buyerOrderRepository;
     private final BuyerOrderMapper buyerOrderMapper;
+    private final BasketRepository basketRepository;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final SellerOfferRepository sellerOfferRepository;
     private final ExternalDroneService externalDroneService;
     private final DroneRepository droneRepository;
     private final ExternalDroneMapper externalDroneMapper;
     private final DeliveryRepository deliveryRepository;
     private final PartOfferToBuyRepository partOfferToBuyRepository;
+    private final TimeSlotMapper timeSlotMapper;
+    private final PaymentRepository paymentRepository;
 
 
     @Override
@@ -60,6 +66,7 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
 
 
     @Override
+    @Transactional
     public Set<BuyerOrderResponse> getAll(Long buyerId, BuyerOrderStatus buyerOrderStatus) {
         User buyer = userRepository.findByIdWithBuyerOrdersAndSellerOffers(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
@@ -69,6 +76,7 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
     }
 
     @Override
+    @Transactional
     public Set<BuyerOrderResponse> getAllBuyerOrders(BuyerOrderFilterRequest filterRequest) {
         List<BuyerOrder> buyerOrderList = buyerOrderRepository.findAll(BuyerOrderSpecification.filterByParams(filterRequest));
         Set<BuyerOrder> buyerOrderSet = new HashSet<>(buyerOrderList);
@@ -82,8 +90,9 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
         User buyer = userRepository.findByIdWithBasket(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
         Basket basket = buyer.getBasket();
+        SellerOffer sellerOffer = basket.getPartOfferToBuySet().stream().findFirst().orElseThrow().getSellerOffer();
 
-        // проверяем какие части в корзине пользователя есть также и в частях кандидата
+        // собираем части в корзине пользователя, которые есть также в частях кандидата
         Set<PartOfferToBuy> parts = basket.getPartOfferToBuySet().stream()
                 .filter(part -> candidate.partOfferToBuyIds().contains(part.getId()))
                 .collect(Collectors.toSet());
@@ -92,7 +101,7 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
             Set<Long> partIds = parts.stream().map(PartOfferToBuy::getId).collect(Collectors.toSet()); // Ids корзины равные Ids кандидата
             Set<Long> absentIds = candidate.partOfferToBuyIds().stream().filter(id -> !partIds.contains(id)).collect(Collectors.toSet()); // Ids кандидата, которых нет в корзине
 
-            throw new EntityNotFoundException("PartOfferToBuyIds %s are not parts of basket with id = %d".formatted(absentIds, buyerId));
+            throw     new EntityNotFoundException("PartOfferToBuyIds %s are not parts of basket with id = %d".formatted(absentIds, buyerId));
         }
 
         // проверяем,что в запросе нет частей закрытых офферов
@@ -121,17 +130,17 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
             // заводим заказ на каждый оффер, потому что Presale у офферов заканчивается в разное время
             Map<Long, List<PartOfferToBuy>> offerToPart = presaleParts.stream().collect(Collectors.groupingBy(part -> part.getSellerOffer().getId()));
             return offerToPart.values().stream()
-                    .map(partList -> createOrder(new HashSet<>(partList), buyer, null, payment))
+                    .map(partList -> createOrder(new HashSet<>(partList), buyer, payment, basket, sellerOffer ))
                     .map(buyerOrderMapper::toBuyerOrderResponse)
                     .collect(Collectors.toSet());
         }
 
         // здесь все части в статусе Opened. Оформляем для них по одному заказу на все части одного поставщика забираемые с одного адреса
-        Map<SellerOfferIdAndAddress, List<PartOfferToBuy>> offerIdAndAddressToParts = parts.stream()
-                .collect(Collectors.groupingBy(part -> new SellerOfferIdAndAddress(part.getSellerOffer().getSeller().getId(), part.getSellerOffer().getAddress())));
+        Map<SellerAndAddress, List<PartOfferToBuy>> offerIdAndAddressToParts = parts.stream()
+                .collect(Collectors.groupingBy(part -> new SellerAndAddress(part.getSellerOffer().getSeller().getId(), part.getSellerOffer().getAddress())));
 
         return offerIdAndAddressToParts.values().stream()
-                .map(partList -> createOrder(new HashSet<>(partList), buyer, candidate.delivery(), payment))
+                .map(partList -> createOrder(new HashSet<>(partList), buyer, null, basket, sellerOffer))
                 .map(buyerOrderMapper::toBuyerOrderResponse)
                 .collect(Collectors.toSet());
     }
@@ -194,6 +203,8 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId))));
         buyerOrder.setBuyerOrderStatus(BuyerOrderStatus.DENIED);
+        int decreaseRating = buyer.getRatingBuyer() - 1;
+        buyer.setRatingBuyer(decreaseRating);
         userRepository.save(buyer);
     }
 
@@ -212,80 +223,70 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
     }
 
     /**
-     * создание заказа по частям предложений одного поставщика, забираемых с одного адреса
+     * создание заказа по частям предложений одного поставщика, забираемых с одного адреса.
      *
-     * @param parts           части корзины? части ?
-     * @param buyer           покупатель
-     * @param deliveryRequest DTO поставки (куда, что, когда)
-     * @param payment         предоплата ???
+     * @param basketParts   части корзины, части предложений продавца, части заказа покупателя совпадают.
+     * @param buyer   покупатель
+     * @param payment предоплата или оплата
      * @return заказ покупателя
      */
-    private BuyerOrder createOrder(Set<PartOfferToBuy> parts, User buyer, @Nullable DeliveryCreateRequest deliveryRequest, @Nullable Payment payment) {
-        if (parts.isEmpty()) throw new IllegalBusinessStateException("Order cannot be empty");
-        Delivery delivery = null;
-        if (deliveryRequest != null) {
-            delivery = new Delivery();
-            delivery.setDeliveryStatus(DeliveryStatus.CREATED);
-            delivery.setExpectedDateTime(deliveryRequest.expectedDateTime());
 
-            Address toAddress = addressRepository.findById(deliveryRequest.addressId())
-                    .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(deliveryRequest.addressId()))));
-            Address fromAddress = parts.stream().findFirst().orElseThrow().getSellerOffer().getAddress();
-            delivery.setToAddress(toAddress);
-            delivery.setFromAddress(fromAddress);
-            DeliveryDroneRequest deliveryDroneRequest = externalDroneMapper.toDeliveryDroneRequest(
-                    deliveryRequest,
-                    toAddress,
-                    fromAddress,
-                    BuyerOrder.builder().partOfferToBuySet(parts).build());
-            ExternalDroneResponse droneResponse = externalDroneService.requestDrone(deliveryDroneRequest);
-            if (droneResponse == null) throw new DroneException("Cannot arrange drone : response is null");
-            if (droneResponse.errorMessage() != null)
-                throw new DroneException("Cannot arrange drone : " + droneResponse.errorMessage());
-            Drone drone = droneRepository.findByDroneServiceIdWithDeliveries(droneResponse.droneServiceId())
-                    .orElseGet(() -> Drone.builder()
-                            .droneServiceId(droneResponse.droneServiceId())
-                            .build());
-            drone.addDelivery(delivery);
-        }
+    private BuyerOrder createOrder(Set<PartOfferToBuy> basketParts, User buyer, @Nullable Payment payment, Basket basket,SellerOffer sellerOffer) {
+        Set<PartOfferToBuy> parts = sellerOffer.getPartOfferToBuyList().stream()
+                .filter(p -> p.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))
+                .limit(basketParts.size())
+                .collect(Collectors.toSet());
+
+        if (parts.size() != basketParts.size()) throw new IllegalBusinessStateException("Not enough parts for order");
 
         BuyerOrder buyerOrder = new BuyerOrder();
         buyerOrder.setBuyer(buyer);
         buyerOrder.setBuyerOrderStatus(BuyerOrderStatus.CREATED);
-        if (delivery != null) {
-            buyerOrder.addDelivery(delivery);
-        }
 
         for (PartOfferToBuy part : parts) {
-            if (part.getSellerOffer().getActualUnitCount() < part.getUnitCount())
-                throw new IllegalBusinessStateException("Cannot create order with %d unit: actual amount is less".formatted(part.getUnitCount()));
+            if (part.getSellerOffer().getActualUnitCount() <= 0)
+                throw new IllegalBusinessStateException("Cannot create order: actual amount is zero");
             buyerOrder.addPartOfferToBuy(part);
+            part.setStatus(PartOfferToBuyStatus.RESERVED);
+            basket.removePartOfferToBuy(part);
+
+            log.info("After saving, SellerOffer ID: {}, Status: {}", sellerOffer.getId(), sellerOffer.getOfferStatus());
+        }
+
+        if (sellerOffer.getActualUnitCount() <= 0) {
+            sellerOffer.setOfferStatus(OfferStatus.CLOSED);
+               log.info("SellerOffer ID {} is now closed.", sellerOffer.getId());
         }
         payment = Objects.requireNonNullElse(payment, new Payment());
-        payment.addBuyerOrder(buyerOrder);
+
         payment.setPaymentStatus(PaymentStatus.CREATED);
         payment.setPaymentMode(PaymentMode.BANK_TRANSFER);
-        //
+        payment.setCurrency(CurrencyCode.RUB);
+
         BigDecimal currentOrderAmount = parts.stream()
                 .map(part -> part.getSellerOffer()
                         .getProduct().getPrice()
-                        .multiply(BigDecimal.valueOf(part.getUnitCount())))
+                        .multiply(BigDecimal.valueOf(parts.size())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal paymentAmount = Objects.requireNonNullElse(payment.getAmount(), BigDecimal.ZERO).add(currentOrderAmount);
         payment.setAmount(paymentAmount);
 
-        buyerOrder.setPayment(payment);
+        payment.addBuyerOrder(buyerOrder);
+      //  basketRepository.save(basket);
 
+        //TODO добавить basketRepository и вызывать метод save для корзины. Проверить входит ли части в таблице basket_part? что то препятствует для удаление частей. сначала проверить с save, (удалить save) и затем cascadeAll проверить
         return buyerOrderRepository.save(buyerOrder);
+
     }
 
     /**
      * ключ для мапы offerIdAndAddressToParts
      *
-     * @param sellerOfferId
+     * @param sellerId
      * @param address
      */
-    private record SellerOfferIdAndAddress(Long sellerOfferId, Address address) {
-
+    private record SellerAndAddress(Long sellerId, Address address) {
     }
+
+
 }

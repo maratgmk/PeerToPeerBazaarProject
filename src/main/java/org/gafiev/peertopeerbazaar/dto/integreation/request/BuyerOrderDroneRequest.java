@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
 /**
- * запрос дрона из внешнего сервиса по DTO данным о заказе покупателя.
+ * приложение запрашивает дрон из внешнего сервиса по DTO данным о заказе покупателя.
  * @param weightKg  общий вес заказа
  * @param volumeLtr  общий объём заказа
  */

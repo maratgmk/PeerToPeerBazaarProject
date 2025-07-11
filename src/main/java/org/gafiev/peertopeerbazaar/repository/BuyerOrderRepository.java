@@ -25,5 +25,17 @@ public interface BuyerOrderRepository extends JpaRepository<BuyerOrder,Long>, Jp
     @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
     Optional<BuyerOrder> findByIdWithDeliveryAndAddress(Long id);
 
+    /**
+     * получение заказа вместе с частями предложения, с предложениями продавца, с адресом продавца, с платежом заказа.
+     * @param id идентификатор заказа
+     * @return заказ в обёртке Option
+     */
+    @EntityGraph(attributePaths = {"partOfferToBuySet","partOfferToBuySet.sellerOffer", "partOfferToBuySet.sellerOffer.address", "payment"})
+    @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
+    Optional<BuyerOrder> findByIdWithPartOfferToBuyAndWithSellerOfferWithAddress(Long id);
+
+    @EntityGraph(attributePaths = {"partOfferToBuySet","deliverySet","deliverySet.address"})
+    @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
+    Optional<BuyerOrder> findByIdWithDeliveryAndAddressAndPartOfferToBuy(Long id);
 }
 

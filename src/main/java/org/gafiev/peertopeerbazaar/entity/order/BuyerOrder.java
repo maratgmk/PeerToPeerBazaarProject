@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * сущность BuyerOrder есть заказ покупателя
+ * заказ покупателя
  */
 @EqualsAndHashCode(exclude = {"partOfferToBuySet","deliverySet"})
 @ToString(exclude = {"partOfferToBuySet","deliverySet"})
@@ -134,7 +134,7 @@ public class BuyerOrder {
      */
     public double getWeightKg(){
         return partOfferToBuySet.stream()
-                .mapToDouble(part -> part.getUnitCount()*part.getSellerOffer().getProduct().getWeightKg())
+                .mapToDouble(part -> part.getSellerOffer().getProduct().getWeightKg())
                 .sum();
     }
 
@@ -144,7 +144,7 @@ public class BuyerOrder {
      */
     public double getVolumeLtr(){
         return partOfferToBuySet.stream()
-                .mapToDouble(part -> part.getUnitCount()*part.getSellerOffer().getProduct().getVolumeLtr())
+                .mapToDouble(part -> part.getSellerOffer().getProduct().getVolumeLtr())
                 .sum();
     }
 }

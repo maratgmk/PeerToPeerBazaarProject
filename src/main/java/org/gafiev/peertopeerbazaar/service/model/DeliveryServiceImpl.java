@@ -1,29 +1,37 @@
 package org.gafiev.peertopeerbazaar.service.model;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryUpdateTime;
 import org.gafiev.peertopeerbazaar.dto.api.response.DeliveryResponse;
-import org.gafiev.peertopeerbazaar.entity.delivery.Address;
-import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
-import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
+import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
+import org.gafiev.peertopeerbazaar.dto.integreation.response.ExternalDroneResponse;
+import org.gafiev.peertopeerbazaar.entity.delivery.*;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
+import org.gafiev.peertopeerbazaar.entity.order.BuyerOrderStatus;
+import org.gafiev.peertopeerbazaar.entity.payment.PaymentStatus;
+import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 import org.gafiev.peertopeerbazaar.entity.user.User;
+import org.gafiev.peertopeerbazaar.exception.DroneException;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
+import org.gafiev.peertopeerbazaar.exception.PaymentStatusException;
 import org.gafiev.peertopeerbazaar.mapper.DeliveryMapper;
-import org.gafiev.peertopeerbazaar.repository.BuyerOrderRepository;
-import org.gafiev.peertopeerbazaar.repository.DeliveryRepository;
-import org.gafiev.peertopeerbazaar.repository.UserRepository;
+import org.gafiev.peertopeerbazaar.mapper.DroneMapper;
+import org.gafiev.peertopeerbazaar.mapper.ExternalDroneMapper;
+import org.gafiev.peertopeerbazaar.mapper.TimeSlotMapper;
+import org.gafiev.peertopeerbazaar.repository.*;
 import org.gafiev.peertopeerbazaar.repository.specification.DeliverySpecification;
+import org.gafiev.peertopeerbazaar.service.integration.interfaces.ExternalDroneService;
 import org.gafiev.peertopeerbazaar.service.model.interfaces.DeliveryService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
@@ -31,6 +39,13 @@ public class DeliveryServiceImpl implements DeliveryService {
     private final BuyerOrderRepository buyerOrderRepository;
     private final UserRepository userRepository;
     private final DeliveryMapper deliveryMapper;
+    private final TimeSlotMapper timeSlotMapper;
+    private final ExternalDroneService externalDroneService;
+    private final DroneServiceImpl droneService;
+    private final DroneMapper droneMapper;
+    private final ExternalDroneMapper externalDroneMapper;
+    private final AddressRepository addressRepository;
+    private final DroneRepository droneRepository;
 
 
     @Override
@@ -41,6 +56,7 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
+    @Transactional
     public Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(Long buyerOrderId) {
         BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithDelivery(buyerOrderId)
                 .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId))));
@@ -48,8 +64,8 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public Set<DeliveryResponse> getAllDeliveries(DeliveryStatus deliveryStatus, Address toAddress, Address fromAddress, LocalDateTime start, LocalDateTime end) {
-        Set<Delivery> deliverySet = deliveryRepository.findAllByDeliveryStatusAndFromAddressAndToAddressAndExpectedDateTimeBetween(deliveryStatus, toAddress, fromAddress, start, end);
+    public Set<DeliveryResponse> getAllDeliveries(DeliveryStatus deliveryStatus, Address toAddress, Address fromAddress, TimeSlot timeSlot) {
+        Set<Delivery> deliverySet = deliveryRepository.findAllByDeliveryStatusAndFromAddressAndToAddressAndTimeSlot(deliveryStatus, toAddress, fromAddress, timeSlot);
         return deliveryMapper.toDeliveryResponseSet(deliverySet);
     }
 
@@ -61,86 +77,172 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
-    public DeliveryResponse createDelivery(DeliveryCreateRequest delivery) {
-        BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithDeliveryAndAddress(delivery.buyerOrderId())
-                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(delivery.buyerOrderId()))));
-
-        Address address = buyerOrder.getDeliverySet().stream()
-                .map(Delivery::getToAddress)
-                .filter(a -> a.getId().equals(delivery.addressId())).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(delivery.addressId()))));
-
-        Delivery createdDelivery = new Delivery();
-        createdDelivery.setExpectedDateTime(delivery.expectedDateTime());
-        createdDelivery.setDeliveryStatus(DeliveryStatus.CREATED);
-        createdDelivery.setBuyerOrder(buyerOrder);
-        createdDelivery.setToAddress(address);
-        //  createdDelivery.setDrone();
-        return deliveryMapper.toDeliveryResponse(createdDelivery);
-    }
-
-    @Override
-    public DeliveryResponse createDeliveryDependsOnFail(Long failDeliveryId) {
-        Delivery deliveryFail = deliveryRepository.findById(failDeliveryId)
-                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(failDeliveryId))));
-
-        Delivery createdDelivery = new Delivery();
-        createdDelivery.setExpectedDateTime(deliveryFail.getExpectedDateTime());
-        createdDelivery.setBuyerOrder(deliveryFail.getBuyerOrder());
-        createdDelivery.setToAddress(deliveryFail.getToAddress());
-        createdDelivery.setDeliveryStatus(DeliveryStatus.CREATED);
-        //  createdDelivery.setDrone(deliveryFail.getDrone());
-
-        return deliveryMapper.toDeliveryResponse(createdDelivery);
-    }
-
-    @Override
-    public DeliveryResponse updateDeliveryDetails(Long id, DeliveryCreateRequest deliveryNew) {
-        BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithDeliveryAndAddress(deliveryNew.buyerOrderId())
-                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(deliveryNew.buyerOrderId()))));
-
-        Delivery delivery = buyerOrder.getDeliverySet().stream()
-                .filter(d -> d.getId().equals(id)).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
-
-        delivery.setExpectedDateTime(deliveryNew.expectedDateTime());
-        delivery.setBuyerOrder(buyerOrder);
-        Address addressNew = buyerOrder.getDeliverySet().stream()
-                .map(Delivery::getToAddress)
-                .filter(a -> a.getId().equals(deliveryNew.addressId())).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(deliveryNew.addressId()))));
-
-        if (!delivery.getToAddress().equals(addressNew)) {
-            delivery.setToAddress(addressNew);
+    public DeliveryResponse create(DeliveryCreateRequest request) {
+        BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithPartOfferToBuyAndWithSellerOfferWithAddress(request.buyerOrderId())
+                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(request.buyerOrderId()))));
+        if(buyerOrder.getPayment().getPaymentStatus() != PaymentStatus.SUCCESS){
+            throw new PaymentStatusException("Delivery is impossible. Payment is not done");
         }
+        
+        Delivery delivery = new Delivery();
+        delivery.setDeliveryStatus(DeliveryStatus.CREATED);
+
+        Address toAddress = addressRepository.findById(request.addressId())
+                .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(request.addressId()))));
+
+        Address fromAddress = buyerOrder.getPartOfferToBuySet().stream().findFirst().orElseThrow().getSellerOffer().getAddress();
+        delivery.setToAddress(toAddress);
+        delivery.setFromAddress(fromAddress);
+        buyerOrder.addDelivery(delivery);
+
+        delivery = deliveryRepository.save(delivery);
+
         return deliveryMapper.toDeliveryResponse(delivery);
     }
 
     @Override
-    public DeliveryResponse updateMyDeliveryDetails(Long id, Long userId, DeliveryCreateRequest deliveryNew) {
-        User user = userRepository.findByIdWithBuyerOrdersAndSellerOffers(userId)
-                .orElseThrow(() -> new EntityNotFoundException(User.class,Map.of("id", String.valueOf(userId))));
+    public List<TimeSlotResponse> takeTimeSlots(Long id) {
+        Delivery delivery = deliveryRepository.findDeliveryByIdWithBuyerOrderWithAddresses(id)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+        Set<TimeSlotResponse> timeSlotResponseSet = externalDroneService.requestDroneSchedule(deliveryMapper.toDeliveryDroneRequest(delivery));
 
-        BuyerOrder buyerOrder = user.getBuyerOrderSet().stream()
-                .filter(o -> o.getId().equals(deliveryNew.buyerOrderId()))
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class,Map.of("id", String.valueOf(deliveryNew.buyerOrderId()))));
+        return timeSlotResponseSet.stream().sorted(Comparator.comparing(TimeSlotResponse::start)).toList();
+    }
 
-        Delivery delivery = buyerOrder.getDeliverySet().stream()
-                .filter(d -> d.getId().equals(id))
-                .findFirst().orElseThrow(() -> new EntityNotFoundException(Delivery.class,Map.of("id", String.valueOf(id))));
+    /**
+     * метод на запрос нового дрона в случае неудавшейся доставки.
+     * причина неудачи не известна.
+     * все параметры доставки остаются прежними, запрашивается только новый дрон.
+     *
+     * @param failDeliveryId идентификатор неудавшейся доставки
+     * @return получение Dto доставки с новым дроном
+     */
+    @Override
+    public DeliveryResponse createDeliveryDependsOnFail(Long failDeliveryId) {
+        Delivery deliveryFail = deliveryRepository.findByIdWithAddresses(failDeliveryId)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(failDeliveryId))));
 
-        delivery.setExpectedDateTime(deliveryNew.expectedDateTime());
-        delivery.setBuyerOrder(buyerOrder);
+        Delivery restoredDelivery = new Delivery();
+        restoredDelivery.setTimeSlot(deliveryFail.getTimeSlot()); // время оставить прежнее?
+        restoredDelivery.setBuyerOrder(deliveryFail.getBuyerOrder());
+        restoredDelivery.setToAddress(deliveryFail.getToAddress());
+        restoredDelivery.setFromAddress(deliveryFail.getFromAddress());
+        restoredDelivery.setDeliveryStatus(DeliveryStatus.CREATED);
 
-        Address addressNew = buyerOrder.getDeliverySet().stream()
-                .map(Delivery::getToAddress)
-                .filter(a -> a.getId().equals(deliveryNew.addressId())).findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(deliveryNew.addressId()))));
+        ExternalDroneResponse droneResponse = externalDroneService.requestDrone(deliveryMapper.toDeliveryDroneRequest(restoredDelivery));
 
-        if(!delivery.getToAddress().equals(addressNew)){
-            delivery.setToAddress(addressNew);
+        restoredDelivery.setDrone(droneMapper.toDrone(droneResponse));
+        restoredDelivery.setDeliveryStatus(DeliveryStatus.DRONE_ASSIGNED);
+
+        restoredDelivery = deliveryRepository.save(restoredDelivery);
+
+        return deliveryMapper.toDeliveryResponse(restoredDelivery);
+    }
+
+    /**
+     * Установка требуемого временного интервала для существующей (созданной) доставки.
+     */
+    @Override
+    @Transactional
+    public DeliveryResponse assignDroneForDelivery(Long id, DeliveryUpdateTime updateTime) {
+        log.info("Starting assign drone for delivery ID: {}", id);
+        log.info("Update time data: {}", updateTime);
+
+        Delivery delivery = deliveryRepository.findDeliveryByIdWithBuyerOrder(id)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+
+        log.info("Found delivery: {}", delivery);
+
+        TimeSlotResponse timeSlot = updateTime.timeSlot();
+        if(timeSlot.end().isBefore(LocalDateTime.now())){
+            timeSlot = null;
+            log.info("Выбранный timeSlot : {} находится уже в прошлом", updateTime.timeSlot());
+        }
+        if (timeSlot == null){
+            throw new DroneException("Дрон назначить не возможно");
         }
 
+        delivery.setTimeSlot(timeSlotMapper.toTimeSlot(timeSlot));
+        log.info("Updated time slot for delivery: {}", delivery.getTimeSlot());
+
+        ExternalDroneResponse droneResponse = externalDroneService.requestDrone(deliveryMapper.toDeliveryDroneRequest(delivery));
+        if(droneResponse == null || droneResponse.errorMessage() != null){
+            throw new DroneException("Cannot request a drone for delivery : deliveryId = %s, reason = %s"
+                    .formatted(id, droneResponse == null ? "response is null" : droneResponse.errorMessage()));
+        }
+
+        Drone drone = droneMapper.toDrone(droneResponse);
+        drone.addDelivery(delivery);
+
+        delivery.setDeliveryStatus(DeliveryStatus.DRONE_ASSIGNED);
+
+        // Сохранение объекта drone в репозитории
+        drone = droneRepository.save(drone);
+
+        // Логирование или использование обновленного объекта drone
+        log.info("Saved drone: {}", drone);
+
+        delivery = deliveryRepository.save(delivery);
+        return deliveryMapper.toDeliveryResponse(delivery);
+    }
+
+    /**
+     * обновление статуса доставки и присвоение рейтингов покупателю и продавцу.
+     * @param id идентификатор поставки
+     * @param status доставки
+     * @return DTO доставки с обновленным статусом
+     */
+    @Override
+    @Transactional
+    public DeliveryResponse  updateStatus(Long id, DeliveryStatus status) {
+        Delivery delivery = deliveryRepository.findByIdWithBuyerAndSeller(id)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+        delivery.setDeliveryStatus(status);
+
+        int currentRatingBuyer = delivery.getBuyerOrder().getBuyer().getRatingBuyer() != null ? delivery.getBuyerOrder().getBuyer().getRatingBuyer() : 0;
+
+        if(status == DeliveryStatus.DELIVERED){
+            delivery.getBuyerOrder().setBuyerOrderStatus(BuyerOrderStatus.DELIVERED);
+            delivery.getBuyerOrder().getBuyer().setRatingBuyer(currentRatingBuyer + 2);
+
+            Optional<User> sellerOpt = delivery.getBuyerOrder().getPartOfferToBuySet().stream()
+                    .map(p -> p.getSellerOffer().getSeller())
+                    .findFirst();
+            if(sellerOpt.isPresent()){
+              User seller =   sellerOpt.get();
+                int currentRatingSeller = seller.getRatingSeller() != null ? seller.getRatingSeller() : 0;
+               seller.setRatingSeller(currentRatingSeller + 1);
+            }
+        }
+        else if(status == DeliveryStatus.CANCELLED){
+            delivery.getBuyerOrder().getBuyer().setRatingBuyer(currentRatingBuyer - 1);
+            //TODO освободить дрон от доставки через RestClient
+        }
+
+        deliveryRepository.save(delivery);
+
+        return deliveryMapper.toDeliveryResponse(delivery);
+    }
+
+
+    /**
+     * метод отмены доставки.
+     *
+     * @param id идентификатор доставки покупателя
+     * @return получение отмененной доставки.
+     */
+    @Override
+    public DeliveryResponse cancelMyDelivery(Long id) {
+
+        Delivery delivery = deliveryRepository.findDeliveryByIdWithDrone(id)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+        delivery.setDeliveryStatus(DeliveryStatus.CANCELLED);
+        Drone drone = delivery.getDrone();
+        droneService.cancelDrone(drone.getId());
+
+        drone.setDroneStatus(DroneStatus.BACK_TO_BASE);//??? установка статуса происходит во внешнем сервисе
+
+        delivery = deliveryRepository.save(delivery);
         return deliveryMapper.toDeliveryResponse(delivery);
     }
 

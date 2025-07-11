@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
 /**
- * запрос дрона из внешнего сервиса по DTO данным об адресе.
+ * приложение запрашивает дрон из внешнего сервиса по DTO данным об адресе.
  * @param id идентификатор адреса
  * @param town населённый пункт
  * @param street улица

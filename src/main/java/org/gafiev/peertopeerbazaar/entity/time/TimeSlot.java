@@ -1,13 +1,15 @@
 package org.gafiev.peertopeerbazaar.entity.time;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 /**
- * Сущность TimeSlot представляет временной диапазон, предоставляемый внешним сервисом,
- * в рамках этого временного диапазона могут быть предоставлены дроны
+ * TimeSlot это временной диапазон, предоставляемый внешним сервисом.
+ * В рамках этого временного диапазона могут быть предоставлены дроны.
  */
 @EqualsAndHashCode
 @ToString
@@ -15,29 +17,22 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "time_slot")
+@Embeddable
 public class TimeSlot {
-    /**
-     * Поле id есть уникальный идентификатор слота
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
 
     /**
-     * дата и время начала слота
+     * дата и время начала временного диапазона.
      */
-    @Column(name = "start")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "start_slot")
     private LocalDateTime start;
 
     /**
-     * дата и время окончание слота
+     * дата и время окончание временного диапазона.
      */
-    @Column(name = "end")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "end_slot")
     private LocalDateTime end;
-
 
 }
 
