@@ -1,0 +1,26 @@
+<project version="4">
+  <component name="ExternalSystemProjectTracker"><![CDATA[{
+  "projectData": {
+    "MAVEN": {
+      "NonEqualBell": {
+        "settingsTracker": {
+          "isDirty": false,
+          "settingsFiles": {
+            "C:/repos/NonEqualBell/pom.xml": 1824956149
+          }
+        }
+      }
+    }
+  }
+}]]></component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectDependenciesModelState">
+    <option name="PROJECT_STATE" value="[{&quot;type&quot;:&quot;maven&quot;,&quot;namespace&quot;:&quot;org.jfree&quot;,&quot;name&quot;:&quot;jfreechart&quot;,&quot;version&quot;:{&quot;value&quot;:&quot;1.5.3&quot;,&quot;releaseDate&quot;:null},&quot;qualifiers&quot;:null,&quot;subpath&quot;:null,&quot;releaseDate&quot;:null,&quot;coordinates&quot;:&quot;maven:org.jfree:jfreechart:1.5.3:null:null&quot;,&quot;searchCoordinates&quot;:&quot;org.jfree:jfreechart:1.5.3&quot;,&quot;searchKey&quot;:&quot;7103595a23085fbce9c85152882d4c954b9cc3a4d756fe4ac037e63220972d23&quot;,&quot;humanReadableCoordinates&quot;:&quot;maven:org.jfree:jfreechart:1.5.3&quot;}]" />
+  </component>
+  <component name="RestoreUpdateTree"><![CDATA[{}]]></component>
+</project>

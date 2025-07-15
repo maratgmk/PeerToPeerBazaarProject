@@ -1,0 +1,27 @@
+<project version="4">
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <directories>
+      <directory path="$PROJECT_DIR$/js_frontend/node_modules" />
+    </directories>
+  </component>
+  <component name="NodePackageJsonFileManager">
+    <packageJsonPaths>
+      <path value="$PROJECT_DIR$/js_frontend/package.json" />
+    </packageJsonPaths>
+  </component>
+  <component name="RestoreUpdateTree"><![CDATA[{}]]></component>
+  <component name="VcsDirectoryMappingCache">
+    <option name="roots">
+      <set>
+        <option value="$PROJECT_DIR$" />
+      </set>
+    </option>
+    <option name="vcsName" value="Git" />
+  </component>
+</project>

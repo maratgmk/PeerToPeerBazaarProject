@@ -1,0 +1,26 @@
+<project version="4">
+  <component name="ExternalSystemProjectTracker"><![CDATA[{
+  "projectData": {
+    "MAVEN": {
+      "Elipsoid2": {
+        "settingsTracker": {
+          "isDirty": false,
+          "settingsFiles": {
+            "C:/repos/VasilievBook/Elipsoid2/pom.xml": 3655256765
+          }
+        }
+      }
+    }
+  }
+}]]></component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectDependenciesModelState">
+    <option name="PROJECT_STATE" value="[{&quot;type&quot;:&quot;maven&quot;,&quot;namespace&quot;:&quot;org.openjfx&quot;,&quot;name&quot;:&quot;javafx-controls&quot;,&quot;version&quot;:{&quot;value&quot;:&quot;17.0.9&quot;,&quot;releaseDate&quot;:null},&quot;qualifiers&quot;:null,&quot;subpath&quot;:null,&quot;releaseDate&quot;:null,&quot;coordinates&quot;:&quot;maven:org.openjfx:javafx-controls:17.0.9:null:null&quot;,&quot;searchCoordinates&quot;:&quot;org.openjfx:javafx-controls:17.0.9&quot;,&quot;searchKey&quot;:&quot;8c7ff3c7cba7dd6ef8aa8f42ce373694560dae92fbfaf5d42bce13efcd3a4a58&quot;,&quot;humanReadableCoordinates&quot;:&quot;maven:org.openjfx:javafx-controls:17.0.9&quot;},{&quot;type&quot;:&quot;maven&quot;,&quot;namespace&quot;:&quot;org.openjfx&quot;,&quot;name&quot;:&quot;javafx-graphics&quot;,&quot;version&quot;:{&quot;value&quot;:&quot;17.0.9&quot;,&quot;releaseDate&quot;:null},&quot;qualifiers&quot;:null,&quot;subpath&quot;:null,&quot;releaseDate&quot;:null,&quot;coordinates&quot;:&quot;maven:org.openjfx:javafx-graphics:17.0.9:null:null&quot;,&quot;searchCoordinates&quot;:&quot;org.openjfx:javafx-graphics:17.0.9&quot;,&quot;searchKey&quot;:&quot;4f8e0f869c9ba672a7297ac97d66575ab453f8efcb474eddca779497423c6a9c&quot;,&quot;humanReadableCoordinates&quot;:&quot;maven:org.openjfx:javafx-graphics:17.0.9&quot;},{&quot;type&quot;:&quot;maven&quot;,&quot;namespace&quot;:&quot;org.openjfx&quot;,&quot;name&quot;:&quot;javafx-base&quot;,&quot;version&quot;:{&quot;value&quot;:&quot;17.0.9&quot;,&quot;releaseDate&quot;:null},&quot;qualifiers&quot;:null,&quot;subpath&quot;:null,&quot;releaseDate&quot;:null,&quot;coordinates&quot;:&quot;maven:org.openjfx:javafx-base:17.0.9:null:null&quot;,&quot;searchCoordinates&quot;:&quot;org.openjfx:javafx-base:17.0.9&quot;,&quot;searchKey&quot;:&quot;5b492428af6502ac3da08dc7443bf4ada6cbadf3997236c4d878adede70e4879&quot;,&quot;humanReadableCoordinates&quot;:&quot;maven:org.openjfx:javafx-base:17.0.9&quot;},{&quot;type&quot;:&quot;maven&quot;,&quot;namespace&quot;:&quot;org.openjfx&quot;,&quot;name&quot;:&quot;javafx-fxml&quot;,&quot;version&quot;:{&quot;value&quot;:&quot;17.0.9&quot;,&quot;releaseDate&quot;:null},&quot;qualifiers&quot;:null,&quot;subpath&quot;:null,&quot;releaseDate&quot;:null,&quot;coordinates&quot;:&quot;maven:org.openjfx:javafx-fxml:17.0.9:null:null&quot;,&quot;searchCoordinates&quot;:&quot;org.openjfx:javafx-fxml:17.0.9&quot;,&quot;searchKey&quot;:&quot;0bb816d396fc4a243a2d0981ad32310be9bbb768db31ad424dd4113f42695b0e&quot;,&quot;humanReadableCoordinates&quot;:&quot;maven:org.openjfx:javafx-fxml:17.0.9&quot;}]" />
+  </component>
+  <component name="RestoreUpdateTree">{}</component>
+</project>

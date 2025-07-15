@@ -1,0 +1,645 @@
+<project version="4">
+  <component name="BookmarksManager">
+    <option name="groups">
+      <GroupState>
+        <option name="name" value="Elipsoid2" />
+      </GroupState>
+    </option>
+  </component>
+  <component name="FileEditorManager">
+    <leaf ideFingerprint="2mcpanorul1he" SIDE_TABS_SIZE_LIMIT_KEY="-1">
+      <file>
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/example/MainApp.java">
+          <provider editor-type-id="text-editor" selected="true">
+            <state relative-caret-position="594">
+              <caret line="27" selection-start-line="27" selection-end-line="27" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1102#1103#0" expanded="true" />
+                <element signature="e#1130#1131#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+        <tab><![CDATA[{"tabTitle":"MainApp.java","foregroundColor":-10315947,"textAttributes":{"name":"a","children":[{"name":"option","attributes":{"name":"FOREGROUND","value":"629755"}}]},"icon":[10,57,99,111,109,46,105,110,116,101,108,108,105,106,46,117,105,46,105,99,111,110,115,46,82,97,115,116,101,114,105,122,101,100,73,109,97,103,101,68,97,116,97,76,111,97,100,101,114,68,101,115,99,114,105,112,116,111,114,18,62,10,15,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,18,21,101,120,112,117,105,47,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,26,12,99,111,109,46,105,110,116,101,108,108,105,106,40,-63,-37,-81,-57,4,48,0]}]]></tab>
+      </file>
+      <file>
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/example/geometry/Plane.java">
+          <provider editor-type-id="text-editor" selected="true">
+            <state relative-caret-position="638">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
+            </state>
+          </provider>
+        </entry>
+        <tab><![CDATA[{"tabTitle":"Plane.java","foregroundColor":-10315947,"textAttributes":{"name":"a","children":[{"name":"option","attributes":{"name":"FOREGROUND","value":"629755"}}]},"icon":[10,57,99,111,109,46,105,110,116,101,108,108,105,106,46,117,105,46,105,99,111,110,115,46,82,97,115,116,101,114,105,122,101,100,73,109,97,103,101,68,97,116,97,76,111,97,100,101,114,68,101,115,99,114,105,112,116,111,114,18,62,10,15,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,18,21,101,120,112,117,105,47,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,26,12,99,111,109,46,105,110,116,101,108,108,105,106,40,-63,-37,-81,-57,4,48,0]}]]></tab>
+      </file>
+      <file current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/example/geometry/Ellipsoid.java">
+          <provider editor-type-id="text-editor" selected="true">
+            <state relative-caret-position="539">
+              <caret line="26" column="51" lean-forward="true" selection-start-line="26" selection-start-column="51" selection-end-line="26" selection-end-column="51" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+        <tab><![CDATA[{"tabTitle":"Ellipsoid.java","foregroundColor":-10315947,"textAttributes":{"name":"a","children":[{"name":"option","attributes":{"name":"FOREGROUND","value":"629755"}}]},"icon":[10,57,99,111,109,46,105,110,116,101,108,108,105,106,46,117,105,46,105,99,111,110,115,46,82,97,115,116,101,114,105,122,101,100,73,109,97,103,101,68,97,116,97,76,111,97,100,101,114,68,101,115,99,114,105,112,116,111,114,18,62,10,15,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,18,21,101,120,112,117,105,47,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,26,12,99,111,109,46,105,110,116,101,108,108,105,106,40,-63,-37,-81,-57,4,48,0]}]]></tab>
+      </file>
+      <file>
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/example/visulisation/Rectangle3D.java">
+          <provider editor-type-id="text-editor" selected="true">
+            <state relative-caret-position="638">
+              <caret line="29" selection-start-line="29" selection-end-line="29" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+        <tab><![CDATA[{"tabTitle":"Rectangle3D.java","foregroundColor":-10315947,"textAttributes":{"name":"a","children":[{"name":"option","attributes":{"name":"FOREGROUND","value":"629755"}}]},"icon":[10,57,99,111,109,46,105,110,116,101,108,108,105,106,46,117,105,46,105,99,111,110,115,46,82,97,115,116,101,114,105,122,101,100,73,109,97,103,101,68,97,116,97,76,111,97,100,101,114,68,101,115,99,114,105,112,116,111,114,18,62,10,15,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,18,21,101,120,112,117,105,47,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,26,12,99,111,109,46,105,110,116,101,108,108,105,106,40,-63,-37,-81,-57,4,48,0]}]]></tab>
+      </file>
+      <file>
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/example/visulisation/IntersectionVisualizer.java">
+          <provider editor-type-id="text-editor" selected="true">
+            <state relative-caret-position="781">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+        <tab><![CDATA[{"tabTitle":"IntersectionVisualizer.java","foregroundColor":-10315947,"textAttributes":{"name":"a","children":[{"name":"option","attributes":{"name":"FOREGROUND","value":"629755"}}]},"icon":[10,57,99,111,109,46,105,110,116,101,108,108,105,106,46,117,105,46,105,99,111,110,115,46,82,97,115,116,101,114,105,122,101,100,73,109,97,103,101,68,97,116,97,76,111,97,100,101,114,68,101,115,99,114,105,112,116,111,114,18,62,10,15,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,18,21,101,120,112,117,105,47,110,111,100,101,115,47,99,108,97,115,115,46,115,118,103,26,12,99,111,109,46,105,110,116,101,108,108,105,106,40,-63,-37,-81,-57,4,48,0]}]]></tab>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTypeUsageLocalSummary">{
+  &quot;data&quot;: {
+    &quot;JAVA&quot;: {
+      &quot;usageCount&quot;: 13,
+      &quot;lastUsed&quot;: 1752573115921
+    },
+    &quot;XML&quot;: {
+      &quot;usageCount&quot;: 3,
+      &quot;lastUsed&quot;: 1752573115133
+    },
+    &quot;AUTO_DETECTED&quot;: {
+      &quot;usageCount&quot;: 1,
+      &quot;lastUsed&quot;: 1752435988908
+    }
+  }
+}</component>
+  <component name="IdeDocumentHistory">
+    <changedPaths>
+      <option value="$PROJECT_DIR$/src/main/java/org/example/geometry/Plane.java" />
+      <option value="$PROJECT_DIR$/src/main/java/org/example/geometry/Ellipsoid.java" />
+      <option value="$PROJECT_DIR$/src/main/java/org/example/visulisation/IntersectionVisualizer.java" />
+      <option value="$PROJECT_DIR$/src/main/java/org/example/visulisation/Rectangle3D.java" />
+      <option value="$PROJECT_DIR$/pom.xml" />
+      <option value="$PROJECT_DIR$/src/main/java/org/example/MainApp.java" />
+    </changedPaths>
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="$PROJECT_DIR$/.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="LanguageUsageStatistics">
+    <language id="JAVA">
+      <summary usageCount="13" lastUsage="1752573115921" />
+    </language>
+    <language id="XML">
+      <summary usageCount="3" lastUsage="1752573115133" />
+    </language>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState>
+      <expand>
+        <path>
+          <item name="" type="e529d0c5:RootNode" />
+          <item name="javafx-demo" type="20da4fc8:ProjectNode" />
+        </path>
+        <path>
+          <item name="" type="e529d0c5:RootNode" />
+          <item name="javafx-demo" type="20da4fc8:ProjectNode" />
+          <item name="Lifecycle" type="d32bdb1e:LifecycleNode" />
+        </path>
+        <path>
+          <item name="" type="e529d0c5:RootNode" />
+          <item name="javafx-demo" type="20da4fc8:ProjectNode" />
+          <item name="Dependencies" type="f55f452e:DependenciesNode" />
+        </path>
+        <path>
+          <item name="" type="e529d0c5:RootNode" />
+          <item name="javafx-demo" type="20da4fc8:ProjectNode" />
+          <item name="Repositories" type="b08b82d1:RepositoriesNode" />
+        </path>
+      </expand>
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" />
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example/geometry}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example/visulisation}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
+          </expand>
+          <select />
+          <presentation>
+            <attributes />
+            <data iconPath="toolwindows/toolWindowProject.svg" iconPlugin="com.intellij" isLeaf="false" text="Elipsoid2" />
+            <item name="Elipsoid2" type="b2602c69:ProjectViewProjectNode" />
+            <presentation>
+              <attributes>
+                <map>
+                  <entry key="filePath" value="$PROJECT_DIR$" />
+                </map>
+              </attributes>
+              <data iconPath="nodes/Module.svg" iconPlugin="com.intellij" isLeaf="false" text="Elipsoid2" />
+              <item name="dir{file://C:/repos/VasilievBook/Elipsoid2}" type="462c0819:PsiDirectoryNode" />
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/.idea" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text=".idea" />
+                <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/.idea}" type="462c0819:PsiDirectoryNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/src" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="src" />
+                <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src}" type="462c0819:PsiDirectoryNode" />
+                <presentation>
+                  <attributes>
+                    <map>
+                      <entry key="filePath" value="$PROJECT_DIR$/src/main" />
+                    </map>
+                  </attributes>
+                  <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="main" />
+                  <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main}" type="462c0819:PsiDirectoryNode" />
+                  <presentation>
+                    <attributes>
+                      <map>
+                        <entry key="filePath" value="$PROJECT_DIR$/src/main/java" />
+                      </map>
+                    </attributes>
+                    <data iconPath="modules/sourceRoot.svg" iconPlugin="com.intellij" isLeaf="false" text="java" />
+                    <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java}" type="462c0819:PsiDirectoryNode" />
+                    <presentation>
+                      <attributes>
+                        <map>
+                          <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example" />
+                        </map>
+                      </attributes>
+                      <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="org.example" />
+                      <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example}" type="462c0819:PsiDirectoryNode" />
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/geometry" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="geometry" />
+                        <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example/geometry}" type="462c0819:PsiDirectoryNode" />
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/geometry/Ellipsoid.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="Ellipsoid" />
+                          <item name="Ellipsoid" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/geometry/Plane.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="Plane" />
+                          <item name="Plane" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/visulisation" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="visulisation" />
+                        <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/java/org/example/visulisation}" type="462c0819:PsiDirectoryNode" />
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/visulisation/IntersectionVisualizer.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="IntersectionVisualizer" />
+                          <item name="IntersectionVisualizer" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/visulisation/Rectangle3D.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="Rectangle3D" />
+                          <item name="Rectangle3D" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/Main.java" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="Main" />
+                        <item name="Main" type="1a9f42e2:ClassTreeNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/org/example/MainApp.java" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="MainApp" />
+                        <item name="MainApp" type="1a9f42e2:ClassTreeNode" />
+                      </presentation>
+                    </presentation>
+                  </presentation>
+                  <presentation>
+                    <attributes>
+                      <map>
+                        <entry key="filePath" value="$PROJECT_DIR$/src/main/resources" />
+                      </map>
+                    </attributes>
+                    <data iconPath="modules/resourcesRoot.svg" iconPlugin="com.intellij" isLeaf="true" text="resources" />
+                    <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/main/resources}" type="462c0819:PsiDirectoryNode" />
+                  </presentation>
+                </presentation>
+                <presentation>
+                  <attributes>
+                    <map>
+                      <entry key="filePath" value="$PROJECT_DIR$/src/test" />
+                    </map>
+                  </attributes>
+                  <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="test" />
+                  <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/src/test}" type="462c0819:PsiDirectoryNode" />
+                </presentation>
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/target" />
+                  </map>
+                </attributes>
+                <data iconPath="modules/excludeRoot.svg" iconPlugin="com.intellij" isLeaf="false" text="target" />
+                <item name="dir{file://C:/repos/VasilievBook/Elipsoid2/target}" type="462c0819:PsiDirectoryNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/.gitignore" />
+                  </map>
+                </attributes>
+                <data iconPath="vcs/ignore_file.svg" iconPlugin="com.intellij" isLeaf="true" text=".gitignore" />
+                <item name=".gitignore" type="ab9368bb:PsiFileNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/pom.xml" />
+                  </map>
+                </attributes>
+                <data iconPath="icons/repositoryLibraryLogo.svg" iconPlugin="com.intellij.java" isLeaf="true" text="pom.xml" />
+                <item name="pom.xml" type="d371aba8:MavenTreeStructureProvider$MavenPomFileNode" />
+              </presentation>
+            </presentation>
+            <presentation>
+              <attributes />
+              <data iconPath="nodes/ppLib.svg" iconPlugin="com.intellij" isLeaf="false" text="External Libraries" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppJdk.svg" iconPlugin="com.intellij" isLeaf="false" text="&lt; 22 &gt;" />
+                <item name="&lt; 22 &gt;" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-base:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-base:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-base:win:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-base:win:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-controls:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-controls:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-controls:win:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-controls:win:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-fxml:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-fxml:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-fxml:win:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-fxml:win:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-graphics:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-graphics:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+              <presentation>
+                <attributes />
+                <data iconPath="nodes/ppLibFolder.svg" iconPlugin="com.intellij" isLeaf="false" text="Maven: org.openjfx:javafx-graphics:win:17.0.9" />
+                <item name="Maven: org.openjfx:javafx-graphics:win:17.0.9" type="70bed36:NamedLibraryElementNode" />
+              </presentation>
+            </presentation>
+            <presentation>
+              <attributes />
+              <data iconPath="scope/scratches.svg" iconPlugin="com.intellij" isLeaf="false" text="Scratches and Consoles" />
+              <item name="Scratches and Consoles" type="b85a3e1f:ScratchTreeStructureProvider$MyProjectNode" />
+            </presentation>
+          </presentation>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="RunConfigurationStartHistory">
+    <history>
+      <element setting="Application.org.example.MainApp" />
+    </history>
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="14991000" />
+  </component>
+  <component name="ToolWindowManager">
+    <layout>
+      <window_info id="Bookmarks" order="0" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="1" weight="0.2502604" />
+      <window_info id="Learn" order="2" />
+      <window_info id="Commit" order="3" visible="true" weight="0.32994792" />
+      <window_info id="Structure" order="3" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.17548077" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="4" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="Problems View" order="6" weight="0.33028847" />
+      <window_info anchor="bottom" id="Terminal" order="7" />
+      <window_info anchor="bottom" id="Services" order="8" />
+      <window_info anchor="bottom" id="Profiler" order="9" />
+      <window_info anchor="bottom" id="Build" order="10" weight="0.33028847" />
+      <window_info anchor="right" id="Maven" order="0" weight="0.32994792" />
+      <window_info anchor="right" id="Coverage" order="1" side_tool="true" />
+      <window_info anchor="right" id="Endpoints" order="2" />
+      <window_info anchor="right" id="AIAssistant" order="3" />
+      <window_info anchor="right" id="Database" order="4" />
+      <window_info anchor="right" id="Notifications" order="5" weight="0.25" />
+      <unified_weights bottom="0.17548077" left="0.32994792" right="0.32994792" />
+    </layout>
+    <recentWindows>
+      <value>Commit</value>
+      <value>Run</value>
+      <value>Project</value>
+      <value>Maven</value>
+      <value>Build</value>
+      <value>Problems View</value>
+    </recentWindows>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="552" y="179" key="#Run/Debug_Configuration_Templates" timestamp="1752581542940">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="179" key="#Run/Debug_Configuration_Templates/0.0.1920.1040@0.0.1920.1040" timestamp="1752581542940" />
+    <state x="552" y="179" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1752591682618">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="179" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1752591682618" />
+    <state x="740" y="226" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1752591537617">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="226" key="#com.intellij.ide.macro.MacrosDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1752591537617" />
+    <state x="788" y="234" key="#com.intellij.openapi.roots.ui.configuration.libraryEditor.LibraryEditorDialog" timestamp="1752591912353">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="788" y="234" key="#com.intellij.openapi.roots.ui.configuration.libraryEditor.LibraryEditorDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1752591912353" />
+    <state width="1876" height="153" key="GridCell.Tab.0.bottom" timestamp="1752593656014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="153" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1752593656014" />
+    <state width="1876" height="153" key="GridCell.Tab.0.center" timestamp="1752593656014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="153" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1752593656014" />
+    <state width="1876" height="153" key="GridCell.Tab.0.left" timestamp="1752593656014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="153" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1752593656014" />
+    <state width="1876" height="153" key="GridCell.Tab.0.right" timestamp="1752593656014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="153" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1752593656014" />
+    <state x="440" y="95" key="SettingsEditor" timestamp="1752592160259">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="440" y="95" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1752592160259" />
+    <state x="552" y="179" key="TargetEnvironmentsConfigurable.size" timestamp="1752590550265">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="179" key="TargetEnvironmentsConfigurable.size/0.0.1920.1040@0.0.1920.1040" timestamp="1752590550265" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="jar://$APPLICATION_HOME_DIR$/plugins/maven/lib/maven.jar!/schemas/maven-4.0.0.xsd">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="267" column="12" selection-start-line="267" selection-start-column="12" selection-end-line="267" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/example/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="13" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="869">
+          <caret line="46" lean-forward="true" selection-start-line="46" selection-end-line="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/example/visulisation/Rectangle3D.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/example/visulisation/IntersectionVisualizer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="781">
+          <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/example/geometry/Plane.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/example/MainApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="594">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1102#1103#0" expanded="true" />
+            <element signature="e#1130#1131#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/example/geometry/Ellipsoid.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="539">
+          <caret line="26" column="51" lean-forward="true" selection-start-line="26" selection-start-column="51" selection-end-line="26" selection-end-column="51" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ArtifactsStructureConfigurable.UI">
+        <settings>
+          <artifact-editor />
+        </settings>
+      </state>
+      <state key="FacetStructureConfigurable.UI" />
+      <state key="GlobalLibrariesConfigurable.UI" />
+      <state key="JdkListConfigurable.UI">
+        <settings>
+          <last-edited>22</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ModuleStructureConfigurable.UI">
+        <settings>
+          <last-edited>Elipsoid2</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.3494253" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+      <state key="ProjectLibrariesConfigurable.UI">
+        <settings>
+          <last-edited>Maven: org.openjfx:javafx-base:17.0.9</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.3494253" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>

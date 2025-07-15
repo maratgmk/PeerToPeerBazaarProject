@@ -1,0 +1,422 @@
+<project version="4">
+  <component name="BookmarksManager">
+    <option name="groups">
+      <GroupState>
+        <option name="name" value="FinalProject" />
+      </GroupState>
+    </option>
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="$PROJECT_DIR$/.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <option name="groupStructurally" value="true" />
+    <treeState>
+      <expand />
+      <select />
+    </treeState>
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1" />
+    <panes>
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project}" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project}" type="462c0819:PsiDirectoryNode" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/service}" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+          <presentation>
+            <attributes />
+            <data iconPath="toolwindows/toolWindowProject.svg" iconPlugin="com.intellij" isLeaf="false" text="FinalProject" />
+            <item name="FinalProject" type="b2602c69:ProjectViewProjectNode" />
+            <presentation>
+              <attributes>
+                <map>
+                  <entry key="filePath" value="$PROJECT_DIR$" />
+                </map>
+              </attributes>
+              <data iconPath="nodes/Module.svg" iconPlugin="com.intellij" isLeaf="false" text="FinalProject" />
+              <item name="dir{file://C:/Users/Marat/Documents/FinalProject}" type="462c0819:PsiDirectoryNode" />
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/.idea" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text=".idea" />
+                <item name="dir{file://C:/Users/Marat/Documents/FinalProject/.idea}" type="462c0819:PsiDirectoryNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/.mvn" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text=".mvn" />
+                <item name="dir{file://C:/Users/Marat/Documents/FinalProject/.mvn}" type="462c0819:PsiDirectoryNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/logs" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="logs" />
+                <item name="dir{file://C:/Users/Marat/Documents/FinalProject/logs}" type="462c0819:PsiDirectoryNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/src" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="src" />
+                <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src}" type="462c0819:PsiDirectoryNode" />
+                <presentation>
+                  <attributes>
+                    <map>
+                      <entry key="filePath" value="$PROJECT_DIR$/src/main" />
+                    </map>
+                  </attributes>
+                  <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="main" />
+                  <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main}" type="462c0819:PsiDirectoryNode" />
+                  <presentation>
+                    <attributes>
+                      <map>
+                        <entry key="filePath" value="$PROJECT_DIR$/src/main/java" />
+                      </map>
+                    </attributes>
+                    <data iconPath="modules/sourceRoot.svg" iconPlugin="com.intellij" isLeaf="false" text="java" />
+                    <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java}" type="462c0819:PsiDirectoryNode" />
+                    <presentation>
+                      <attributes>
+                        <map>
+                          <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project" />
+                        </map>
+                      </attributes>
+                      <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="com.example.final_project" />
+                      <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project}" type="462c0819:PsiDirectoryNode" />
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/aspect" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="aspect" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/aspect}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/config" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="config" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/config}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/controller" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="controller" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/controller}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/dto" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="dto" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/dto}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/entity" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="entity" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/entity}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/exceptions" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="exceptions" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/exceptions}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/mapper" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="mapper" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/mapper}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/repository" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="repository" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/repository}" type="462c0819:PsiDirectoryNode" />
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/package.svg" iconPlugin="com.intellij" isLeaf="false" text="service" />
+                        <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/java/com/example/final_project/service}" type="462c0819:PsiDirectoryNode" />
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/CartItemService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="CartItemService" />
+                          <item name="CartItemService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/CartService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="CartService" />
+                          <item name="CartService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/CategoryService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="CategoryService" />
+                          <item name="CategoryService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/FavoriteService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="FavoriteService" />
+                          <item name="FavoriteService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/OrderItemService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="OrderItemService" />
+                          <item name="OrderItemService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/OrderService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="OrderService" />
+                          <item name="OrderService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/ProductService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="ProductService" />
+                          <item name="ProductService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                        <presentation>
+                          <attributes>
+                            <map>
+                              <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/service/UserService.java" />
+                            </map>
+                          </attributes>
+                          <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="UserService" />
+                          <item name="UserService" type="1a9f42e2:ClassTreeNode" />
+                        </presentation>
+                      </presentation>
+                      <presentation>
+                        <attributes>
+                          <map>
+                            <entry key="filePath" value="$PROJECT_DIR$/src/main/java/com/example/final_project/FinalProjectApplication.java" />
+                          </map>
+                        </attributes>
+                        <data iconPath="nodes/class.svg" iconPlugin="com.intellij" isLeaf="true" text="FinalProjectApplication" />
+                        <item name="FinalProjectApplication" type="1a9f42e2:ClassTreeNode" />
+                      </presentation>
+                    </presentation>
+                  </presentation>
+                  <presentation>
+                    <attributes>
+                      <map>
+                        <entry key="filePath" value="$PROJECT_DIR$/src/main/resources" />
+                      </map>
+                    </attributes>
+                    <data iconPath="modules/resourcesRoot.svg" iconPlugin="com.intellij" isLeaf="false" text="resources" />
+                    <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/main/resources}" type="462c0819:PsiDirectoryNode" />
+                  </presentation>
+                </presentation>
+                <presentation>
+                  <attributes>
+                    <map>
+                      <entry key="filePath" value="$PROJECT_DIR$/src/test" />
+                    </map>
+                  </attributes>
+                  <data iconPath="nodes/folder.svg" iconPlugin="com.intellij" isLeaf="false" text="test" />
+                  <item name="dir{file://C:/Users/Marat/Documents/FinalProject/src/test}" type="462c0819:PsiDirectoryNode" />
+                </presentation>
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/target" />
+                  </map>
+                </attributes>
+                <data iconPath="modules/excludeRoot.svg" iconPlugin="com.intellij" isLeaf="false" text="target" />
+                <item name="dir{file://C:/Users/Marat/Documents/FinalProject/target}" type="462c0819:PsiDirectoryNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/.gitignore" />
+                  </map>
+                </attributes>
+                <data iconPath="vcs/ignore_file.svg" iconPlugin="com.intellij" isLeaf="true" text=".gitignore" />
+                <item name=".gitignore" type="ab9368bb:PsiFileNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/mvnw" />
+                  </map>
+                </attributes>
+                <data iconPath="nodes/console.svg" iconPlugin="com.intellij" isLeaf="true" text="mvnw" />
+                <item name="mvnw" type="ab9368bb:PsiFileNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/mvnw.cmd" />
+                  </map>
+                </attributes>
+                <data iconPath="fileTypes/text.svg" iconPlugin="com.intellij" isLeaf="true" text="mvnw.cmd" />
+                <item name="mvnw.cmd" type="ab9368bb:PsiFileNode" />
+              </presentation>
+              <presentation>
+                <attributes>
+                  <map>
+                    <entry key="filePath" value="$PROJECT_DIR$/pom.xml" />
+                  </map>
+                </attributes>
+                <data iconPath="icons/repositoryLibraryLogo.svg" iconPlugin="com.intellij.java" isLeaf="true" text="pom.xml" />
+                <item name="pom.xml" type="d371aba8:MavenTreeStructureProvider$MavenPomFileNode" />
+              </presentation>
+            </presentation>
+            <presentation>
+              <attributes />
+              <data iconPath="nodes/ppLib.svg" iconPlugin="com.intellij" isLeaf="false" text="External Libraries" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </presentation>
+            <presentation>
+              <attributes />
+              <data iconPath="scope/scratches.svg" iconPlugin="com.intellij" isLeaf="false" text="Scratches and Consoles" />
+              <item name="Scratches and Consoles" type="b85a3e1f:ScratchTreeStructureProvider$MyProjectNode" />
+            </presentation>
+          </presentation>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="64000" />
+  </component>
+  <component name="ToolWindowManager">
+    <layout>
+      <window_info id="Bookmarks" order="0" side_tool="true" />
+      <window_info id="ORM" order="0" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.18046875" />
+      <window_info id="Learn" order="0" />
+      <window_info id="Structure" order="0" side_tool="true" />
+      <window_info anchor="bottom" id="Version Control" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="4" />
+      <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
+      <window_info anchor="bottom" id="Problems View" order="4" />
+      <window_info anchor="bottom" id="Terminal" order="4" />
+      <window_info anchor="bottom" id="Services" order="4" />
+      <window_info anchor="bottom" id="Profiler" order="4" />
+      <window_info anchor="bottom" id="Build" order="4" />
+      <window_info anchor="right" id="Maven" order="0" />
+      <window_info anchor="right" id="Coverage" order="0" side_tool="true" />
+      <window_info anchor="right" id="Endpoints" order="0" />
+      <window_info anchor="right" id="Beans" order="0" show_stripe_button="false" />
+      <window_info anchor="right" id="AIAssistant" order="0" />
+      <window_info anchor="right" id="Database" order="0" />
+      <window_info anchor="right" id="Notifications" order="0" weight="0.25" />
+      <unified_weights left="0.18046875" />
+    </layout>
+    <recentWindows>
+      <value>Project</value>
+    </recentWindows>
+  </component>
+</project>
