@@ -9,8 +9,8 @@ import java.util.Set;
 /**
  * наименьшая часть предложения продавца, которую может заказать покупатель.
  */
-@EqualsAndHashCode(exclude = {"basketSet","buyerOrder","sellerOffer"})
-@ToString(exclude = {"basketSet","buyerOrder","sellerOffer"})
+@EqualsAndHashCode(of = {"id","status"})
+@ToString(of = {"id","status"})
 @Getter
 @Setter
 @AllArgsConstructor
@@ -44,7 +44,7 @@ public class PartOfferToBuy {
     private SellerOffer sellerOffer;
 
     /**
-     * заказ покупателя (buyerOrder) состоит из множества частей (partOfferToBuy) от разных предложений продавцов (sellerOfferSet).
+     * заказ покупателя (buyerOrder) состоит из множества частей (partOfferToBuy) от разных предложений продавцов (sellerOfferSet).??? Не так!!!
      * buyerOrder является родительской сущностью для partOfferToBuy.
      * fetch = FetchType.LAZY означает, что при загрузке partOfferToBuy сущность buyerOrderDrone будет загружаться только при специальном дополнительном запросе.
      * по умолчанию будет доступен buyerOrderId, который является внешним ключом к PartOfferToBuy.

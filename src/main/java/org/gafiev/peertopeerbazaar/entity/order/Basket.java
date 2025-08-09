@@ -63,7 +63,8 @@ public class Basket {
      * @param partOfferToBuy выбранная покупателем часть предложения продавца
      */
     public void removePartOfferToBuy(PartOfferToBuy partOfferToBuy) {
-        partOfferToBuySet.remove(partOfferToBuy);
+        partOfferToBuySet.removeIf(partOfferToBuy::equals);
+       // partOfferToBuySet.remove(partOfferToBuy);
         partOfferToBuy.getBasketSet().remove(this);
     }
 }

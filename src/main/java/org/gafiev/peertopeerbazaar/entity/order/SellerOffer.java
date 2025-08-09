@@ -84,12 +84,14 @@ public class SellerOffer {
     private Address address;
 
     /**
-     * partOfferToBuySet множество частей предложения продавца, которые выбраны разными покупателями.
-     * является владеющей стороной, PartOfferToBuy содержит внешний ключ от SellerOffer,
-     * что отражено в mappedBy = "sellerOffer". SellerOffer есть родительская сущность и управляет жизненным циклом PartOfferToBuy,
+     * partOfferToBuyList список частей предложения продавца.
+     * PartOfferToBuy содержит внешний ключ от SellerOffer, и является владеющей стороной,
+     * что отражено в mappedBy = "sellerOffer", что означает, что в PartOfferToBuy есть поле SellerOffer.
+     * SellerOffer есть родительская сущность и управляет жизненным циклом PartOfferToBuy,
      * то есть все изменения в SellerOffer каскадом переходят в PartOfferToBuy (cascade = CascadeType.ALL).
-     * orphanRemoval = true означает, что при методе partOfferToBuySet.remove(partOfferToBuy),
+     * orphanRemoval = true означает, что при методе partOfferToBuyList.remove(partOfferToBuy),
      * автоматом удаляется partOfferToBuy из БД. Это заслуга Hibernate.
+     * List<PartOfferToBuy> необходим в BuyerOrderServiceImpl, когда применяется метод limit().
      */
     @Builder.Default
     @OneToMany(mappedBy = "sellerOffer", cascade = CascadeType.ALL, orphanRemoval = true)

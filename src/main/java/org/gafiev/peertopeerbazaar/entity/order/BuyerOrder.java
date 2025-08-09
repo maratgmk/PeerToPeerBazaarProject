@@ -21,7 +21,7 @@ import java.util.Set;
 @Entity
 @Builder
 @Table(name = "buyer_order")
-public class BuyerOrder {
+public class    BuyerOrder {
     /**
      * id это идентификатор заказа покупателя
      */

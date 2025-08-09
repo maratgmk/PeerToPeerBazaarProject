@@ -21,7 +21,7 @@ public record SellerOfferCreateRequest(
         @NotBlank @Size(min = 1)
         String comment,
 
-        @NotNull @Nonnull @PastOrPresent(message = "Date Time of creation can not be in the past.")
+        @NotNull @Nonnull
         LocalDateTime creationDateTime,
 
         @NotNull @Nonnull @FutureOrPresent(message = "Date Time of finish can not be in the past.")

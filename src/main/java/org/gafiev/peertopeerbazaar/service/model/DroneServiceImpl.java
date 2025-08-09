@@ -56,7 +56,8 @@ public class DroneServiceImpl implements DroneService {
      * Это метод по загрузке и разгрузке дрона. Метод вызывается дважды, сначала при загрузке, затем, когда прилетит к покупателю, то будет разгрузка.
      * метод по обновлению дрона, изначальные drone.getDeliverySet() затираются новыми доставками из droneRequest.deliveryIdsToAdd()
      * и в добавок из нового множества полученных стираются ещё раз те, которые совпадают с droneRequest.deliveryIdsToRemove(). Зачем так?
-     * @param id идентификатор дрона, который надо обновить
+     *
+     * @param id           идентификатор дрона, который надо обновить
      * @param droneRequest DTO информация, необходимая для обновления дрона
      * @return DTO изменённого дрона
      */
@@ -91,7 +92,8 @@ public class DroneServiceImpl implements DroneService {
     /**
      * метод по обновлению дрона, к изначальному множеству доставок = drone.getDeliverySet() добавляются новые доставки из droneRequest.deliveryIdsToAdd()
      * и удаляются доставки из droneRequest.deliveryIdsToRemove().
-     * @param id идентификатор дрона, который надо обновить
+     *
+     * @param id           идентификатор дрона, который надо обновить
      * @param droneRequest DTO информация, необходимая для обновления дрона
      * @return DTO изменённого дрона
      */
@@ -100,27 +102,27 @@ public class DroneServiceImpl implements DroneService {
         Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrders(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
 
-            Set<Delivery> deliveryCurrentSet = new HashSet<>(drone.getDeliverySet());
+        Set<Delivery> deliveryCurrentSet = new HashSet<>(drone.getDeliverySet());
 
-            Set<Long> deliveryIdsToAdd = droneRequest.deliveryIdsToAdd();
-            if(deliveryIdsToAdd != null && !deliveryIdsToAdd.isEmpty()){
-                Set<Delivery> deliveryToAddSet = droneRequest.deliveryIdsToAdd().stream()
-                        .filter(addId -> deliveryCurrentSet.stream().noneMatch(delivery -> delivery.getId().equals(addId)))
-                        .map(addId -> deliveryRepository.findById(addId)
-                                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(addId)))))
-                        .collect(Collectors.toSet());
+        Set<Long> deliveryIdsToAdd = droneRequest.deliveryIdsToAdd();
+        if (deliveryIdsToAdd != null && !deliveryIdsToAdd.isEmpty()) {
+            Set<Delivery> deliveryToAddSet = droneRequest.deliveryIdsToAdd().stream()
+                    .filter(addId -> deliveryCurrentSet.stream().noneMatch(delivery -> delivery.getId().equals(addId)))
+                    .map(addId -> deliveryRepository.findById(addId)
+                            .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(addId)))))
+                    .collect(Collectors.toSet());
 
-                deliveryCurrentSet.addAll(deliveryToAddSet);
-            }
-            drone.setDeliverySet(deliveryCurrentSet);
+            deliveryCurrentSet.addAll(deliveryToAddSet);
+        }
+        drone.setDeliverySet(deliveryCurrentSet);
 
         Set<Long> deliveryIdsToRemove = droneRequest.deliveryIdsToRemove();
-        if(deliveryIdsToRemove != null && !deliveryIdsToRemove.isEmpty()){
+        if (deliveryIdsToRemove != null && !deliveryIdsToRemove.isEmpty()) {
             Set<Long> deliveryCurrentIdsSet = deliveryCurrentSet.stream().map(Delivery::getId).collect(Collectors.toSet());
 
-            for (Long deliveryId : deliveryIdsToRemove){
-                if(!deliveryCurrentIdsSet.contains(deliveryId)){
-                    throw new EntityNotFoundException(Delivery.class,Map.of("deliveryId", String.valueOf(deliveryId)));
+            for (Long deliveryId : deliveryIdsToRemove) {
+                if (!deliveryCurrentIdsSet.contains(deliveryId)) {
+                    throw new EntityNotFoundException(Delivery.class, Map.of("deliveryId", String.valueOf(deliveryId)));
                 }
             }
             deliveryCurrentSet.removeIf(delivery -> deliveryIdsToRemove.contains(delivery.getId()));
@@ -132,8 +134,8 @@ public class DroneServiceImpl implements DroneService {
 
     @Override
     public List<TimeSlotResponse> getTimeSlots(Long id) {
-     Delivery delivery = deliveryRepository.findDeliveryByIdWithBuyerOrderWithAddresses(id)
-             .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+        Delivery delivery = deliveryRepository.findDeliveryByIdWithBuyerOrderWithAddresses(id)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
 
         Set<TimeSlotResponse> timeSlotResponses = externalDroneService.requestDroneSchedule(deliveryMapper.toDeliveryDroneRequest(delivery));
 
@@ -145,7 +147,7 @@ public class DroneServiceImpl implements DroneService {
         Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrders(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
 
-        if(drone.getDroneStatus() == DroneStatus.OFFLOADED){
+        if (drone.getDroneStatus() == DroneStatus.OFFLOADED) {
             drone.getDeliverySet().forEach(d -> {
                 d.setDeliveryStatus(DeliveryStatus.DELIVERED);
                 d.getBuyerOrder().setBuyerOrderStatus(BuyerOrderStatus.DELIVERED);

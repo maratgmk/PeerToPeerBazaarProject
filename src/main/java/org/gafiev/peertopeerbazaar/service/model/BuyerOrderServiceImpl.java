@@ -86,22 +86,27 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
 
     @Override
     @Transactional
-    public Set<BuyerOrderResponse> create(Long buyerId, BuyerOrderCreateRequest candidate) {
+    public Set<BuyerOrderResponse> create(Long buyerId, BuyerOrderCreateRequest partsToOrder) {
         User buyer = userRepository.findByIdWithBasket(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
         Basket basket = buyer.getBasket();
-        SellerOffer sellerOffer = basket.getPartOfferToBuySet().stream().findFirst().orElseThrow().getSellerOffer();
 
-        // собираем части в корзине пользователя, которые есть также в частях кандидата
-        Set<PartOfferToBuy> parts = basket.getPartOfferToBuySet().stream()
-                .filter(part -> candidate.partOfferToBuyIds().contains(part.getId()))
+        // Не используется !!!!!!
+        Set<SellerOffer> sellerOffers = basket.getPartOfferToBuySet().stream()
+                .map(PartOfferToBuy::getSellerOffer)
                 .collect(Collectors.toSet());
 
-        if (candidate.partOfferToBuyIds().size() != parts.size()) {
-            Set<Long> partIds = parts.stream().map(PartOfferToBuy::getId).collect(Collectors.toSet()); // Ids корзины равные Ids кандидата
-            Set<Long> absentIds = candidate.partOfferToBuyIds().stream().filter(id -> !partIds.contains(id)).collect(Collectors.toSet()); // Ids кандидата, которых нет в корзине
 
-            throw     new EntityNotFoundException("PartOfferToBuyIds %s are not parts of basket with id = %d".formatted(absentIds, buyerId));
+        // собираем множество, которое есть пересечение корзины пользователя и partsToOrder
+        Set<PartOfferToBuy> parts = basket.getPartOfferToBuySet().stream()
+                .filter(part -> partsToOrder.partOfferToBuyIds().contains(part.getId()))
+                .collect(Collectors.toSet());
+
+        if (partsToOrder.partOfferToBuyIds().size() != parts.size()) {
+            Set<Long> partIds = parts.stream().map(PartOfferToBuy::getId).collect(Collectors.toSet()); // Ids пересечения
+            Set<Long> absentIds = partsToOrder.partOfferToBuyIds().stream().filter(id -> !partIds.contains(id)).collect(Collectors.toSet()); // симметрическая разность partsToOrder и корзины
+
+            throw new EntityNotFoundException("PartOfferToBuyIds %s are not parts of basket with id = %d".formatted(absentIds, buyerId));
         }
 
         // проверяем,что в запросе нет частей закрытых офферов
@@ -128,19 +133,26 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
         final Payment payment = new Payment();
         if (isPresalePresent) {
             // заводим заказ на каждый оффер, потому что Presale у офферов заканчивается в разное время
-            Map<Long, List<PartOfferToBuy>> offerToPart = presaleParts.stream().collect(Collectors.groupingBy(part -> part.getSellerOffer().getId()));
-            return offerToPart.values().stream()
-                    .map(partList -> createOrder(new HashSet<>(partList), buyer, payment, basket, sellerOffer ))
+            Map<SellerOffer, List<PartOfferToBuy>> sellerOfferToParts = presaleParts.stream()
+                    .collect(Collectors.groupingBy(PartOfferToBuy::getSellerOffer));// TODO создавать отдельную доставку для каждого сочетания продавец+адрес, логика в доставке
+
+            return sellerOfferToParts.entrySet().stream()
+                    .map(entry -> createOrder(Map.of(entry.getKey(),entry.getValue()), buyer, payment, basket))
                     .map(buyerOrderMapper::toBuyerOrderResponse)
                     .collect(Collectors.toSet());
         }
 
         // здесь все части в статусе Opened. Оформляем для них по одному заказу на все части одного поставщика забираемые с одного адреса
-        Map<SellerAndAddress, List<PartOfferToBuy>> offerIdAndAddressToParts = parts.stream()
+        Map<SellerAndAddress, List<PartOfferToBuy>> sellerIdAndAddressToParts = parts.stream()
                 .collect(Collectors.groupingBy(part -> new SellerAndAddress(part.getSellerOffer().getSeller().getId(), part.getSellerOffer().getAddress())));
 
-        return offerIdAndAddressToParts.values().stream()
-                .map(partList -> createOrder(new HashSet<>(partList), buyer, null, basket, sellerOffer))
+        List<Map<SellerOffer, List<PartOfferToBuy>>> sellerOfferToOrderPartsList = sellerIdAndAddressToParts.values().stream()
+                .map(partOfferToBuys -> partOfferToBuys.stream()
+                        .collect(Collectors.groupingBy(PartOfferToBuy::getSellerOffer)))
+                .toList();
+
+        return sellerOfferToOrderPartsList.stream()
+                .map(sellerOfferToOrderParts -> createOrder(sellerOfferToOrderParts, buyer, null, basket))
                 .map(buyerOrderMapper::toBuyerOrderResponse)
                 .collect(Collectors.toSet());
     }
@@ -225,56 +237,76 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
     /**
      * создание заказа по частям предложений одного поставщика, забираемых с одного адреса.
      *
-     * @param basketParts   части корзины, части предложений продавца, части заказа покупателя совпадают.
-     * @param buyer   покупатель
-     * @param payment предоплата или оплата
+     * @param sellerOfferToOrderParts хэш таблица, где ключ это оффер, значение части, которые покупатель желает заказать, т.е. содержимое корзины.
+     * @param buyer                   покупатель
+     * @param payment                 предоплата или оплата
+     * @param basket                  корзина покупателя
      * @return заказ покупателя
      */
+    private BuyerOrder createOrder(Map<SellerOffer, List<PartOfferToBuy>> sellerOfferToOrderParts, User buyer, @Nullable Payment payment, Basket basket) {
+        // выборка из корзины ???
+        Map<SellerOffer, Set<PartOfferToBuy>> updatedSellerOfferToOrderParts = sellerOfferToOrderParts.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), entry.getKey().getPartOfferToBuyList().stream()
+                        .filter(p -> p.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))
+                        .limit(entry.getValue().size()) // чей размер?
+                        .collect(Collectors.toSet())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    private BuyerOrder createOrder(Set<PartOfferToBuy> basketParts, User buyer, @Nullable Payment payment, Basket basket,SellerOffer sellerOffer) {
-        Set<PartOfferToBuy> parts = sellerOffer.getPartOfferToBuyList().stream()
-                .filter(p -> p.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))
-                .limit(basketParts.size())
-                .collect(Collectors.toSet());
-
-        if (parts.size() != basketParts.size()) throw new IllegalBusinessStateException("Not enough parts for order");
+        updatedSellerOfferToOrderParts.forEach((offer, updatedOrderParts) -> {
+            List<PartOfferToBuy> partsFromBasket = Objects.requireNonNullElse(sellerOfferToOrderParts.get(offer), List.of());
+            if (updatedOrderParts.size() < partsFromBasket.size()) {
+                throw new IllegalBusinessStateException("Not enough partsFromOffer for order : sellerOfferId = : %d"
+                        .formatted(offer.getId()));
+            }
+            // удаление из корзины частей, которых нет в оффере
+            partsFromBasket.forEach(p -> {
+                if (!updatedOrderParts.contains(p)) {
+                    basket.removePartOfferToBuy(p);
+                }
+            });
+            // добавление в корзину частей из оффера
+            updatedOrderParts.forEach(p -> {
+                if (!partsFromBasket.contains(p)) {
+                    basket.addPartOfferToBuy(p);
+                }
+            });
+        });
 
         BuyerOrder buyerOrder = new BuyerOrder();
         buyerOrder.setBuyer(buyer);
         buyerOrder.setBuyerOrderStatus(BuyerOrderStatus.CREATED);
 
-        for (PartOfferToBuy part : parts) {
-            if (part.getSellerOffer().getActualUnitCount() <= 0)
-                throw new IllegalBusinessStateException("Cannot create order: actual amount is zero");
-            buyerOrder.addPartOfferToBuy(part);
-            part.setStatus(PartOfferToBuyStatus.RESERVED);
-            basket.removePartOfferToBuy(part);
+        for (Map.Entry<SellerOffer, Set<PartOfferToBuy>> entry : updatedSellerOfferToOrderParts.entrySet()) {
+            entry.getValue().forEach(part -> {
+                buyerOrder.addPartOfferToBuy(part);
+                part.setStatus(PartOfferToBuyStatus.RESERVED);
+                basket.removePartOfferToBuy(part);
+            });
 
-            log.info("After saving, SellerOffer ID: {}, Status: {}", sellerOffer.getId(), sellerOffer.getOfferStatus());
+            SellerOffer offer = entry.getKey();
+            if (offer.getActualUnitCount() <= 0) {
+                offer.setOfferStatus(OfferStatus.CLOSED);
+                log.info("SellerOffer ID {} is now closed.", offer.getId());
+            }
         }
 
-        if (sellerOffer.getActualUnitCount() <= 0) {
-            sellerOffer.setOfferStatus(OfferStatus.CLOSED);
-               log.info("SellerOffer ID {} is now closed.", sellerOffer.getId());
-        }
         payment = Objects.requireNonNullElse(payment, new Payment());
 
         payment.setPaymentStatus(PaymentStatus.CREATED);
         payment.setPaymentMode(PaymentMode.BANK_TRANSFER);
         payment.setCurrency(CurrencyCode.RUB);
 
-        BigDecimal currentOrderAmount = parts.stream()
-                .map(part -> part.getSellerOffer()
+        //из мапы updatedSellerOfferToOrderParts
+        BigDecimal currentOrderAmount = updatedSellerOfferToOrderParts.entrySet().stream()
+                .map(entry -> entry.getKey()
                         .getProduct().getPrice()
-                        .multiply(BigDecimal.valueOf(parts.size())))
+                        .multiply(BigDecimal.valueOf(entry.getValue().size())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal paymentAmount = Objects.requireNonNullElse(payment.getAmount(), BigDecimal.ZERO).add(currentOrderAmount);
         payment.setAmount(paymentAmount);
 
         payment.addBuyerOrder(buyerOrder);
-      //  basketRepository.save(basket);
 
-        //TODO добавить basketRepository и вызывать метод save для корзины. Проверить входит ли части в таблице basket_part? что то препятствует для удаление частей. сначала проверить с save, (удалить save) и затем cascadeAll проверить
         return buyerOrderRepository.save(buyerOrder);
 
     }
@@ -287,6 +319,5 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
      */
     private record SellerAndAddress(Long sellerId, Address address) {
     }
-
 
 }

@@ -23,6 +23,7 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.SellerOfferService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -114,7 +115,14 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         }
         sellerOffer.setOfferStatus(sellerOfferCreate.offerStatus());
         sellerOffer.setComment(sellerOfferCreate.comment());
-        sellerOffer.setCreationDateTime(sellerOfferCreate.creationDateTime());
+
+        // Проверяем условия для creationDateTime
+        LocalDateTime creationDateTime = sellerOfferCreate.creationDateTime();
+        if ((sellerOfferCreate.offerStatus() == OfferStatus.PRESALE && creationDateTime.isBefore(LocalDateTime.now())) ||
+                (sellerOfferCreate.offerStatus() == OfferStatus.OPENED && creationDateTime.isAfter(LocalDateTime.now()))) {
+            throw new IllegalArgumentException("Invalid creation date time for the given offer status.");
+        }
+        sellerOffer.setCreationDateTime(creationDateTime);
         sellerOffer.setFinishDateTime(sellerOfferCreate.finishedDateTime());
         product.addSellerOffer(sellerOffer);
         address.addSellerOffer(sellerOffer);
@@ -143,7 +151,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
             throw new IllegalBusinessStateException("You do not have permission to update this offer.");
         }
 
-        //TODO написать логику проверки частей: если частей стало больше, то досоздать PartOfferToBuy и добавить их в SellerOffer, если частей стало меньше, то удалить незарезервированные части из оффера
         int partSize = sellerOffer.getPartOfferToBuyList().size();
         if (sellerOfferNew.unitCount() > partSize) {
             for (int i = 0; i < sellerOfferNew.unitCount() - partSize; i++) {
