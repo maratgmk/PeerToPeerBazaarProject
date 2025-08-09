@@ -4,7 +4,7 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.request.AddressFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.AddressFilterRequest;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -49,13 +49,13 @@ public class AddressSpecifications {
             }
 
             if (request.town() != null && !request.town().isBlank()) {
-                predicates.add(criteriaBuilder.like(root.get("town"), "%" + request.town() + "%"));
+                predicates.add(criteriaBuilder.equal(root.get("town"),  request.town()));
             }
             if (request.street() != null && !request.street().isBlank()) {
                 predicates.add(criteriaBuilder.equal(root.get("street"), request.street()));
             }
             if (request.numberBuilding() != null) {
-                predicates.add(criteriaBuilder.ge(root.get("number_building"), request.numberBuilding()));
+                predicates.add(criteriaBuilder.equal(root.get("number_building"), request.numberBuilding()));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 

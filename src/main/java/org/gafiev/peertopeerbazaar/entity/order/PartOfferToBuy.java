@@ -3,20 +3,24 @@ package org.gafiev.peertopeerbazaar.entity.order;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * сущность PartOfferToBuy указывает на ту часть предложения продавца, которую хочет заказать покупатель
+ * наименьшая часть предложения продавца, которую может заказать покупатель.
  */
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(of = {"id","status"})
+@ToString(of = {"id","status"})
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "part_offer_to_buy")
+@Builder(toBuilder = true)
 public class PartOfferToBuy {
     /**
-     * id есть идентификатор объекта класса PartOfferToBuy
+     * id есть идентификатор части.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,29 +28,47 @@ public class PartOfferToBuy {
     private Long id;
 
     /**
-     * Количество порций из предложения продавца, которые хочет заказать покупатель
+     * статус части
      */
-    @Column(name = "unit_count")
-    private Integer unitCount;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    @Builder.Default
+    private PartOfferToBuyStatus status = PartOfferToBuyStatus.NOT_RESERVED;
 
     /**
-     * предложение продавца
-     * сумма всех partOfferToBuy.getPortionCount одного экземпляра SellerOffer равно unitCount этого экземпляра sellerOffer
-     * "надо причесать"
+     * предложение продавца является родительской сущностью для partOfferToBuy.
+     * fetch = FetchType.LAZY означает, что при загрузке partOfferToBuy сущность sellerOffer будет загружаться только при специальном дополнительном запросе.
+     * по умолчанию будет доступен sellerOfferId, который является внешним ключом к PartOfferToBuy.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private SellerOffer sellerOffer;
 
     /**
-     * заказ покупателя состоит из множества частей от разных sellerOffer
+     * заказ покупателя (buyerOrder) состоит из множества частей (partOfferToBuy) от разных предложений продавцов (sellerOfferSet).??? Не так!!!
+     * buyerOrder является родительской сущностью для partOfferToBuy.
+     * fetch = FetchType.LAZY означает, что при загрузке partOfferToBuy сущность buyerOrderDrone будет загружаться только при специальном дополнительном запросе.
+     * по умолчанию будет доступен buyerOrderId, который является внешним ключом к PartOfferToBuy.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private BuyerOrder buyerOrder;
 
     /**
-     * корзина покупателя, в которой лежит множество частей предложений от разных продавцов
-     * параметр FetchType.LAZY означает, что при загрузке partOfferToBuy корзина загружаться не будет
+     * корзина покупателя, в которой лежит partOfferToBuySet (множество частей предложений от разных продавцов).
+     * fetch = FetchType.LAZY означает, что при загрузке partOfferToBuy корзина будет загружаться только при специальном дополнительном запросе.
+     * по умолчанию будет доступен basketIds, который является внешним ключом к PartOfferToBuy.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Basket basket;
+    @ManyToMany(mappedBy = "partOfferToBuySet", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @Builder.Default
+    private Set<Basket> basketSet = new HashSet<>();
+
+
+    public void addBasket(@NonNull Basket basket){
+        basketSet.add(basket);
+        basket.getPartOfferToBuySet().add(this);
+    }
+
+    public void removeBasket(@NonNull Basket basket){
+        basketSet.remove(basket);
+        basket.getPartOfferToBuySet().remove(this);
+    }
 }

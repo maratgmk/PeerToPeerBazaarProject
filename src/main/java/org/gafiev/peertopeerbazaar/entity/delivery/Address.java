@@ -18,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder(toBuilder = true)
 @Table(name = "address")
 public class Address {
     /**
@@ -79,7 +80,7 @@ public class Address {
     /**
      * с одного адреса продавец предлагает множество заказов
      */
-    @OneToMany(mappedBy = "seller", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "address", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
     /**
@@ -94,7 +95,7 @@ public class Address {
      * и в это предложение устанавливает ссылку на этот адрес
      */
     public void addSellerOffer(@NonNull SellerOffer sellerOffer){
-        this.sellerOfferSet.add(sellerOffer);
+        sellerOfferSet.add(sellerOffer);
         sellerOffer.setAddress(this);
     }
 
@@ -104,7 +105,7 @@ public class Address {
      * @param sellerOffer это объект сущности SellerOffer (предложение продавца)
      */
     public void removeSellerOffer(@NonNull SellerOffer sellerOffer){
-        this.sellerOfferSet.remove(sellerOffer);
+        sellerOfferSet.remove(sellerOffer);
         sellerOffer.setAddress(null);
     }
 
@@ -114,7 +115,7 @@ public class Address {
      * и в эту доставку устанавливает ссылку на этот адрес
      */
     public void addDelivery(@NonNull Delivery delivery){
-        this.deliverySet.add(delivery);
+        deliverySet.add(delivery);
         delivery.setToAddress(this);
     }
 
@@ -124,12 +125,11 @@ public class Address {
      * и в эту удалённую доставку устанавливает нулевую ссылку этот адрес
      */
     public void removeDelivery(@NonNull Delivery delivery){
-        this.deliverySet.remove(delivery);
+        deliverySet.remove(delivery);
         delivery.setToAddress(null);
     }
 
 }
 
-// TODO в сервисе оформления заказа должна быть проверка в виде отдельной интеграции,
-//  что товар можно доставить по адресу, по координатам, что эти координаты не являются запретной зоной
+
 

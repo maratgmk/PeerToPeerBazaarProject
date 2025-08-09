@@ -3,7 +3,7 @@ package org.gafiev.peertopeerbazaar.repository.specification;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.request.UserFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.UserFilterRequest;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -19,6 +19,7 @@ public class UserSpecification {
     public static Specification<User> filterByParams(UserFilterRequest filterRequest) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
             if (filterRequest == null) return criteriaBuilder.conjunction();
 
             if (filterRequest.ids() != null && !filterRequest.ids().isEmpty()) {
@@ -45,7 +46,7 @@ public class UserSpecification {
                 predicates.add(criteriaBuilder.le(root.get("ratingSeller"), filterRequest.ratingBuyerHigh()));
             }
 
-            return criteriaBuilder.and(new Predicate[0]);
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
         };
 

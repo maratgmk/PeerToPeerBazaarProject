@@ -2,25 +2,27 @@ package org.gafiev.peertopeerbazaar.entity.order;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *  предложение (оффер) продавца
+ * предложение (оффер) продавца
  */
-
-@EqualsAndHashCode(exclude = "partOfferToBuySet")
-@ToString(exclude = "partOfferToBuySet")
+@Slf4j
+@EqualsAndHashCode(exclude ={ "partOfferToBuyList","product","seller","address"})
+@ToString(exclude = {"partOfferToBuyList","product","seller","address"})
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "seller_offer")
 public class SellerOffer {
 
@@ -31,12 +33,6 @@ public class SellerOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
-    /**
-     * количество единиц измерения в оффере
-     */
-    @Column(name = "unit_count")
-    private Integer unitCount;
 
     /**
      * состояние оффера
@@ -65,56 +61,70 @@ public class SellerOffer {
 
     /**
      * продукт созданный данным продавцом
+     * fetch = FetchType.LAZY значит что при загрузке sellerOffer продукт загружаться не будет,
+     * но productId по умолчанию доступен, так как это внешний ключ для SellerOffer
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     /**
      * продавец - создатель оффера
+     * fetch = FetchType.LAZY значит что при загрузке sellerOffer продавец загружаться не будет,
+     * но userId по умолчанию доступен, так как это внешний ключ для SellerOffer
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User seller;
 
     /**
      * адрес, откуда дрон заберёт часть оффера (заказ)
+     * fetch = FetchType.LAZY значит что при загрузке sellerOffer адрес загружаться не будет,
+     * но addressId по умолчанию доступен, так как это внешний ключ для SellerOffer
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
 
     /**
-     * множество частей предложения продавца, которые можно выбрать
+     * partOfferToBuyList список частей предложения продавца.
+     * PartOfferToBuy содержит внешний ключ от SellerOffer, и является владеющей стороной,
+     * что отражено в mappedBy = "sellerOffer", что означает, что в PartOfferToBuy есть поле SellerOffer.
+     * SellerOffer есть родительская сущность и управляет жизненным циклом PartOfferToBuy,
+     * то есть все изменения в SellerOffer каскадом переходят в PartOfferToBuy (cascade = CascadeType.ALL).
+     * orphanRemoval = true означает, что при методе partOfferToBuyList.remove(partOfferToBuy),
+     * автоматом удаляется partOfferToBuy из БД. Это заслуга Hibernate.
+     * List<PartOfferToBuy> необходим в BuyerOrderServiceImpl, когда применяется метод limit().
      */
+    @Builder.Default
     @OneToMany(mappedBy = "sellerOffer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PartOfferToBuy> partOfferToBuySet = new HashSet<>();
+    private List<PartOfferToBuy> partOfferToBuyList = new ArrayList<>();
 
     /**
      * метод добавления заказанной части оффера к множеству всех заказанных частей данного оффера
+     *
      * @param partOfferToBuy часть оффера продавца, заказанного покупателем
      */
-    public void addPartOfferToBuySet(PartOfferToBuy partOfferToBuy){
-        partOfferToBuySet.add(partOfferToBuy);
+    public void addPartOfferToBuy(@NonNull PartOfferToBuy partOfferToBuy) {
+        partOfferToBuyList.add(partOfferToBuy);
         partOfferToBuy.setSellerOffer(this);
     }
 
     /**
      * метод удаления заказанной части оффера из множества всех заказанных частей данного оффера
+     *
      * @param partOfferToBuy часть оффера продавца, заказанного покупателем
      */
-    public void removePartOfferToBuySet(PartOfferToBuy partOfferToBuy){
-        partOfferToBuySet.remove(partOfferToBuy);
+    public void removePartOfferToBuySet(@NonNull PartOfferToBuy partOfferToBuy) {
+        partOfferToBuyList.remove(partOfferToBuy);
         partOfferToBuy.setSellerOffer(null);
     }
 
     /**
-     * метод возвращает остаток единиц товара, которые ещё не заказаны
-     * @return количество незаказанных единиц товара
+     * количество единиц товара в оффере или количество частей, которые ещё не заказаны.
+     *
+     * @return количество незаказанных (частей) = единиц товара
      */
-    public int getActualUnitCount(){
-        int orderedCount = partOfferToBuySet.stream()
-                .filter(part -> part.getBuyerOrder() != null && part.getBuyerOrder().getBuyerOrderStatus() != BuyerOrderStatus.DENIED)
-                .mapToInt(PartOfferToBuy::getUnitCount)
-                .sum();
-        return unitCount - orderedCount;
+    public int getActualUnitCount() {
+       return (int) partOfferToBuyList.stream()
+                .filter(part -> part.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))
+                .count();
     }
-
 }

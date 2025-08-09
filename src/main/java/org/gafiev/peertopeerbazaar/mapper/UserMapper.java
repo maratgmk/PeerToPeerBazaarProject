@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.response.UserResponse;
+import org.gafiev.peertopeerbazaar.dto.api.response.UserResponse;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 @Component
 @AllArgsConstructor
 public class UserMapper {
-    private final PaymentAccountMapper paymentAccountMapper;
     private final ProductMapper productMapper;
     private final BuyerOrderMapper buyerOrderMapper;
     private final SellerOfferMapper sellerOfferMapper;
@@ -23,16 +22,13 @@ public class UserMapper {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .phone(user.getPhone())
-                .role(user.getRole())
+                .roles(user.getRoles())
                 .ratingSeller(user.getRatingSeller())
                 .ratingBuyer(user.getRatingBuyer())
                 .sellerOfferResponseSet(sellerOfferMapper.toSellerOfferResponseSet(user.getSellerOfferSet()))
                 .buyerOrderResponseSet(buyerOrderMapper.toBuyerOrderResponseSet(user.getBuyerOrderSet()))
                 .productSet(productMapper.toProductResponseSet(user.getProductSet()))
-                .paymentAccountSet(paymentAccountMapper.toPaymentAccountResponseSet(user.getPaymentAccountSet()))
                 .build();
-
-
     }
 
     public Set<UserResponse> toUserResponseSet(Set<User> users){

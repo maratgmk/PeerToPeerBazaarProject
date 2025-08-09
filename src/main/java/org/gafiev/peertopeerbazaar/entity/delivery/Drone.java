@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Сущность Drone осуществляет обмен заказов между пользователями
+ *  Drone осуществляет доставку заказов между пользователями.
  */
 @EqualsAndHashCode(exclude = "deliverySet")
 @ToString(exclude = "deliverySet")
@@ -16,38 +16,42 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder(toBuilder = true)
 @Table(name = "drone")
 public class Drone {
     /**
-     * id есть уникальный идентификатор дрона
+     * идентификатор дрона.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    /**
-     * droneStatus показывает состояние полёта дрона
-     */
-    @Enumerated(EnumType.STRING)
-    private DroneStatus droneStatus;
 
     /**
-     * droneServiceId id переданное сторонним сервисом
+     * идентификатор дрона в стороннем сервисе.
      */
     @Column(name = "drone_service_id", unique = true)
     private Long droneServiceId;
 
+
     /**
-     * deliverySet есть множество доставок,
+     * состояние дрона.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "drone_status")
+    private DroneStatus droneStatus;
+
+    /**
+     * deliverySet есть множество доставок.
      * один drone осуществляет много доставок,
      */
+    @Builder.Default
     @OneToMany(mappedBy = "drone", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Delivery> deliverySet = new HashSet<>();
 
-
     /**
-     * метод добавления доставки во множество доставок этого дрона
+     * метод добавления доставки во множество доставок этого дрона.
      *
      * @param delivery доставка
      */
@@ -57,7 +61,7 @@ public class Drone {
     }
 
     /**
-     * метод удаления доставки из множества доставок этого дрона
+     * метод удаления доставки из множества доставок этого дрона.
      *
      * @param delivery доставка
      */

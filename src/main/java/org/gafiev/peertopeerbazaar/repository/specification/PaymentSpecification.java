@@ -4,10 +4,8 @@ import jakarta.annotation.Nullable;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.request.PaymentFilterRequest;
-import org.gafiev.peertopeerbazaar.dto.request.ProductFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.PaymentFilterRequest;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
-import org.gafiev.peertopeerbazaar.entity.product.Product;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;

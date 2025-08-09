@@ -27,4 +27,3 @@ public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpec
     Optional<Address> findByIdWithSellerOffersAndDeliveries(Long id);
 
 }
-// TODO над каждым методом поставить @Transaction и в @Service

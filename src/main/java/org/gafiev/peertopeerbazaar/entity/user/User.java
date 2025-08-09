@@ -5,7 +5,6 @@ import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.Basket;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
-import org.gafiev.peertopeerbazaar.entity.payment.PaymentAccount;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
 
 import java.util.HashSet;
@@ -19,10 +18,10 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"sellerOfferSet","buyerOrderSet","paymentAccountSet","productSet"})
-@ToString(exclude = {"sellerOfferSet","buyerOrderSet","paymentAccountSet","productSet"})
+@EqualsAndHashCode(exclude = {"sellerOfferSet", "buyerOrderSet", "productSet", "basket"})
+@ToString(exclude = {"sellerOfferSet", "buyerOrderSet",  "productSet", "basket","password"})
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
     /**
      * id является уникальным идентификатором пользователя
@@ -35,19 +34,19 @@ public class User {
     /**
      * firstName есть имя пользователя
      */
-    @Column(name="first_name")
+    @Column(name = "first_name")
     private String firstName;
 
     /**
      * lastName есть фамилия пользователя
      */
-    @Column(name="last_name")
+    @Column(name = "last_name")
     private String lastName;
 
     /**
      * email электронная почта пользователя
      */
-    @Column(name = "email",unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     /**
@@ -63,10 +62,12 @@ public class User {
     private String phone;
 
     /**
-     * role указывает как приложение отождествляет пользователя
+     * roles указывает, что у пользователя может быть множество ролей.
      */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Set<Role> roles = new HashSet<>();
 
     /**
      * ratingSeller показывает рейтинг продавца от 0 до 100;
@@ -84,160 +85,129 @@ public class User {
      * basket устанавливает связь с покупателем, который заполняет корзину
      */
     @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+
     private Basket basket;
 
-     /**
-     * Это поле является коллекцией дочерних сущностей, которая содержит внешний ключ (id) продавца (автора).
-     * Параметр mappedBy = "author" указывает, что в классе Product есть поле author, которое является родительской сущностью.
-     * Это создает связь "один ко многим" (OneToMany) между User и Product, где User создаёт множество продуктов.
-     * User является управляющей стороной, управляет жизненным циклом связанных сущностей Product в контексте каскадирования (персистентности).
+    /**
+     * productSet является коллекцией дочерних сущностей, которая содержит внешний ключ (id) продавца (автора).
+     * mappedBy = "author" указывает, что в классе Product есть поле author, которое является родительской сущностью.
+     * User является управляющей (родительской) стороной, управляет жизненным циклом связанных сущностей Product в контексте каскадирования (персистентности).
      * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
      * все связанные Product также будут затронуты каскадно.
-     * Параметр orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей Product,
-     * которые больше не связаны с родительской сущностью User. Это означает, что если продукт будет удален из коллекции,
-     * он также будет удален из базы данных.
+     * orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей Product из БД,
+     * что означает, если продукт будет удален из коллекции productSet методом productSet.remove(product),
+     * product также будет удален из базы данных. Это заслуга Hibernate.
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> productSet = new HashSet<>();
 
+
+
     /**
-     * Поле sellerSellerOffers представляет собой множество заказов, созданных продавцом.
-     * Это поле является дочерней сущностью и владеющей стороной, которая содержит внешний ключ (id) продавца.
-     * Параметр mappedBy = "seller" указывает, что в классе SellerOffer есть поле seller, которое является родительской сущностью.
-     * Это создает связь "один ко многим" (OneToMany) между User и SellerOffer, где User порождает множество заказов.
-     * Каскадирование указано на стороне User, что делает User управляющей стороной,
-     * которая управляет жизненным циклом связанных сущностей sellerSellerOffers в контексте каскадирования (персистентности).
+     * buyerOrderSet представляет собой множество заказов, созданных покупателем
+     * является дочерней сущностью и владеющей стороной, которая содержит внешний ключ (id) покупателя.
+     * mappedBy = "buyer" указывает, что в классе BuyerOrder есть поле buyer, которое является родительской сущностью.
+     * Это создает связь "один ко многим" (OneToMany) между User и BuyerOrder, где User порождает множество заказов.
+     * Каскадирование указано на стороне User, что делает User управляющей (родительской) стороной,
+     * которая управляет жизненным циклом связанных сущностей buyerOrderDrone в контексте каскадирования (персистентности).
      * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
-     * все связанные SellerOffer также будут затронуты каскадно.
-     * Параметр orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей SellerOffer,
-     * которые больше не связаны с родительской сущностью User. Это означает, что если заказ будет удален из коллекции,
-     * он также будет удален из базы данных.
+     * все связанные buyerOrder также будут затронуты каскадно.
+     * orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей BuyerOrder из БД,
+     * что означает, если buyerOrder будет удален из коллекции buyerOrderSet методом buyerOrderSet.remove(buyerOrderDrone),
+     * buyerOrderDrone также будет удален из базы данных. Это заслуга Hibernate.
      */
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BuyerOrder> buyerOrderSet = new HashSet<>();
 
     /**
-     * Поле buyerSellerOffers представляет собой множество заказов, созданных покупателем.
-     * Это поле является дочерней сущностью и владеющей стороной, которая содержит внешний ключ (id) покупателя.
-     * Параметр mappedBy = "buyer" указывает, что в классе SellerOffer есть поле buyer, которое является родительской сущностью.
+     * sellerOfferSet представляет собой множество предложений, созданных продавцом.
+     * SellerOffer является владеющей стороной, которая содержит внешний ключ (id) покупателя.
+     * mappedBy = "seller" указывает, что в классе SellerOffer есть поле buyer, которое является родительской сущностью.
      * Это создает связь "один ко многим" (OneToMany) между User и SellerOffer, где User порождает множество заказов.
      * Каскадирование указано на стороне User, что делает User управляющей стороной,
-     * которая управляет жизненным циклом связанных сущностей buyerSellerOffers в контексте каскадирования (персистентности).
+     * которая управляет жизненным циклом связанных сущностей SellerOffer в контексте каскадирования (персистентности).
      * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
      * все связанные SellerOffer также будут затронуты каскадно.
-     * Параметр orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей SellerOffer,
-     * которые больше не связаны с родительской сущностью User. Это означает, что если заказ будет удален из коллекции,
-     * он также будет удален из базы данных.
+     * orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей BuyerOrder из БД,
+     * что означает, если sellerOffer будет удален из коллекции sellerOffer методом sellerOfferSet.remove(sellerOffer),
+     * sellerOffer также будет удален из базы данных. Это заслуга Hibernate.
      */
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
-    /**
-     * Поле paymentAccounts является множеством платежных счетов пользователя
-     * и является владеющей стороной, владеет ключом пользователя,
-     * атрибут mappedBy = "user" означает, что в классе PaymentAccount есть поле "user",
-     * атрибут CascadeType.ALL относится к paymentAccounts и означает, что
-     * при всех изменениях в сущности пользователя, каскадом изменятся пользователи в
-     * таблице "payment_account", атрибут orphanRemoval = true означает,
-     * что при удалении пользователя на обратной стороне,
-     * из БД автоматически удалится владеющая сторона, т.е. платежные аккаунты данного пользователя
-     */
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PaymentAccount> paymentAccountSet = new HashSet<>();
 
 
     /**
-     * Добавляет продукт в коллекцию продуктов автора.
-     * <p>
-     * Этот метод добавляет указанный продукт в коллекцию продуктов
+     * метод добавляет указанный продукт в коллекцию продуктов
      * и устанавливает автора для данного продукта.
-     * </p>
+     *
      * @param product продукт, который нужно добавить
      */
-    public void addProduct(@NonNull Product product){
-        this.productSet.add(product);
+    public void addProduct(@NonNull Product product) {
+        productSet.add(product);
         product.setAuthor(this);
     }
 
+
+
     /**
-     * Удаляет продукт из коллекции продуктов автора.
-     * <p>
      * Этот метод удаляет указанный продукт из коллекции продуктов
      * и сбрасывает автора для данного продукта.
-     * </p>
+     *
      * @param product продукт, который нужно удалить
      */
-    public void removeProduct(@NonNull Product product){
-        this.productSet.remove(product);
+    public void removeProduct(@NonNull Product product) {
+        productSet.remove(product);
         product.setAuthor(null);
     }
 
-    /**
-     * Добавляет платежный аккаунт в коллекцию аккаунтов пользователя.
-     *
-     * @param paymentAccount платежный аккаунт, который нужно добавить
-     */
-    public void addPaymentAccount(@NonNull PaymentAccount paymentAccount){
-        this.paymentAccountSet.add(paymentAccount);
-        paymentAccount.setUser(this);
+    public void addRole(@NonNull Role role){
+        roles.add(role);
     }
 
-    /**
-     * Удаляет платежный аккаунт из коллекции аккаунтов пользователя.
-     *
-     * @param paymentAccount платежный аккаунт, который нужно удалить
-     */
-    public void removePaymentAccount(@NonNull PaymentAccount paymentAccount){
-        this.paymentAccountSet.remove(paymentAccount);
-        paymentAccount.setUser(null);
+    public void removeRole(@NonNull Role role){
+        roles.remove(role);
     }
 
+
     /**
-     * метод добавления предложение продавца в коллекцию предложений продавца
+     * метод добавления предложение продавца в коллекцию sellerOfferSet
      *
      * @param sellerOffer предложение продавца, которое нужно добавить
      */
-    public void addSellerOrder(@NonNull SellerOffer sellerOffer){
+    public void addSellerOffer(@NonNull SellerOffer sellerOffer) {
         sellerOfferSet.add(sellerOffer);
         sellerOffer.setSeller(this);
     }
 
     /**
-     * метод удаления предложения продавца из коллекции предложений продавца
+     * метод удаления предложения продавца из коллекции sellerOfferSet
      *
-     * @param sellerOffer заказ, который нужно удалить; не должен быть <code>null</code>
+     * @param sellerOffer предложение, который нужно удалить
      */
-    public void removeSellerOrder(@NonNull SellerOffer sellerOffer){
+    public void removeSellerOrder(@NonNull SellerOffer sellerOffer) {
         sellerOfferSet.remove(sellerOffer);
         sellerOffer.setSeller(null);
     }
 
     /**
-     * Добавляет заказ в коллекцию заказов покупателя.
-     *
-     * <p>
-     * Этот метод добавляет указанный заказ в коллекцию
+     * метод добавляет указанный заказ в коллекцию заказов покупателя
      * и устанавливает покупателя для данного заказа.
-     * </p>
      *
-     * @param buyerOrder заказ, который нужно добавить; не должен быть <code>null</code>
+     * @param buyerOrder заказ, который нужно добавить
      */
-    public void addBuyerOrder(@NonNull BuyerOrder buyerOrder){
+    public void addBuyerOrder(@NonNull BuyerOrder buyerOrder) {
         buyerOrderSet.add(buyerOrder);
         buyerOrder.setBuyer(this);
     }
 
     /**
-     * Удаляет заказ из коллекции заказов покупателя.
+     * метод удаляет указанный заказ из коллекции заказов покупателя
+     * и сбрасывает покупателя для данного заказа
      *
-     * <p>
-     * Этот метод удаляет указанный заказ из коллекции
-     * и сбрасывает покупателя для данного заказа на <code>null</code>.
-     * </p>
-     *
-     * @param buyerOrder заказ, который нужно удалить; не должен быть <code>null</code>
+     * @param buyerOrder заказ, который нужно удалить
      */
-    public void removeBuyerOrder(@NonNull BuyerOrder buyerOrder){
+    public void removeBuyerOrder(@NonNull BuyerOrder buyerOrder) {
         buyerOrderSet.remove(buyerOrder);
         buyerOrder.setBuyer(null);
     }
