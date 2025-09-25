@@ -56,6 +56,13 @@ public class DeliveryServiceImpl implements DeliveryService {
     }
 
     @Override
+    public Long getBuyerIdByDeliveryId(Long id) {
+        Delivery delivery = deliveryRepository.findByIdWithBuyerAndSeller(id)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+        return delivery.getBuyerOrder().getBuyer().getId();
+    }
+
+    @Override
     @Transactional
     public Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(Long buyerOrderId) {
         BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithDelivery(buyerOrderId)

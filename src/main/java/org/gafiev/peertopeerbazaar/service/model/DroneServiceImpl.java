@@ -43,6 +43,12 @@ public class DroneServiceImpl implements DroneService {
         return droneMapper.toDroneResponse(drone);
     }
 
+    @Override
+    public DroneResponse getDroneByIdWithBuyerOrder(Long id) {
+        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id).orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
+        return droneMapper.toDroneResponse(drone);
+    }
+
     /**
      * в этом методе getAllDrones все данные из репозитория получаются обновленными согласно метода по расписанию?
      */
@@ -63,7 +69,7 @@ public class DroneServiceImpl implements DroneService {
      */
     @Override
     public DroneResponse update(Long id, DroneCreateRequest droneRequest) {
-        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrders(id)
+        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
         Set<Long> droneDeliveryIds = drone.getDeliverySet().stream().map(Delivery::getId).collect(Collectors.toSet());
 
@@ -99,7 +105,7 @@ public class DroneServiceImpl implements DroneService {
      */
     @Override
     public DroneResponse update2(Long id, DroneCreateRequest droneRequest) {
-        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrders(id)
+        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
 
         Set<Delivery> deliveryCurrentSet = new HashSet<>(drone.getDeliverySet());
@@ -144,7 +150,7 @@ public class DroneServiceImpl implements DroneService {
 
     @Override
     public DroneResponse observingFlightOfDrone(Long id) {
-        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrders(id)
+        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
 
         if (drone.getDroneStatus() == DroneStatus.OFFLOADED) {

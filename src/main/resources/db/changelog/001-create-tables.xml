@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+  <!-- 001: Users and Roles -->
+  <changeSet id="001-users-roles" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="users"/></not>
+    </preConditions>
+    <createTable tableName="users">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="first_name" type="VARCHAR(255)"/>
+      <column name="last_name" type="VARCHAR(255)"/>
+      <column name="email" type="VARCHAR(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="password" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="phone" type="VARCHAR(255)"/>
+      <column name="rating_seller" type="INTEGER" defaultValueNumeric="0"/>
+      <column name="rating_buyer" type="INTEGER" defaultValueNumeric="0"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createTable tableName="user_roles">
+      <column name="user_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="role" type="VARCHAR(32)">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="user_roles" columnNames="user_id, role" constraintName="pk_user_roles"/>
+    <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="user_id"
+                             referencedTableName="users" referencedColumnNames="id"
+                             constraintName="fk_user_roles_user" onDelete="CASCADE"/>
+    <createIndex indexName="idx_users_email" unique="true" tableName="users">
+      <column name="email"/>
+    </createIndex>
+  </changeSet>
+
+  <!-- 002: Address -->
+  <changeSet id="002-address" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="address"/></not>
+    </preConditions>
+    <createTable tableName="address">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="town" type="VARCHAR(255)"/>
+      <column name="street" type="VARCHAR(255)"/>
+      <column name="number_building" type="INTEGER"/>
+      <column name="zip_code" type="INTEGER"/>
+      <column name="latitude" type="DOUBLE PRECISION"/>
+      <column name="longitude" type="DOUBLE PRECISION"/>
+      <column name="attitude" type="DOUBLE PRECISION"/>
+      <column name="accuracy" type="DOUBLE PRECISION"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <!-- 003: Product -->
+  <changeSet id="003-product" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="product"/></not>
+      <tableExists tableName="users"/>
+    </preConditions>
+    <createTable tableName="product">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="name" type="VARCHAR(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="TEXT"/>
+      <column name="category" type="VARCHAR(32)"/>
+      <column name="portion_unit" type="VARCHAR(32)"/>
+      <column name="weight" type="DOUBLE PRECISION"/>
+      <column name="volume" type="DOUBLE PRECISION"/>
+      <column name="price" type="DECIMAL(19,4)"/>
+      <column name="image_uri" type="VARCHAR(512)"/>
+      <column name="qr_code" type="VARCHAR(256)"/>
+      <column name="author_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addForeignKeyConstraint baseTableName="product" baseColumnNames="author_id"
+                             referencedTableName="users" referencedColumnNames="id"
+                             constraintName="fk_product_author" onDelete="CASCADE"/>
+    <createIndex indexName="idx_product_author" tableName="product">
+      <column name="author_id"/>
+    </createIndex>
+  </changeSet>
+
+  <!-- 004: Drone -->
+  <changeSet id="004-drone" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="drone"/></not>
+    </preConditions>
+    <createTable tableName="drone">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="drone_service_id" type="BIGINT">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="drone_status" type="VARCHAR(32)"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <createIndex indexName="idx_drone_service_id" unique="true" tableName="drone">
+      <column name="drone_service_id"/>
+    </createIndex>
+  </changeSet>
+
+  <!-- 005: Payment -->
+  <changeSet id="005-payment" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="payment"/></not>
+    </preConditions>
+    <createTable tableName="payment">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="amount" type="DECIMAL(19,4)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="currency" type="VARCHAR(3)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="payment_mode" type="VARCHAR(32)"/>
+      <column name="payment_status" type="VARCHAR(32)"/>
+      <column name="completion_date_time" type="TIMESTAMP"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <!-- 006: SellerOffer -->
+  <changeSet id="006-seller-offer" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="seller_offer"/></not>
+      <tableExists tableName="product"/>
+      <tableExists tableName="users"/>
+      <tableExists tableName="address"/>
+    </preConditions>
+    <createTable tableName="seller_offer">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="offer_status" type="VARCHAR(32)"/>
+      <column name="comment" type="TEXT"/>
+      <column name="creation_date_time" type="TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="finish_date_time" type="TIMESTAMP"/>
+      <column name="product_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="seller_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="address_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addForeignKeyConstraint baseTableName="seller_offer" baseColumnNames="product_id"
+                             referencedTableName="product" referencedColumnNames="id"
+                             constraintName="fk_seller_offer_product" onDelete="CASCADE"/>
+    <addForeignKeyConstraint baseTableName="seller_offer" baseColumnNames="seller_id"
+                             referencedTableName="users" referencedColumnNames="id"
+                             constraintName="fk_seller_offer_seller" onDelete="CASCADE"/>
+    <addForeignKeyConstraint baseTableName="seller_offer" baseColumnNames="address_id"
+                             referencedTableName="address" referencedColumnNames="id"
+                             constraintName="fk_seller_offer_address" onDelete="CASCADE"/>
+    <createIndex indexName="idx_seller_offer_product" tableName="seller_offer">
+      <column name="product_id"/>
+    </createIndex>
+    <createIndex indexName="idx_seller_offer_seller" tableName="seller_offer">
+      <column name="seller_id"/>
+    </createIndex>
+    <createIndex indexName="idx_seller_offer_address" tableName="seller_offer">
+      <column name="address_id"/>
+    </createIndex>
+  </changeSet>
+
+  <!-- 007: BuyerOrder -->
+  <changeSet id="007-buyer-order" author="your-name" runOnChange="true" failOnError="false">
+    <preConditions onFail="MARK_RAN">
+      <not><tableExists tableName="buyer_order"/></not>
+      <tableExists tableName="users"/>
+      <tableExists tableName="payment"/>
+    </preConditions>
+    <createTable tableName="buyer_order">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="buyer_order_status" type="VARCHAR(32)"/>
+      <column name="buyer_id" type="BIGINT">
+        <constraints nullable="false"/>
+      </column>
+      <column name="payment_id" type="BIGINT"/>
+      <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addForeignKeyConstraint baseTableName="buyer_order" baseColumnNames="buyer_id"
+                             referencedTableName="users" referencedColumnNames="id"
+                             constraintName="fk_buyer_order_buyer" onDelete="RESTRICT"/>
+    <addForeignKeyConstraint baseTableName="buyer_order" baseColumnNames="payment_id"
+                             referencedTableName="payment" referencedColumnNames="id"
+                             constraintName="fk_buyer_order_payment" onDelete="SET NULL"/>
+    <createIndex indexName="idx_buyer_order_buyer" tableName="buyer_order">
+      <column name="buyer_id"/>
+    </createIndex>
+    <createIndex indexName="idx_buyer_order_payment" tableName="buyer_order">
+      <column name="payment_id"/>
+    </createIndex>
+  </changeSet>
+
+    <!-- 008: PartOfferToBuy -->
+    <changeSet id="008-part-offer-to-buy" author="your-name" runOnChange="true" failOnError="false">
+      <preConditions onFail="MARK_RAN">
+        <not><tableExists tableName="part_offer_to_buy"/></not>
+        <tableExists tableName="seller_offer"/>
+        <tableExists tableName="buyer_order"/>
+      </preConditions>
+      <createTable tableName="part_offer_to_buy">
+        <column name="id" type="BIGINT" autoIncrement="true">
+          <constraints primaryKey="true" nullable="false"/>
+        </column>
+        <column name="status" type="VARCHAR(32)" defaultValue="NOT_RESERVED">
+          <constraints nullable="false"/>
+        </column>
+        <column name="seller_offer_id" type="BIGINT">
+          <constraints nullable="false"/>
+        </column>
+        <column name="buyer_order_id" type="BIGINT">
+          <constraints nullable="true"/>
+        </column>
+        <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addForeignKeyConstraint baseTableName="part_offer_to_buy" baseColumnNames="seller_offer_id"
+                               referencedTableName="seller_offer" referencedColumnNames="id"
+                               constraintName="fk_part_offer_seller_offer" onDelete="CASCADE"/>
+      <addForeignKeyConstraint baseTableName="part_offer_to_buy" baseColumnNames="buyer_order_id"
+                               referencedTableName="buyer_order" referencedColumnNames="id"
+                               constraintName="fk_part_offer_buyer_order" onDelete="SET NULL"/>
+      <createIndex indexName="idx_part_offer_seller_offer" tableName="part_offer_to_buy">
+        <column name="seller_offer_id"/>
+      </createIndex>
+      <createIndex indexName="idx_part_offer_buyer_order" tableName="part_offer_to_buy">
+        <column name="buyer_order_id"/>
+      </createIndex>
+    </changeSet>
+
+    <!-- 009: Basket -->
+    <changeSet id="009-basket" author="your-name" runOnChange="true" failOnError="false">
+      <preConditions onFail="MARK_RAN">
+        <not><tableExists tableName="basket"/></not>
+        <tableExists tableName="users"/>
+      </preConditions>
+      <createTable tableName="basket">
+        <column name="buyer_id" type="BIGINT">
+          <constraints primaryKey="true" nullable="false"/>
+        </column>
+        <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addForeignKeyConstraint baseTableName="basket" baseColumnNames="buyer_id"
+                               referencedTableName="users" referencedColumnNames="id"
+                               constraintName="fk_basket_buyer" onDelete="CASCADE"/>
+      <createIndex indexName="idx_basket_buyer" tableName="basket">
+        <column name="buyer_id"/>
+      </createIndex>
+    </changeSet>
+
+    <!-- 010: Basket_Part (join table for ManyToMany Basket <-> PartOfferToBuy) -->
+    <changeSet id="010-basket-part" author="your-name" runOnChange="true" failOnError="false">
+      <preConditions onFail="MARK_RAN">
+        <not><tableExists tableName="basket_part"/></not>
+        <tableExists tableName="basket"/>
+        <tableExists tableName="part_offer_to_buy"/>
+      </preConditions>
+      <createTable tableName="basket_part">
+        <column name="buyer_id" type="BIGINT">
+          <constraints nullable="false"/>
+        </column>
+        <column name="part_id" type="BIGINT">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addPrimaryKey tableName="basket_part" columnNames="buyer_id, part_id" constraintName="pk_basket_part"/>
+      <addForeignKeyConstraint baseTableName="basket_part" baseColumnNames="buyer_id"
+                               referencedTableName="basket" referencedColumnNames="buyer_id"
+                               constraintName="fk_basket_part_basket" onDelete="CASCADE"/>
+      <addForeignKeyConstraint baseTableName="basket_part" baseColumnNames="part_id"
+                               referencedTableName="part_offer_to_buy" referencedColumnNames="id"
+                               constraintName="fk_basket_part_part_offer" onDelete="CASCADE"/>
+    </changeSet>
+
+    <!-- 011: Delivery (с Embedded TimeSlot: start_slot и end_slot nullable=true) -->
+    <changeSet id="011-delivery" author="your-name" runOnChange="true" failOnError="false">
+      <preConditions onFail="MARK_RAN">
+        <not><tableExists tableName="delivery"/></not>
+        <tableExists tableName="buyer_order"/>
+        <tableExists tableName="address"/>
+        <tableExists tableName="drone"/>
+      </preConditions>
+      <createTable tableName="delivery">
+        <column name="id" type="BIGINT" autoIncrement="true">
+          <constraints primaryKey="true" nullable="false"/>
+        </column>
+        <column name="delivery_status" type="VARCHAR(32)">
+          <constraints nullable="false"/>
+        </column>
+        <column name="start_slot" type="TIMESTAMP">
+          <constraints nullable="true"/>
+        </column>
+        <column name="end_slot" type="TIMESTAMP">
+          <constraints nullable="true"/>
+        </column>
+        <column name="buyer_order_id" type="BIGINT">
+          <constraints nullable="false"/>
+        </column>
+        <column name="to_address_id" type="BIGINT">
+          <constraints nullable="false"/>
+        </column>
+        <column name="from_address_id" type="BIGINT">
+          <constraints nullable="false"/>
+        </column>
+        <column name="drone_id" type="BIGINT">
+          <constraints nullable="true"/>
+        </column>
+        <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addForeignKeyConstraint baseTableName="delivery" baseColumnNames="buyer_order_id"
+                               referencedTableName="buyer_order" referencedColumnNames="id"
+                               constraintName="fk_delivery_buyer_order" onDelete="CASCADE"/>
+      <addForeignKeyConstraint baseTableName="delivery" baseColumnNames="to_address_id"
+                               referencedTableName="address" referencedColumnNames="id"
+                               constraintName="fk_delivery_to_address" onDelete="RESTRICT"/>
+      <addForeignKeyConstraint baseTableName="delivery" baseColumnNames="from_address_id"
+                               referencedTableName="address" referencedColumnNames="id"
+                               constraintName="fk_delivery_from_address" onDelete="RESTRICT"/>
+      <addForeignKeyConstraint baseTableName="delivery" baseColumnNames="drone_id"
+                               referencedTableName="drone" referencedColumnNames="id"
+                               constraintName="fk_delivery_drone" onDelete="SET NULL"/>
+      <createIndex indexName="idx_delivery_buyer_order" tableName="delivery">
+        <column name="buyer_order_id"/>
+      </createIndex>
+      <createIndex indexName="idx_delivery_to_address" tableName="delivery">
+        <column name="to_address_id"/>
+      </createIndex>
+      <createIndex indexName="idx_delivery_from_address" tableName="delivery">
+        <column name="from_address_id"/>
+      </createIndex>
+      <createIndex indexName="idx_delivery_drone" tableName="delivery">
+        <column name="drone_id"/>
+      </createIndex>
+    </changeSet>
+
+  </databaseChangeLog>
+
+

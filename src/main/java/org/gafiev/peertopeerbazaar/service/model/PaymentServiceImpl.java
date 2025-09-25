@@ -48,14 +48,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     /**
      * получение DTO платежа из БД по его Id вместе
-     * с его ленивой частью BuyerOrder.
+     * с его ленивой частью BuyerOrderSet.
      *
      * @param id идентификатор платежа
      * @return DTO платежа вместе с множеством заказов, оплаченных этим платежом
      */
     @Override
-    public PaymentResponse getPaymentByIdWithBuyerOrder(Long id) {
-        Payment payment = paymentRepository.findByIdWithBuyerOrder(id)
+    public PaymentResponse getPaymentByIdWithBuyerOrders(Long id) {
+        Payment payment = paymentRepository.findByIdWithBuyerOrders(id)
                 .orElseThrow(() -> new EntityNotFoundException(Payment.class, Map.of("id", String.valueOf(id))));
         return paymentMapper.toPaymentResponse(payment);
     }
@@ -85,7 +85,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentResponse updatePayment(Long id, PaymentUpdateRequest paymentNew) {
-        Payment payment = paymentRepository.findByIdWithBuyerOrder(id)
+        Payment payment = paymentRepository.findByIdWithBuyerOrders(id)
                 .orElseThrow(() -> new EntityNotFoundException(Payment.class, Map.of("id", String.valueOf(id))));
 
         if(paymentNew.amount() != null){

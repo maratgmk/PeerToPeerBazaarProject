@@ -16,6 +16,7 @@ import java.util.Set;
  */
 public interface BuyerOrderService {
 
+    BuyerOrderResponse getByIdWithBuyer(Long buyerOrderId);
     /**
      * метод получения DTO заказа покупателя по двум идентификаторам.
      *

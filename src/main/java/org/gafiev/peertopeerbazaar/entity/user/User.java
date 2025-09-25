@@ -6,7 +6,11 @@ import org.gafiev.peertopeerbazaar.entity.order.Basket;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,10 +23,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(exclude = {"sellerOfferSet", "buyerOrderSet", "productSet", "basket"})
-@ToString(exclude = {"sellerOfferSet", "buyerOrderSet",  "productSet", "basket","password"})
+@ToString(exclude = {"sellerOfferSet", "buyerOrderSet", "productSet", "basket", "password"})
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     /**
      * id является уникальным идентификатором пользователя
      */
@@ -65,7 +69,8 @@ public class User {
      * roles указывает, что у пользователя может быть множество ролей.
      */
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")) // FK: user_id -> users.id
+    @Column(name = "role")  // Value-колонка: role (VARCHAR для enum)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
@@ -102,7 +107,6 @@ public class User {
     private Set<Product> productSet = new HashSet<>();
 
 
-
     /**
      * buyerOrderSet представляет собой множество заказов, созданных покупателем
      * является дочерней сущностью и владеющей стороной, которая содержит внешний ключ (id) покупателя.
@@ -136,7 +140,6 @@ public class User {
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
 
-
     /**
      * метод добавляет указанный продукт в коллекцию продуктов
      * и устанавливает автора для данного продукта.
@@ -147,7 +150,6 @@ public class User {
         productSet.add(product);
         product.setAuthor(this);
     }
-
 
 
     /**
@@ -161,11 +163,11 @@ public class User {
         product.setAuthor(null);
     }
 
-    public void addRole(@NonNull Role role){
+    public void addRole(@NonNull Role role) {
         roles.add(role);
     }
 
-    public void removeRole(@NonNull Role role){
+    public void removeRole(@NonNull Role role) {
         roles.remove(role);
     }
 
@@ -212,4 +214,25 @@ public class User {
         buyerOrder.setBuyer(null);
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(r -> new SimpleGrantedAuthority(r.name()))
+                .toList();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !this.roles.contains(Role.BLOCKED);
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }

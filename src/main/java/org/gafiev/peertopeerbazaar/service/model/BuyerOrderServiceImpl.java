@@ -54,6 +54,14 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
 
 
     @Override
+    public BuyerOrderResponse getByIdWithBuyer(Long buyerOrderId) {
+        BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithBuyer(buyerOrderId)
+                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class,Map.of("id", String.valueOf(buyerOrderId))));
+        return buyerOrderMapper.toBuyerOrderResponse(buyerOrder);
+
+    }
+
+    @Override
     public BuyerOrderResponse get(Long buyerId, Long buyerOrderId) {
         User buyer = userRepository.findByIdWithBuyerOrdersAndSellerOffers(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
@@ -132,12 +140,12 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
         // если все части Presale, то оформляем для них заказы с одной общей оплатой
         final Payment payment = new Payment();
         if (isPresalePresent) {
-            // заводим заказ на каждый оффер, потому что Presale у офферов заканчивается в разное время
+            // заводим заказ на каждый оффер, потому что Presale у офферов начинается и заканчивается в разное время
             Map<SellerOffer, List<PartOfferToBuy>> sellerOfferToParts = presaleParts.stream()
                     .collect(Collectors.groupingBy(PartOfferToBuy::getSellerOffer));// TODO создавать отдельную доставку для каждого сочетания продавец+адрес, логика в доставке
 
             return sellerOfferToParts.entrySet().stream()
-                    .map(entry -> createOrder(Map.of(entry.getKey(),entry.getValue()), buyer, payment, basket))
+                    .map(entry -> createOrder(Map.of(entry.getKey(), entry.getValue()), buyer, payment, basket))
                     .map(buyerOrderMapper::toBuyerOrderResponse)
                     .collect(Collectors.toSet());
         }
@@ -244,7 +252,9 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
      * @return заказ покупателя
      */
     private BuyerOrder createOrder(Map<SellerOffer, List<PartOfferToBuy>> sellerOfferToOrderParts, User buyer, @Nullable Payment payment, Basket basket) {
-        // выборка из корзины ???
+        // изменение входящей мапы, так как части из List<PartOfferToBuy> могут быть уже RESERVED другим покупателем,
+        // и поэтому резервируются другие части из entry.getKey().getPartOfferToBuyList() = sellerOffer.getPartOfferToBuyList(), ограничивая их своим числом частей,
+        // равным entry.getValue().size() = List<PartOfferToBuy>.size 
         Map<SellerOffer, Set<PartOfferToBuy>> updatedSellerOfferToOrderParts = sellerOfferToOrderParts.entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey(), entry.getKey().getPartOfferToBuyList().stream()
                         .filter(p -> p.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))

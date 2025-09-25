@@ -21,6 +21,8 @@ public interface DroneService {
      */
     DroneResponse getDroneById(Long id);
 
+    DroneResponse getDroneByIdWithBuyerOrder(Long id);
+
     /**
      * получение всех дронов согласно фильтра.
      * @param filterRequest фильтр указывающий параметры или ограничения поиска

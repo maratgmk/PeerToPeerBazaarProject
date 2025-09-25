@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.service.model.interfaces;
 
-import org.gafiev.peertopeerbazaar.dto.api.request.UserCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.UserFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.UserUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.UserResponse;
 
 import java.util.Set;
@@ -29,11 +29,7 @@ public interface UserService {
 
     UserResponse findByIdFull(Long id);
 
-    UserResponse createUser(UserCreateRequest candidate);
-
-    UserResponse updateUser(Long id, UserCreateRequest updatedUser);
-
-    UserResponse confirmUser(Long id);
+    UserResponse updateUser(Long id, UserUpdateRequest updatedUser);
 
     void deleteUserById(Long id);
 

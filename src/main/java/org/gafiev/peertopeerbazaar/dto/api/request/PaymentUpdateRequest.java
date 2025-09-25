@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Builder(toBuilder = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record PaymentUpdateRequest(
+public record   PaymentUpdateRequest(
 
         @Nullable @Positive
         @Digits(integer = 8, fraction = 2)

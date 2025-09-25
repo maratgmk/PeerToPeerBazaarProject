@@ -15,6 +15,7 @@ import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
 import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 import org.gafiev.peertopeerbazaar.service.model.interfaces.DeliveryService;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,16 +34,19 @@ import java.util.Set;
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
-    @GetMapping(path = "/{id}", consumes = MediaType.ALL_VALUE)
-    public DeliveryResponse getDeliveryById(@NotNull @Positive @PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
+    @GetMapping(path = "/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
+    public DeliveryResponse getDeliveryById(@NotNull @Positive @PathVariable Long id,@NotNull @Positive @PathVariable Long userId) {
         return deliveryService.getDeliveryById(id);
     }
 
-    @GetMapping(path = "/order", consumes = MediaType.ALL_VALUE)
-    public Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(@NotNull @Positive @RequestParam Long buyerOrderId) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
+    @GetMapping(path = "/order/user/{buyerId}", consumes = MediaType.ALL_VALUE)
+    public Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(@NotNull @Positive @RequestParam Long buyerOrderId,@NotNull @Positive @RequestParam Long buyerId) {
         return deliveryService.getMyDeliveriesByBuyerOrderId(buyerOrderId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/all")
     public Set<DeliveryResponse> getAllDeliveries(
             @Valid @RequestParam DeliveryStatus deliveryStatus,
@@ -52,31 +56,38 @@ public class DeliveryController {
         return deliveryService.getAllDeliveries(deliveryStatus, toAddress, fromAddress, timeSlot);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/filter")
     public Set<DeliveryResponse> getAllDeliveriesByFilter(@Valid @RequestBody DeliveryFilterRequest filterRequest) {
         return deliveryService.getAllDeliveriesByFilter(filterRequest);
     }
 
-    @PostMapping
-    public DeliveryResponse create(@Valid @NotNull @RequestBody DeliveryCreateRequest request) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
+    @PostMapping(path = "/user/{buyerId}")
+    public DeliveryResponse create(@NotNull @Positive @PathVariable Long buyerId,@Valid @NotNull @RequestBody DeliveryCreateRequest request) {
         return deliveryService.create(request);
     }
 
-    @GetMapping (path = "/{id}/time", consumes = MediaType.ALL_VALUE)
-    public List<TimeSlotResponse> getTimeSlots(@Positive @NotNull @PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
+    @GetMapping (path = "/{id}/time/user{buyerId}", consumes = MediaType.ALL_VALUE)
+    public List<TimeSlotResponse> getTimeSlots(@Positive @NotNull @PathVariable Long id,@Positive @NotNull @PathVariable Long buyerId) {
         List<TimeSlotResponse> responseList = deliveryService.takeTimeSlots(id);
         log.info("Полученные времена от сервиса дронов {}", responseList);
         return responseList;
     }
 
-
-    @GetMapping(path = "/{failDeliveryId}/new", consumes = MediaType.ALL_VALUE)
-    public DeliveryResponse createDeliveryDependsOnFail(@NotNull @Positive @PathVariable Long failDeliveryId) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
+    @GetMapping(path = "/{failDeliveryId}/new/user{buyerId}", consumes = MediaType.ALL_VALUE)
+    public DeliveryResponse createDeliveryDependsOnFail(@NotNull @Positive @PathVariable Long failDeliveryId,
+                                                        @NotNull @Positive @PathVariable Long buyerId) {
         return deliveryService.createDeliveryDependsOnFail(failDeliveryId);
     }
 
-    @PutMapping("/{id}")
-    public DeliveryResponse assignDroneForDelivery(@NotNull @Positive @PathVariable Long id, @Valid @RequestBody DeliveryUpdateTime updateRequest) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)") //TODO check buyerId, userId
+    @PutMapping("/{id}/user/{buyerId}")
+    public DeliveryResponse assignDroneForDelivery(@NotNull @Positive @PathVariable Long id,
+                                                   @NotNull @Positive @PathVariable Long buyerId,
+                                                   @Valid @RequestBody DeliveryUpdateTime updateRequest) {
         log.info("Updating delivery time slot for delivery ID: {}", id);
         log.debug("Received update request: {}", updateRequest);
         try {
@@ -89,17 +100,21 @@ public class DeliveryController {
         }
     }
 
-    @GetMapping(value = "/{id}/cancel", consumes = MediaType.ALL_VALUE)
-    public DeliveryResponse cancelMyDelivery(
-            @NotNull @Positive @PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
+    @GetMapping(value = "/{id}/cancel/user/{buyerId}", consumes = MediaType.ALL_VALUE)
+    public DeliveryResponse cancelMyDelivery(@NotNull @Positive @PathVariable Long id,@NotNull @Positive @PathVariable Long buyerId) {
         return deliveryService.cancelMyDelivery(id);
     }
 
-    @PostMapping("/{id}/confirm")
-    public DeliveryResponse confirmDelivery(@NotNull @Positive @PathVariable Long id, @NotNull @Positive @RequestParam Long userId){
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)") //TODO check buyerId, userId
+    @PostMapping("/{id}/confirm/user/{buyerId}")
+    public DeliveryResponse confirmDelivery(@NotNull @Positive @PathVariable Long id,
+                                            @NotNull @Positive @PathVariable Long buyerId,
+                                            @NotNull @Positive @RequestParam Long userId){
         return deliveryService.updateStatus(id,DeliveryStatus.DELIVERED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public void deleteDelivery(@NotNull @Positive @PathVariable Long id) {
         deliveryService.deleteDelivery(id);

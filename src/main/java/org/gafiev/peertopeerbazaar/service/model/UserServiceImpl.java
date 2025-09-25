@@ -1,10 +1,9 @@
 package org.gafiev.peertopeerbazaar.service.model;
 
 import lombok.AllArgsConstructor;
-import org.gafiev.peertopeerbazaar.dto.api.request.UserCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.UserFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.UserUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.UserResponse;
-import org.gafiev.peertopeerbazaar.entity.user.Role;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
 import org.gafiev.peertopeerbazaar.mapper.UserMapper;
@@ -65,28 +64,6 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * создание нового клиента
-     *
-     * @param candidate информация для создания нового пользователя
-     * @return DTO нового пользователя
-     */
-    @Override
-    @Transactional
-    public UserResponse createUser(UserCreateRequest candidate) {
-        User user = new User();
-        user.setFirstName(candidate.firstName());
-        user.setLastName(candidate.lastName());
-        user.setEmail(candidate.email());
-        user.setPhone(candidate.phone());
-        user.setPassword(candidate.password());
-        user.addRole(Role.UNCONFIRMED);
-
-        user = userRepository.save(user);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    /**
      * изменения существующего пользователя
      *
      * @param id          идентификатор существующего пользователя
@@ -95,37 +72,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional
-    public UserResponse updateUser(Long id, UserCreateRequest updatedUser) {
+    public UserResponse updateUser(Long id, UserUpdateRequest updatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(id))));
 
         user.setFirstName(updatedUser.firstName());
         user.setLastName(updatedUser.lastName());
-        user.setEmail(updatedUser.email());
         user.setPhone(updatedUser.phone());
-        user.setPassword(updatedUser.password());
-
-        user = userRepository.save(user);
-
-        return userMapper.toUserResponse(user);
-    }
-
-    /**
-     * метод установки роли пользователю, или продавца или покупателя, или обе роли.
-     *
-     * @param id идентификатор пользователя
-     * @return DTO пользователя с назначенными ролями
-     */
-    @Override
-    public UserResponse confirmUser(Long id) {
-        User user = userRepository.findByIdFull(id)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(id))));
-
-        user.addRole(Role.USER);
-        user.addRole(Role.BUYER);
-        user.removeRole(Role.UNCONFIRMED);
-
-
         user = userRepository.save(user);
 
         return userMapper.toUserResponse(user);

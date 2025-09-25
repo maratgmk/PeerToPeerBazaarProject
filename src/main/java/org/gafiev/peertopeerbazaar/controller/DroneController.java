@@ -10,6 +10,7 @@ import org.gafiev.peertopeerbazaar.dto.api.response.DroneResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.service.model.interfaces.DroneService;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,28 +28,33 @@ import java.util.Set;
 public class DroneController {
     private final DroneService droneService;
 
-    @GetMapping(path = "/{id}", consumes = MediaType.ALL_VALUE)
-    public DroneResponse getDroneById(@Positive @NotNull @PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
+    @GetMapping(path = "/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
+    public DroneResponse getDroneById(@Positive @NotNull @PathVariable Long id, @Positive @NotNull @PathVariable Long userId ) {
         return droneService.getDroneById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")  // somebody else ?
     @PostMapping("/filter")
     public Set<DroneResponse> getAllDrones(@Valid @RequestBody DroneFilterRequest filterRequest) {
         return droneService.getAllDrones(filterRequest);
     }
 
-    @PutMapping("/{id}")
-    public DroneResponse update(@Positive @NotNull @PathVariable Long id, @Valid @RequestBody DroneCreateRequest droneRequest) {
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
+    @PutMapping("/{id}/user/{userId}")
+    public DroneResponse update(@Positive @NotNull @PathVariable Long id,@Positive @NotNull @PathVariable Long userId, @Valid @RequestBody DroneCreateRequest droneRequest) {
         return droneService.update(id, droneRequest);
     }
 
-    @GetMapping(path = "/delivery/{id}", consumes = MediaType.ALL_VALUE)
-    public List<TimeSlotResponse> getTimeSlots(@Positive @NotNull @PathVariable Long id){
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
+    @GetMapping(path = "/delivery/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
+    public List<TimeSlotResponse> getTimeSlots(@Positive @NotNull @PathVariable Long id,@Positive @NotNull @PathVariable Long userId){
         return droneService.getTimeSlots(id);
     }
 
-    @GetMapping(path = "/cancel/{id}",consumes = MediaType.ALL_VALUE)
-    public DroneResponse cancelDrone(@Positive @NotNull @PathVariable Long id){
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
+    @GetMapping(path = "/cancel/{id}/user/{userId}",consumes = MediaType.ALL_VALUE)
+    public DroneResponse cancelDrone(@Positive @NotNull @PathVariable Long id, @Positive @NotNull @PathVariable Long userId){
         return droneService.cancelDrone(id);
     }
 }
