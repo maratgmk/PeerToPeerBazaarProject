@@ -5,8 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
 
-  <!-- 001: Users and Roles -->
-  <changeSet id="001-users-roles" author="your-name" runOnChange="true" failOnError="false">
+
+  <changeSet id="001-users-roles" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="users"/></not>
     </preConditions>
@@ -33,11 +33,11 @@
       <column name="user_id" type="BIGINT">
         <constraints nullable="false"/>
       </column>
-      <column name="role" type="VARCHAR(32)">
+      <column name="roles" type="VARCHAR(32)">
         <constraints nullable="false"/>
       </column>
     </createTable>
-    <addPrimaryKey tableName="user_roles" columnNames="user_id, role" constraintName="pk_user_roles"/>
+    <addPrimaryKey tableName="user_roles" columnNames="user_id, roles" constraintName="pk_user_roles"/>
     <addForeignKeyConstraint baseTableName="user_roles" baseColumnNames="user_id"
                              referencedTableName="users" referencedColumnNames="id"
                              constraintName="fk_user_roles_user" onDelete="CASCADE"/>
@@ -46,8 +46,8 @@
     </createIndex>
   </changeSet>
 
-  <!-- 002: Address -->
-  <changeSet id="002-address" author="your-name" runOnChange="true" failOnError="false">
+
+  <changeSet id="002-address" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="address"/></not>
     </preConditions>
@@ -70,7 +70,7 @@
   </changeSet>
 
   <!-- 003: Product -->
-  <changeSet id="003-product" author="your-name" runOnChange="true" failOnError="false">
+  <changeSet id="003-product" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="product"/></not>
       <tableExists tableName="users"/>
@@ -106,7 +106,7 @@
   </changeSet>
 
   <!-- 004: Drone -->
-  <changeSet id="004-drone" author="your-name" runOnChange="true" failOnError="false">
+  <changeSet id="004-drone" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="drone"/></not>
     </preConditions>
@@ -128,7 +128,7 @@
   </changeSet>
 
   <!-- 005: Payment -->
-  <changeSet id="005-payment" author="your-name" runOnChange="true" failOnError="false">
+  <changeSet id="005-payment" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="payment"/></not>
     </preConditions>
@@ -152,7 +152,7 @@
   </changeSet>
 
   <!-- 006: SellerOffer -->
-  <changeSet id="006-seller-offer" author="your-name" runOnChange="true" failOnError="false">
+  <changeSet id="006-seller-offer" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="seller_offer"/></not>
       <tableExists tableName="product"/>
@@ -203,7 +203,7 @@
   </changeSet>
 
   <!-- 007: BuyerOrder -->
-  <changeSet id="007-buyer-order" author="your-name" runOnChange="true" failOnError="false">
+  <changeSet id="007-buyer-order" author="Marat Gafiev" runOnChange="true" failOnError="false">
     <preConditions onFail="MARK_RAN">
       <not><tableExists tableName="buyer_order"/></not>
       <tableExists tableName="users"/>
@@ -237,7 +237,7 @@
   </changeSet>
 
     <!-- 008: PartOfferToBuy -->
-    <changeSet id="008-part-offer-to-buy" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="008-part-offer-to-buy" author="Marat Gafiev" runOnChange="true" failOnError="false">
       <preConditions onFail="MARK_RAN">
         <not><tableExists tableName="part_offer_to_buy"/></not>
         <tableExists tableName="seller_offer"/>
@@ -275,7 +275,7 @@
     </changeSet>
 
     <!-- 009: Basket -->
-    <changeSet id="009-basket" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="009-basket" author="Marat Gafiev" runOnChange="true" failOnError="false">
       <preConditions onFail="MARK_RAN">
         <not><tableExists tableName="basket"/></not>
         <tableExists tableName="users"/>
@@ -297,7 +297,7 @@
     </changeSet>
 
     <!-- 010: Basket_Part (join table for ManyToMany Basket <-> PartOfferToBuy) -->
-    <changeSet id="010-basket-part" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="010-basket-part" author="Marat Gafiev" runOnChange="true" failOnError="false">
       <preConditions onFail="MARK_RAN">
         <not><tableExists tableName="basket_part"/></not>
         <tableExists tableName="basket"/>
@@ -321,7 +321,7 @@
     </changeSet>
 
     <!-- 011: Delivery (с Embedded TimeSlot: start_slot и end_slot nullable=true) -->
-    <changeSet id="011-delivery" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="011-delivery" author="Marat Gafiev" runOnChange="true" failOnError="false">
       <preConditions onFail="MARK_RAN">
         <not><tableExists tableName="delivery"/></not>
         <tableExists tableName="buyer_order"/>

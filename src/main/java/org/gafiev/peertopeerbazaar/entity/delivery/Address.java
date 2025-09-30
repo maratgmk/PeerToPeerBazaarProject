@@ -3,7 +3,9 @@ package org.gafiev.peertopeerbazaar.entity.delivery;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -88,6 +90,10 @@ public class Address {
      */
     @OneToMany(mappedBy = "toAddress", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private Set<Delivery> deliverySet = new HashSet<>();
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * @param sellerOffer это предложение продавца

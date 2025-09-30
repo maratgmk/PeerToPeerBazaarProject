@@ -5,41 +5,40 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
 
-
-    <changeSet id="012-users" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="012-users" author="Marat Gafiev" runOnChange="true" failOnError="false">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="users"/>
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM users</sqlCheck>
         </preConditions>
         <insert tableName="users">
-            <column name="id" value="1"/>
+            <column name="id" value="101"/>
             <column name="first_name" value="John"/>
             <column name="last_name" value="Doe"/>
-            <column name="email" value="seller@example.com"/>
-            <column name="password" value="$2a$10$DGRkFxexQm6TNt6DqPxvuu7wZFUQ0UdYHZeqi9BSmNoKuUCfBkHV6"/>
+            <column name="email" value="sellerdoe@example.com"/>
+            <column name="password" value="$2a$10$8N8vcQGVI2BR4KHWAwYOnedh6LbkMRbCVwAOX8ronArs8khH.KZcy"/>
             <column name="phone" value="+1234567890"/>
             <column name="rating_seller" valueNumeric="5"/>
             <column name="rating_buyer" valueNumeric="0"/>
             <column name="created_at" valueDate="2025-09-23 10:00:00"/>
         </insert>
         <insert tableName="users">
-            <column name="id" value="2"/>
+            <column name="id" value="102"/>
             <column name="first_name" value="Alice"/>
             <column name="last_name" value="Smith"/>
-            <column name="email" value="buyer1@example.com"/>
-            <column name="password" value="$2a$10$DGRkFxexQm6TNt6DqPxvuu7wZFUQ0UdYHZeqi9BSmNoKuUCfBkHV6"/>
+            <column name="email" value="buyeralice@example.com"/>
+            <column name="password" value="$2a$10$8N8vcQGVI2BR4KHWAwYOnedh6LbkMRbCVwAOX8ronArs8khH.KZcy"/>
             <column name="phone" value="+1987654321"/>
             <column name="rating_seller" valueNumeric="0"/>
             <column name="rating_buyer" valueNumeric="4"/>
             <column name="created_at" valueDate="2025-09-23 11:00:00"/>
         </insert>
         <insert tableName="users">
-            <column name="id" value="3"/>
+            <column name="id" value="103"/>
             <column name="first_name" value="Bob"/>
             <column name="last_name" value="Johnson"/>
-            <column name="email" value="buyer2@example.com"/>
-            <!--  test  password TtSsXz56@!lXy-->
-            <column name="password" value="$2a$10$DGRkFxexQm6TNt6DqPxvuu7wZFUQ0UdYHZeqi9BSmNoKuUCfBkHV6"/>
+            <column name="email" value="buyerbob@example.com"/>
+            <!--  test  password LS3754Xz56@!Go-->
+            <column name="password" value="$2a$10$8N8vcQGVI2BR4KHWAwYOnedh6LbkMRbCVwAOX8ronArs8khH.KZcy"/>
             <column name="phone" value="+1122334455"/>
             <column name="rating_seller" valueNumeric="0"/>
             <column name="rating_buyer" valueNumeric="3"/>
@@ -47,231 +46,305 @@
         </insert>
     </changeSet>
 
-
-    <changeSet id="013-user-roles" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="013-user-roles" author="Marat Gafiev" runOnChange="true" failOnError="false">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="user_roles"/>
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM user_roles</sqlCheck>
         </preConditions>
         <insert tableName="user_roles">
-            <column name="user_id" valueNumeric="1"/>
-            <column name="role" value="SELLER"/>
+            <column name="user_id" valueNumeric="101"/>
+            <column name="roles" value="USER"/>
         </insert>
         <insert tableName="user_roles">
-            <column name="user_id" valueNumeric="2"/>
-            <column name="role" value="BUYER"/>
+            <column name="user_id" valueNumeric="101"/>
+            <column name="roles" value="BUYER"/>
         </insert>
         <insert tableName="user_roles">
-            <column name="user_id" valueNumeric="3"/>
-            <column name="role" value="BUYER"/>
+            <column name="user_id" valueNumeric="101"/>
+            <column name="roles" value="SELLER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="102"/>
+            <column name="roles" value="USER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="102"/>
+            <column name="roles" value="BUYER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="103"/>
+            <column name="roles" value="USER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="103"/>
+            <column name="roles" value="BUYER"/>
         </insert>
     </changeSet>
 
-
-    <changeSet id="014-addresses" author="your-name" runOnChange="true" failOnError="false">
+    <changeSet id="014-addresses" author="Marat Gafiev" runOnChange="true" failOnError="false">
         <preConditions onFail="MARK_RAN">
             <tableExists tableName="address"/>
             <sqlCheck expectedResult="0">SELECT COUNT(*) FROM address</sqlCheck>
         </preConditions>
         <insert tableName="address">
             <column name="id" value="1"/>
-            <column name="town" value="CityA"/>
-            <column name="street" value="Main Street"/>
-            <column name="number_building" valueNumeric="123"/>
-            <column name="zip_code" valueNumeric="12345"/>
-            <column name="latitude" valueNumeric="40.7128"/>
-            <column name="longitude" valueNumeric="-74.0060"/>
-            <column name="attitude" valueNumeric="10.0"/>
-            <column name="accuracy" valueNumeric="5.0"/>
+            <column name="town" value="Вятские поляны"/>
+            <column name="street" value="Шорина"/>
+            <column name="number_building" valueNumeric="28"/>
+            <column name="zip_code" valueNumeric="612964"/>
+            <column name="latitude" valueNumeric="56.220234"/>
+            <column name="longitude" valueNumeric="51.070336"/>
+            <column name="attitude" valueNumeric="74.90"/>
+            <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 10:00:00"/>
         </insert>
         <insert tableName="address">
             <column name="id" value="2"/>
-            <column name="town" value="CityB"/>
-            <column name="street" value="Oak Avenue"/>
-            <column name="number_building" valueNumeric="456"/>
-            <column name="zip_code" valueNumeric="67890"/>
-            <column name="latitude" valueNumeric="34.0522"/>
-            <column name="longitude" valueNumeric="-118.2437"/>
-            <column name="attitude" valueNumeric="15.0"/>
-            <column name="accuracy" valueNumeric="3.0"/>
+            <column name="town" value="Вятские поляны"/>
+            <column name="street" value="Кирова"/>
+            <column name="number_building" valueNumeric="7"/>
+            <column name="zip_code" valueNumeric="612963"/>
+            <column name="latitude" valueNumeric="56.221099"/>
+            <column name="longitude" valueNumeric="51.071028"/>
+            <column name="attitude" valueNumeric="81.90"/>
+            <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 11:00:00"/>
         </insert>
         <insert tableName="address">
             <column name="id" value="3"/>
-            <column name="town" value="CityC"/>
-            <column name="street" value="Pine Road"/>
-            <column name="number_building" valueNumeric="789"/>
-            <column name="zip_code" valueNumeric="11223"/>
-            <column name="latitude" valueNumeric="41.8781"/>
-            <column name="longitude" valueNumeric="-87.6298"/>
-            <column name="attitude" valueNumeric="20.0"/>
-            <column name="accuracy" valueNumeric="4.0"/>
+            <column name="town" value="Вятские поляны"/>
+            <column name="street" value="Кукина"/>
+            <column name="number_building" valueNumeric="62"/>
+            <column name="zip_code" valueNumeric="612965"/>
+            <column name="latitude" valueNumeric="56.224843"/>
+            <column name="longitude" valueNumeric="51.066043"/>
+            <column name="attitude" valueNumeric="92.10"/>
+            <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 12:00:00"/>
         </insert>
-    </changeSet>
-
-
-    <changeSet id="015-drone" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="drone"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM drone</sqlCheck>
-        </preConditions>
-        <insert tableName="drone">
-            <column name="id" value="1"/>
-            <column name="drone_service_id" valueNumeric="1001"/>
-            <column name="drone_status" value="AVAILABLE"/>
-            <column name="created_at" valueDate="2025-09-23 09:00:00"/>
-        </insert>
-    </changeSet>
-
-    <!-- 016: Insert sample product by seller -->
-    <changeSet id="016-product" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="product"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM product</sqlCheck>
-        </preConditions>
-        <insert tableName="product">
-            <column name="id" value="1"/>
-            <column name="name" value="Fresh Apples"/>
-            <column name="description" value="Organic red apples, 1kg pack"/>
-            <column name="category" value="FRUIT"/>
-            <column name="portion_unit" value="KG"/>
-            <column name="weight" valueNumeric="1.0"/>
-            <column name="volume" valueNumeric="0.0"/>
-            <column name="price" valueNumeric="2.50"/>
-            <column name="image_uri" value="http://example.com/apple.jpg"/>
-            <column name="qr_code" value="QR-APPLE-001"/>
-            <column name="author_id" valueNumeric="1"/>
-            <column name="created_at" valueDate="2025-09-23 10:30:00"/>
-        </insert>
-    </changeSet>
-
-    <!-- 017: Insert sample seller offer -->
-    <changeSet id="017-seller-offer" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="seller_offer"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM seller_offer</sqlCheck>
-        </preConditions>
-        <insert tableName="seller_offer">
-            <column name="id" value="1"/>
-            <column name="offer_status" value="OPENED"/>
-            <column name="comment" value="Available for delivery today"/>
-            <column name="creation_date_time" valueDate="2025-09-23 10:30:00"/>
-            <column name="finish_date_time" valueDate="2025-09-24 23:59:59"/>
-            <column name="product_id" valueNumeric="1"/>
-            <column name="seller_id" valueNumeric="1"/>
-            <column name="address_id" valueNumeric="1"/>
-            <column name="created_at" valueDate="2025-09-23 10:30:00"/>
-        </insert>
-    </changeSet>
-
-    <!-- 018: Insert sample part offer to buy (for the seller offer) -->
-    <changeSet id="018-part-offer-to-buy" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="part_offer_to_buy"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM part_offer_to_buy</sqlCheck>
-        </preConditions>
-        <insert tableName="part_offer_to_buy">
-            <column name="id" value="1"/>
-            <column name="status" value="NOT_RESERVED"/>
-            <column name="seller_offer_id" valueNumeric="1"/>
-            <!-- buyer_order_id опущен: вставится NULL по умолчанию (nullable=true), обновится в 022 -->
+        <insert tableName="address">
+            <column name="id" value="4"/>
+            <column name="town" value="Вятские поляны"/>
+            <column name="street" value="Кукина"/>
+            <column name="number_building" valueNumeric="92"/>
+            <column name="zip_code" valueNumeric="612965"/>
+            <column name="latitude" valueNumeric="56.222861"/>
+            <column name="longitude" valueNumeric="51.058014"/>
+            <column name="attitude" valueNumeric="98.70"/>
+            <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 13:00:00"/>
         </insert>
-    </changeSet>
-
-    <!-- 019: Insert baskets for buyers -->
-    <changeSet id="019-baskets" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="basket"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM basket</sqlCheck>
-        </preConditions>
-        <insert tableName="basket">
-            <column name="buyer_id" valueNumeric="2"/>
-            <column name="created_at" valueDate="2025-09-23 11:30:00"/>
-        </insert>
-        <insert tableName="basket">
-            <column name="buyer_id" valueNumeric="3"/>
-            <column name="created_at" valueDate="2025-09-23 12:30:00"/>
-        </insert>
-    </changeSet>
-
-    <!-- 020: Insert basket parts (link buyers' baskets to part offer) -->
-    <changeSet id="020-basket-parts" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="basket_part"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM basket_part</sqlCheck>
-        </preConditions>
-        <insert tableName="basket_part">
-            <column name="buyer_id" valueNumeric="2"/>
-            <column name="part_id" valueNumeric="1"/>
-        </insert>
-        <insert tableName="basket_part">
-            <column name="buyer_id" valueNumeric="3"/>
-            <column name="part_id" valueNumeric="1"/>
-        </insert>
-    </changeSet>
-
-    <!-- 021: Insert sample payment for buyer1 -->
-    <changeSet id="021-payment" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="payment"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM payment</sqlCheck>
-        </preConditions>
-        <insert tableName="payment">
-            <column name="id" value="1"/>
-            <column name="amount" valueNumeric="2.50"/>
-            <column name="currency" value="USD"/>
-            <column name="payment_mode" value="CARD"/>
-            <column name="payment_status" value="COMPLETED"/>
-            <column name="completion_date_time" valueDate="2025-09-23 14:00:00"/>
-            <column name="created_at" valueDate="2025-09-23 13:45:00"/>
-        </insert>
-    </changeSet>
-
-    <!-- 022: Insert sample buyer order for buyer1 (с UPDATE для связи с part_offer_to_buy) -->
-    <changeSet id="022-buyer-order" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="buyer_order"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM buyer_order</sqlCheck>
-            <!-- Проверка: part_offer_to_buy существует для UPDATE -->
-            <tableExists tableName="part_offer_to_buy"/>
-            <sqlCheck expectedResult="1">SELECT COUNT(*) FROM part_offer_to_buy WHERE id = 1</sqlCheck>
-        </preConditions>
-        <!-- Вставка заказа покупателя -->
-        <insert tableName="buyer_order">
-            <column name="id" value="1"/>
-            <column name="buyer_order_status" value="PLACED"/>
-            <column name="buyer_id" valueNumeric="2"/>  <!-- Покупатель Alice (ID=2) -->
-            <column name="payment_id" valueNumeric="1"/>  <!-- Платёж из 021 -->
-            <column name="created_at" valueDate="2025-09-23 13:50:00"/>
-        </insert>
-        <!-- UPDATE: Связываем part_offer_to_buy с заказом (завершаем цикл) -->
-        <update tableName="part_offer_to_buy">
-            <column name="buyer_order_id" valueNumeric="1"/>  <!-- Реальная связь с заказом -->
-            <column name="status" value="RESERVED"/>  <!-- Обновляем статус: зарезервировано под заказ -->
-            <where>id = 1</where>  <!-- Только для части из 018 (Alice; Bob остаётся NOT_RESERVED) -->
-        </update>
-    </changeSet>
-
-    <!-- 023: Insert sample delivery for the order (восстановленный полный) -->
-    <changeSet id="023-delivery" author="your-name" runOnChange="true" failOnError="false">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="delivery"/>
-            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM delivery</sqlCheck>
-        </preConditions>
-        <insert tableName="delivery">
-            <column name="id" value="1"/>
-            <column name="delivery_status" value="SCHEDULED"/>
-            <column name="start_slot" valueDate="2025-09-23 15:00:00"/>
-            <column name="end_slot" valueDate="2025-09-23 16:00:00"/>
-            <column name="buyer_order_id" valueNumeric="1"/>  <!-- Ссылка на заказ из 022 -->
-            <column name="to_address_id" valueNumeric="2"/>   <!-- Адрес Alice -->
-            <column name="from_address_id" valueNumeric="1"/> <!-- Адрес продавца -->
-            <column name="drone_id" valueNumeric="1"/>        <!-- Дрон из 015 -->
+        <insert tableName="address">
+            <column name="id" value="5"/>
+            <column name="town" value="Вятские поляны"/>
+            <column name="street" value="Садовая"/>
+            <column name="number_building" valueNumeric="26"/>
+            <column name="zip_code" valueNumeric="612965"/>
+            <column name="latitude" valueNumeric="56.222962"/>
+            <column name="longitude" valueNumeric="51.055152"/>
+            <column name="attitude" valueNumeric="101.60"/>
+            <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 14:00:00"/>
         </insert>
     </changeSet>
 
+        <changeSet id="015-product" author="Marat Gafiev" runOnChange="true" failOnError="false">
+            <preConditions onFail="MARK_RAN">
+                <tableExists tableName="product"/>
+                <sqlCheck expectedResult="0">SELECT COUNT(*) FROM product</sqlCheck>
+            </preConditions>
+            <insert tableName="product">
+                <column name="id" value="1"/>
+                <column name="name" value="Fresh Apples"/>
+                <column name="description" value="Organic red apples"/>
+                <column name="category" value="AVOID_HEAT"/>
+                <column name="portion_unit" value="KG"/>
+                <column name="weight" valueNumeric="1.00"/>
+                <column name="volume" valueNumeric="2.30"/>
+                <column name="price" valueNumeric="250.50"/>
+                <column name="image_uri" value="http://example.com/apple.jpg"/>
+                <column name="qr_code" value="QR-APPLE-001"/>
+                <column name="author_id" valueNumeric="1"/>
+                <column name="created_at" valueDate="2025-09-23 10:00:00"/>
+            </insert>
+            <insert tableName="product">
+                <column name="id" value="2"/>
+                <column name="name" value="Strawberry"/>
+                <column name="description" value="To eat immediately"/>
+                <column name="category" value="AVOID_HEAT"/>
+                <column name="portion_unit" value="KG"/>
+                <column name="weight" valueNumeric="1.0"/>
+                <column name="volume" valueNumeric="1.65"/>
+                <column name="price" valueNumeric="1650.00"/>
+                <column name="image_uri" value="http://example.com/strawberry.jpg"/>
+                <column name="qr_code" value="QR-Strawberry-001"/>
+                <column name="author_id" valueNumeric="1"/>
+                <column name="created_at" valueDate="2025-09-23 10:30:00"/>
+            </insert>
+            <insert tableName="product">
+                <column name="id" value="3"/>
+                <column name="name" value="Mushroom"/>
+                <column name="description" value="Very fresh avoid direct sun rays"/>
+                <column name="category" value="FRAGILE"/>
+                <column name="portion_unit" value="KG"/>
+                <column name="weight" valueNumeric="1.0"/>
+                <column name="volume" valueNumeric="2.65"/>
+                <column name="price" valueNumeric="785.60"/>
+                <column name="image_uri" value="http://example.com/mushroom.jpg"/>
+                <column name="qr_code" value="QR-mushroom-001"/>
+                <column name="author_id" valueNumeric="1"/>
+                <column name="created_at" valueDate="2025-09-23 11:00:00"/>
+            </insert>
+        </changeSet>
+
+    <changeSet id="017-product" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="product"/>
+        </preConditions>
+        <update tableName="product">
+            <column name="portion_unit" value="KILOGRAM"/>
+            <where>id = 1</where>
+        </update>
+        <update tableName="product">
+            <column name="portion_unit" value="KILOGRAM"/>
+            <where>id = 2</where>
+        </update>
+        <update tableName="product">
+            <column name="portion_unit" value="KILOGRAM"/>
+            <where>id = 3</where>
+        </update>
+    </changeSet>
+
+<!--    <changeSet id="016-drone" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="drone"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM drone</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="drone">-->
+<!--            <column name="id" value="1"/>-->
+<!--            <column name="drone_service_id" valueNumeric="1001"/>-->
+<!--            <column name="drone_status" value="BACK_TO_BASE"/>-->
+<!--            <column name="created_at" valueDate="2025-09-23 09:00:00"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+    <!-- 017: Insert sample seller offer -->
+<!--    <changeSet id="017-seller-offer" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="seller_offer"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM seller_offer</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="seller_offer">-->
+<!--            <column name="id" value="1"/>-->
+<!--            <column name="offer_status" value="OPENED"/>-->
+<!--            <column name="comment" value="Available for delivery today"/>-->
+<!--            <column name="creation_date_time" valueDate="2025-09-23 10:30:00"/>-->
+<!--            <column name="finish_date_time" valueDate="2025-09-24 23:59:59"/>-->
+<!--            <column name="product_id" valueNumeric="1"/>-->
+<!--            <column name="seller_id" valueNumeric="1"/>-->
+<!--            <column name="address_id" valueNumeric="1"/>-->
+<!--            <column name="created_at" valueDate="2025-09-23 10:30:00"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+    <!-- 018: Insert sample part offer to buy (for the seller offer) -->
+<!--    <changeSet id="018-part-offer-to-buy" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="part_offer_to_buy"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM part_offer_to_buy</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="part_offer_to_buy">-->
+<!--            <column name="id" value="1"/>-->
+<!--            <column name="status" value="NOT_RESERVED"/>-->
+<!--            <column name="seller_offer_id" valueNumeric="1"/>-->
+<!--            &lt;!&ndash; buyer_order_id опущен: вставится NULL по умолчанию (nullable=true), обновится в 022 &ndash;&gt;-->
+<!--            <column name="created_at" valueDate="2025-09-23 13:00:00"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+    <!-- 019: Insert baskets for buyers -->
+<!--    <changeSet id="019-baskets" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="basket"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM basket</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="basket">-->
+<!--            <column name="buyer_id" valueNumeric="2"/>-->
+<!--            <column name="created_at" valueDate="2025-09-23 11:30:00"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="basket">-->
+<!--            <column name="buyer_id" valueNumeric="3"/>-->
+<!--            <column name="created_at" valueDate="2025-09-23 12:30:00"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+    <!-- 020: Insert basket parts (link buyers' baskets to part offer) -->
+<!--    <changeSet id="020-basket-parts" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="basket_part"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM basket_part</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="basket_part">-->
+<!--            <column name="buyer_id" valueNumeric="2"/>-->
+<!--            <column name="part_id" valueNumeric="1"/>-->
+<!--        </insert>-->
+<!--        <insert tableName="basket_part">-->
+<!--            <column name="buyer_id" valueNumeric="3"/>-->
+<!--            <column name="part_id" valueNumeric="1"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+    <!-- 021: Insert sample payment for buyer1 -->
+<!--    <changeSet id="021-payment" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="payment"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM payment</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="payment">-->
+<!--            <column name="id" value="1"/>-->
+<!--            <column name="amount" valueNumeric="2.50"/>-->
+<!--            <column name="currency" value="USD"/>-->
+<!--            <column name="payment_mode" value="CARD"/>-->
+<!--            <column name="payment_status" value="SUCCESS"/>-->
+<!--            <column name="completion_date_time" valueDate="2025-09-23 14:00:00"/>-->
+<!--            <column name="created_at" valueDate="2025-09-23 13:45:00"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+    <!-- 022: Insert sample buyer order for buyer1 (с UPDATE для связи с part_offer_to_buy) -->
+<!--    <changeSet id="022-buyer-order" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="buyer_order"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM buyer_order</sqlCheck>-->
+<!--            &lt;!&ndash; Проверка: part_offer_to_buy существует для UPDATE &ndash;&gt;-->
+<!--            <tableExists tableName="part_offer_to_buy"/>-->
+<!--            <sqlCheck expectedResult="1">SELECT COUNT(*) FROM part_offer_to_buy WHERE id = 1</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        &lt;!&ndash; Вставка заказа покупателя &ndash;&gt;-->
+<!--        <insert tableName="buyer_order">-->
+<!--            <column name="id" value="1"/>-->
+<!--            <column name="buyer_order_status" value="CREATED"/>-->
+<!--            <column name="buyer_id" valueNumeric="2"/>  &lt;!&ndash; Покупатель Alice (ID=2) &ndash;&gt;-->
+<!--            <column name="payment_id" valueNumeric="1"/>  &lt;!&ndash; Платёж из 021 &ndash;&gt;-->
+<!--            <column name="created_at" valueDate="2025-09-23 13:50:00"/>-->
+<!--        </insert>-->
+        <!-- UPDATE: Связываем part_offer_to_buy с заказом (завершаем цикл) -->
+<!--        <update tableName="part_offer_to_buy">-->
+<!--            <column name="buyer_order_id" valueNumeric="1"/>  &lt;!&ndash; Реальная связь с заказом &ndash;&gt;-->
+<!--            <column name="status" value="RESERVED"/>  &lt;!&ndash; Обновляем статус: зарезервировано под заказ &ndash;&gt;-->
+<!--            <where>id = 1</where>  &lt;!&ndash; Только для части из 018 (Alice; Bob остаётся NOT_RESERVED) &ndash;&gt;-->
+<!--        </update>-->
+<!--    </changeSet>-->
+    <!-- 023: Insert sample delivery for the order (восстановленный полный) -->
+<!--    <changeSet id="023-delivery" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <tableExists tableName="delivery"/>-->
+<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM delivery</sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <insert tableName="delivery">-->
+<!--            <column name="id" value="1"/>-->
+<!--            <column name="delivery_status" value="DELIVERED"/>-->
+<!--            <column name="start_slot" valueDate="2025-09-23 15:00:00"/>-->
+<!--            <column name="end_slot" valueDate="2025-09-23 16:00:00"/>-->
+<!--            <column name="buyer_order_id" valueNumeric="1"/>  &lt;!&ndash; Ссылка на заказ из 022 &ndash;&gt;-->
+<!--            <column name="to_address_id" valueNumeric="2"/>   &lt;!&ndash; Адрес Alice &ndash;&gt;-->
+<!--            <column name="from_address_id" valueNumeric="1"/> &lt;!&ndash; Адрес продавца &ndash;&gt;-->
+<!--            <column name="drone_id" valueNumeric="1"/>        &lt;!&ndash; Дрон из 015 &ndash;&gt;-->
+<!--            <column name="created_at" valueDate="2025-09-23 14:00:00"/>-->
+<!--        </insert>-->
+<!--    </changeSet>-->
 </databaseChangeLog>

@@ -6,10 +6,12 @@ import org.gafiev.peertopeerbazaar.entity.order.Basket;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -70,7 +72,7 @@ public class User implements UserDetails {
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")) // FK: user_id -> users.id
-    @Column(name = "role")  // Value-колонка: role (VARCHAR для enum)
+    @Column(name = "roles")  // Value-колонка: role (VARCHAR для enum)
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
@@ -90,8 +92,11 @@ public class User implements UserDetails {
      * basket устанавливает связь с покупателем, который заполняет корзину
      */
     @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
-
     private Basket basket;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * productSet является коллекцией дочерних сущностей, которая содержит внешний ключ (id) продавца (автора).

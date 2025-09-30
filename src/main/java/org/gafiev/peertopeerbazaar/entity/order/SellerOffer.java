@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
 import org.gafiev.peertopeerbazaar.entity.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,10 @@ public class SellerOffer {
      */
     @Column(name = "finish_date_time")
     private LocalDateTime finishDateTime;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * продукт созданный данным продавцом

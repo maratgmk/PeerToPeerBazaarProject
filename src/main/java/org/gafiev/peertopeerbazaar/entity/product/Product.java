@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,12 +47,14 @@ public class Product {
      * обобщенная характеристика продукта
      */
     @Enumerated(EnumType.STRING)
+    @Column(name = "category")
     private Category category;
 
     /**
      * единица измерения одной порции продукта
      */
     @Enumerated(EnumType.STRING)
+    @Column(name = "portion_unit")
     private PortionUnit portionUnit;
 
     /**
@@ -88,6 +92,10 @@ public class Product {
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private User author;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * множество предложений продавца, связанное с данным product

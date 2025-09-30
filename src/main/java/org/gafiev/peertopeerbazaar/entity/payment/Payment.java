@@ -4,8 +4,10 @@ import com.neovisionaries.i18n.CurrencyCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,6 +64,10 @@ public class Payment {
      */
     @Column(name = "completion_date_time")
     private LocalDateTime completionDateTime;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * множество заказов, которое оплачено этим одним платежом,
