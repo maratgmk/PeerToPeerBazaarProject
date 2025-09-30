@@ -2,7 +2,9 @@ package org.gafiev.peertopeerbazaar.entity.order;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +36,10 @@ public class PartOfferToBuy {
     @Column(name = "status")
     @Builder.Default
     private PartOfferToBuyStatus status = PartOfferToBuyStatus.NOT_RESERVED;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * предложение продавца является родительской сущностью для partOfferToBuy.

@@ -2,7 +2,9 @@ package org.gafiev.peertopeerbazaar.entity.delivery;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +43,10 @@ public class Drone {
     @Enumerated(EnumType.STRING)
     @Column(name = "drone_status")
     private DroneStatus droneStatus;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * deliverySet есть множество доставок.

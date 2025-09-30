@@ -21,6 +21,10 @@ public interface BuyerOrderRepository extends JpaRepository<BuyerOrder,Long>, Jp
     @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
     Optional<BuyerOrder> findByIdWithDelivery(Long id);
 
+    @EntityGraph(attributePaths = {"buyer"})
+    @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
+    Optional<BuyerOrder> findByIdWithBuyer(Long id);
+
     @EntityGraph(attributePaths = {"deliverySet","deliverySet.address"})
     @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
     Optional<BuyerOrder> findByIdWithDeliveryAndAddress(Long id);

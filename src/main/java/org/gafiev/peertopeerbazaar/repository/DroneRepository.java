@@ -22,7 +22,7 @@ public interface DroneRepository extends JpaRepository<Drone,Long>, JpaSpecifica
      */
     @EntityGraph(attributePaths = {"deliverySet","deliverySet.buyerOrder"})
     @Query("SELECT d FROM Drone d  WHERE d.id = :id")
-    Optional<Drone> findByIdWithDeliveriesAndBuyerOrders(Long id);
+    Optional<Drone> findByIdWithDeliveriesAndBuyerOrder(Long id);
 
 
 

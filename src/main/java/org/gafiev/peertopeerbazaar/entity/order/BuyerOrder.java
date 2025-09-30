@@ -5,7 +5,9 @@ import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
 import org.gafiev.peertopeerbazaar.entity.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +38,10 @@ public class    BuyerOrder {
     @Enumerated(EnumType.STRING)
     @Column(name = "buyer_order_status")
     private BuyerOrderStatus buyerOrderStatus;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * buyer покупатель, который осуществляет заказ.

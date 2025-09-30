@@ -2,7 +2,7 @@ package org.gafiev.peertopeerbazaar.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.gafiev.peertopeerbazaar.properties.DroneProperties;
 import org.gafiev.peertopeerbazaar.properties.PaymentProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableScheduling
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Import(value = {PaymentProperties.class, DroneProperties.class})
 public class AppConfig {
     private final PaymentProperties paymentProperties;

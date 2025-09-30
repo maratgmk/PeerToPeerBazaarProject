@@ -22,7 +22,7 @@ public class ExternalPaymentController {
     private final PaymentService paymentService;
 
     @PostMapping(path = "/notify/{paymentId}")
-    public ResponseEntity<String> getStatus(@NotNull @PathVariable Long paymentId, @RequestBody ExternalPaymentResponse paymentResponse) {
+    public ResponseEntity<String> notify(@NotNull @PathVariable Long paymentId, @RequestBody ExternalPaymentResponse paymentResponse) {
         try {
             PaymentResponse response = paymentService.updatePayment(paymentId, PaymentUpdateRequest.builder()
                     .paymentStatus(paymentResponse.status())

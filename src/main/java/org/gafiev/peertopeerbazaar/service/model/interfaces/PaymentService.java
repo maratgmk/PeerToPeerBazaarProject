@@ -17,7 +17,7 @@ public interface PaymentService {
 
     PaymentResponse getPaymentById(Long id);
 
-    PaymentResponse getPaymentByIdWithBuyerOrder(Long id);
+    PaymentResponse getPaymentByIdWithBuyerOrders(Long id);
 
     Set<PaymentResponse> getAllPaymentSet(PaymentFilterRequest filterRequest);
 

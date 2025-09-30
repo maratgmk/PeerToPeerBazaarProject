@@ -23,6 +23,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
      * @return Optional платеж
      */
     @Query("SELECT p FROM Payment p JOIN FETCH p.buyerOrderSet b WHERE p.id = :id")
-    Optional<Payment> findByIdWithBuyerOrder(@Param("id") Long id);
+    Optional<Payment> findByIdWithBuyerOrders(@Param("id") Long id);
 
 }

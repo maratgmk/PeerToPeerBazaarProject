@@ -3,7 +3,9 @@ package org.gafiev.peertopeerbazaar.entity.order;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.user.User;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +35,10 @@ public class Basket {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId
     private User buyer;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * Множество частей офферов всех продавцов, которые выбрал покупатель и положил в корзину.

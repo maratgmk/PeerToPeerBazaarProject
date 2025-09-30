@@ -22,6 +22,11 @@ public interface DeliveryService {
      */
     DeliveryResponse getDeliveryById(Long id);
 
+
+    Long getBuyerIdByDeliveryId(Long id);
+
+
+
     /**
      * получение множества доставок по идентификатору заказа покупателя.
      * @param buyerOrderId  идентификатор заказа покупателя

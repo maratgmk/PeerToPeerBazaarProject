@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 /**
  * Доставка заказа покупателя от адреса продавца на адрес покупателя конкретным дроном.
@@ -40,6 +43,10 @@ public class Delivery {
     @Embedded
     @Column(name = "time_slot",nullable = true)
     private TimeSlot timeSlot;
+
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
 
     /**
      * заказ покупателя.

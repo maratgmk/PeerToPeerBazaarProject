@@ -87,6 +87,13 @@ public class AddressServiceImpl implements AddressService {
         return addressMapper.toAddressResponseSet(myAddressSet);
     }
 
+    @Override
+    public Set<SellerOffer> getOffersByAddressId(Long id) {
+        Address address = addressRepository.findByIdWithSellerOffersAndDeliveries(id)
+                .orElseThrow(() -> new EntityNotFoundException(Address.class,Map.of("id", String.valueOf(id))));
+       return address.getSellerOfferSet();
+    }
+
     /**
      * создание нового адреса для проверки возможности обслуживания и
      * сохранения в БД.
@@ -123,7 +130,7 @@ public class AddressServiceImpl implements AddressService {
      */
     @Override
     @Transactional
-    public AddressResponse updateMyAddress(Long id, Long userId, AddressCreateRequest addressNew) {
+    public AddressResponse updateMyAddress(Long id, AddressCreateRequest addressNew) {
         checkAddress(addressNew);
 
         Address address = addressRepository.findByIdWithSellerOffersAndDeliveries(id)
