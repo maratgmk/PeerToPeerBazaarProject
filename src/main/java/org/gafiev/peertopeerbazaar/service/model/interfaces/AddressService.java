@@ -3,7 +3,6 @@ package org.gafiev.peertopeerbazaar.service.model.interfaces;
 import org.gafiev.peertopeerbazaar.dto.api.request.AddressCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.AddressFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.AddressResponse;
-import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 
 import java.util.Set;
 
@@ -20,14 +19,13 @@ public interface AddressService {
 
     Set<AddressResponse> getAllMyAddresses(Long userId);
 
-    Set<SellerOffer> getOffersByAddressId(Long id);
-
     AddressResponse getAddressById(Long id);
 
-    AddressResponse createAddress(AddressCreateRequest address);
+    AddressResponse createAddress(AddressCreateRequest addressRequest);
 
     AddressResponse updateMyAddress(Long id, AddressCreateRequest addressDetails);
 
     void deleteAddress(Long id);
 
 }
+

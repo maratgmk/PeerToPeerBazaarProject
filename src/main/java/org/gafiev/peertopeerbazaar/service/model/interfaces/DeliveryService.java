@@ -5,9 +5,7 @@ import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryUpdateTime;
 import org.gafiev.peertopeerbazaar.dto.api.response.DeliveryResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
-import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
-import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 
 import java.util.List;
 import java.util.Set;
@@ -22,31 +20,12 @@ public interface DeliveryService {
      */
     DeliveryResponse getDeliveryById(Long id);
 
-
-    Long getBuyerIdByDeliveryId(Long id);
-
-
-
     /**
      * получение множества доставок по идентификатору заказа покупателя.
      * @param buyerOrderId  идентификатор заказа покупателя
      * @return множество DTO доставок
      */
     Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(Long buyerOrderId);
-
-    /**
-     * получение множества поставок из БД с одинаковыми статусами, с одинаковым адресом забора и с одинаковым адресом доставки,
-     * согласно временного диапазона между двумя разными ожидаемыми временами доставок.
-     * @param deliveryStatus статус доставки
-     * @param toAddress адрес получения доставки
-     * @param fromAddress адрес забора доставки
-     * @param timeSlot  временной диапазон доставок
-     * @return подмножество из множества всех доставок, выбранное по указанным параметрам
-     */
-    Set<DeliveryResponse> getAllDeliveries(DeliveryStatus deliveryStatus,
-                                           Address toAddress,
-                                           Address fromAddress,
-                                           TimeSlot timeSlot);
 
     /**
      * получение DTO доставок по заданному клиентом в запросе фильтру.
@@ -71,14 +50,6 @@ public interface DeliveryService {
     List<TimeSlotResponse> takeTimeSlots(Long id);
 
     /**
-     * создание новой доставки вместо неудавшейся.
-     * меняется только Id все параметры остаются прежними
-     * @param failDeliveryId идентификатор неудавшейся доставки
-     * @return DTO новой попытки доставки вместо неудавшейся попытки
-     */
-    DeliveryResponse createDeliveryDependsOnFail(Long failDeliveryId);
-
-    /**
      * Установка требуемого временного интервала для существующей (созданной) доставки.
      * @param id идентификатор доставки, которую следует обновить
      * @param updateRequest DTO информация от покупателя на установку временного интервала
@@ -93,14 +64,6 @@ public interface DeliveryService {
      * @return DTO доставки
      */
     DeliveryResponse updateStatus(Long id, DeliveryStatus status);
-
-    /**
-     * отмена существующей доставки по требованию покупателя.
-     *
-     * @param id идентификатор доставки покупателя
-     * @return DTO обновленной доставки
-     */
-    DeliveryResponse cancelMyDelivery(Long id);
 
     /**
      * удаление доставки по идентификатору из БД.

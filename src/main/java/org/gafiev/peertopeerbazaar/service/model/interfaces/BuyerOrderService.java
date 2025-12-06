@@ -24,7 +24,7 @@ public interface BuyerOrderService {
      * @param buyerOrderId идентификатор заказа покупателя
      * @return buyerOrderResponse
      */
-    BuyerOrderResponse get(Long buyerId, Long buyerOrderId);
+    BuyerOrderResponse get(Long buyerOrderId, Long buyerId);
 
     /**
      * метод получения множества DTO заказов покупателя, соответствующих определённому статусу.
@@ -33,7 +33,7 @@ public interface BuyerOrderService {
      * @param buyerOrderStatus состояние заказа покупателя
      * @return buyerOrderResponseSet
      */
-    Set<BuyerOrderResponse> getAll(Long buyerId, BuyerOrderStatus buyerOrderStatus);
+    Set<BuyerOrderResponse> getAllByStatus(Long buyerId, BuyerOrderStatus buyerOrderStatus);
 
     /**
      * поиск всех заказов покупателя, удовлетворяющих заданным критериям.
@@ -70,9 +70,8 @@ public interface BuyerOrderService {
     /**
      * метод удаления заказа покупателя из БД.
      *
-     * @param buyerId идентификатор покупателя
      * @param buyerOrderId идентификатор заказа покупателя
      */
-    void delete(Long buyerId, Long buyerOrderId);
+    void delete(Long buyerOrderId);
 
 }

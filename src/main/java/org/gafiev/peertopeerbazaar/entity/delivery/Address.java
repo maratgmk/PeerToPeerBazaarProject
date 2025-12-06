@@ -1,7 +1,21 @@
 package org.gafiev.peertopeerbazaar.entity.delivery;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -82,13 +96,15 @@ public class Address {
     /**
      * с одного адреса продавец предлагает множество заказов
      */
-    @OneToMany(mappedBy = "address", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "address", cascade = {CascadeType.PERSIST,CascadeType.MERGE}, orphanRemoval = true)
+    @Builder.Default
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
     /**
      * по одному адресу осуществляется множество доставок
      */
-    @OneToMany(mappedBy = "toAddress", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "toAddress", cascade = {CascadeType.PERSIST,CascadeType.MERGE}, orphanRemoval = true)
+    @Builder.Default
     private Set<Delivery> deliverySet = new HashSet<>();
 
     @CreationTimestamp
@@ -136,6 +152,8 @@ public class Address {
     }
 
 }
+
+
 
 
 

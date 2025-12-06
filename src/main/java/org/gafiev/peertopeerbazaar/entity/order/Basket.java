@@ -1,7 +1,22 @@
 package org.gafiev.peertopeerbazaar.entity.order;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,8 +27,8 @@ import java.util.Set;
 /**
  * Сущность корзина показывает, что выбрал покупатель из разных предложений разных продавцов
  */
-@EqualsAndHashCode(exclude = "partOfferToBuySet")
-@ToString(exclude = "partOfferToBuySet")
+@EqualsAndHashCode(exclude = {"partOfferToBuySet","buyer"})
+@ToString(exclude = {"partOfferToBuySet","buyer"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -25,14 +40,14 @@ public class Basket {
      * id уникальный идентификатор корзины, который совпадает с id покупателя
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY) // это вызывает конфликт с @MapsId????
     @Column(name = "buyer_id")
     private Long id;
 
     /**
      * buyer это покупатель передаёт свой id корзине
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY) //, cascade = CascadeType.ALL Cascade должен быть только на owning side (User.basket)
     @MapsId
     private User buyer;
 
@@ -70,7 +85,6 @@ public class Basket {
      */
     public void removePartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.removeIf(partOfferToBuy::equals);
-       // partOfferToBuySet.remove(partOfferToBuy);
         partOfferToBuy.getBasketSet().remove(this);
     }
 }

@@ -1,11 +1,15 @@
 package org.gafiev.peertopeerbazaar.repository.specification;
 
 import jakarta.annotation.Nullable;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.gafiev.peertopeerbazaar.dto.api.request.BuyerOrderFilterRequest;
+import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuy;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
@@ -23,29 +27,37 @@ public class BuyerOrderSpecification {
 
             if (filterRequest == null) return criteriaBuilder.conjunction();
 
-            if (filterRequest.ids() != null && !filterRequest.ids().isEmpty()) {
+            // Фильтр по ID заказов (обязательный)
+            if (!filterRequest.ids().isEmpty()) {
                 predicates.add(root.get("id").in(filterRequest.ids()));
             }
 
+            // Фильтр по ID частей предложений (опциональный)
             if (filterRequest.partOfferToBuyIds() != null && !filterRequest.partOfferToBuyIds().isEmpty()) {
-                predicates.add(root.get("id").in(filterRequest.partOfferToBuyIds()));
+                Join<BuyerOrder, PartOfferToBuy> partOfferJoin = root.join("partOfferToBuySet", JoinType.LEFT);
+                predicates.add(partOfferJoin.get("id").in(filterRequest.partOfferToBuyIds()));
             }
 
+            // Фильтр по ID доставок (опциональный)
             if (filterRequest.deliveryIds() != null && !filterRequest.deliveryIds().isEmpty()) {
-                predicates.add(root.get("id").in(filterRequest.deliveryIds()));
+                Join<BuyerOrder, Delivery> deliveryJoin = root.join("deliverySet", JoinType.LEFT);
+                predicates.add(deliveryJoin.get("id").in(filterRequest.deliveryIds()));
             }
 
+            // Статус заказа (опциональный)
             if (filterRequest.buyerOrderStatus() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("buyer_order_status"), filterRequest.buyerOrderStatus().name()));
+                predicates.add(criteriaBuilder.equal(root.get("buyerOrderStatus"), filterRequest.buyerOrderStatus().name()));
+            }
+            // Фильтр по ID покупателей (опциональный)
+            if (filterRequest.buyerIds() != null && !filterRequest.buyerIds().isEmpty()) {
+                predicates.add(root.get("buyer").get("id").in(filterRequest.buyerIds()));
             }
 
-            if (filterRequest.buyerIds() != null && filterRequest.buyerIds().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), filterRequest.buyerIds()));
+            // Фильтр по ID платежей (опциональный)
+            if (filterRequest.paymentIds() != null && !filterRequest.paymentIds().isEmpty()) {
+                predicates.add(root.get("payment").get("id").in(filterRequest.paymentIds()));
             }
 
-            if (filterRequest.paymentIds() != null && filterRequest.paymentIds().isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("id"), filterRequest.paymentIds()));
-            }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

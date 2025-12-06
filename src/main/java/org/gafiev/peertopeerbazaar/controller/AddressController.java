@@ -11,7 +11,15 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.AddressService;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
@@ -28,8 +36,8 @@ public class AddressController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public AddressResponse createAddress(@Valid @RequestBody AddressCreateRequest candidate) {
-        return addressService.createAddress(candidate);
+    public AddressResponse createAddress(@Valid @RequestBody AddressCreateRequest addressRequest) {
+        return addressService.createAddress(addressRequest);
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
@@ -45,13 +53,20 @@ public class AddressController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
-    @PostMapping("/user")
+    @GetMapping("/user")
     public Set<AddressResponse> getAllMyAddresses(@NotNull @Positive @RequestParam Long userId) {
         return addressService.getAllMyAddresses(userId);
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
-    @PutMapping("/{id}user/{userId}")
+    @PostMapping(value = "/create/user/{userId}",consumes = MediaType.ALL_VALUE)
+    public AddressResponse createAddress(@NotNull @Positive @PathVariable Long userId,
+            @Valid @RequestBody AddressCreateRequest createRequest) {
+        return addressService.createAddress(createRequest);
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
+    @PutMapping("/update/{id}/user/{userId}")
     public AddressResponse updateMyAddress(
             @NotNull @Positive @PathVariable Long id,@NotNull @Positive @PathVariable Long userId,
             @Valid @RequestBody AddressCreateRequest addressNew) {
@@ -59,7 +74,7 @@ public class AddressController {
     }
 
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
-    @DeleteMapping(path = "/{id}user/{userId}", consumes = MediaType.ALL_VALUE)
+    @DeleteMapping(path = "/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
     public void deleteAddress(@NotNull @Positive @PathVariable Long id,@NotNull @Positive @PathVariable Long userId) {
         addressService.deleteAddress(id);
     }

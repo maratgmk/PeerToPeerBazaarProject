@@ -1,6 +1,7 @@
 package org.gafiev.peertopeerbazaar.service.model;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.dto.api.request.SellerOfferCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.SellerOfferFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.SellerOfferResponse;
@@ -24,10 +25,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class SellerOfferServiceImpl implements SellerOfferService {
 
     private final SellerOfferRepository sellerOfferRepository;
@@ -113,6 +119,7 @@ public class SellerOfferServiceImpl implements SellerOfferService {
             PartOfferToBuy partOfferToBuy = PartOfferToBuy.builder().build();
             sellerOffer.addPartOfferToBuy(partOfferToBuy);
         }
+
         sellerOffer.setOfferStatus(sellerOfferCreate.offerStatus());
         sellerOffer.setComment(sellerOfferCreate.comment());
 
@@ -120,13 +127,16 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         LocalDateTime creationDateTime = sellerOfferCreate.creationDateTime();
         if ((sellerOfferCreate.offerStatus() == OfferStatus.PRESALE && creationDateTime.isBefore(LocalDateTime.now())) ||
                 (sellerOfferCreate.offerStatus() == OfferStatus.OPENED && creationDateTime.isAfter(LocalDateTime.now()))) {
+            log.info("SellerOfferStatus is : {} and creationDateTime is {} ", sellerOfferCreate.offerStatus(),creationDateTime);
             throw new IllegalArgumentException("Invalid creation date time for the given offer status.");
         }
         sellerOffer.setCreationDateTime(creationDateTime);
         sellerOffer.setFinishDateTime(sellerOfferCreate.finishedDateTime());
         product.addSellerOffer(sellerOffer);
+        log.debug("Address sellerOfferSet: {}", address.getSellerOfferSet());
         address.addSellerOffer(sellerOffer);
         seller.addSellerOffer(sellerOffer);
+        seller.setCreatedAt(sellerOfferCreate.createdAt());
 
         sellerOffer = sellerOfferRepository.save(sellerOffer);
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);

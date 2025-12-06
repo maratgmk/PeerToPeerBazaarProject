@@ -1,7 +1,27 @@
 package org.gafiev.peertopeerbazaar.entity.user;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import org.gafiev.peertopeerbazaar.entity.order.Basket;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
@@ -93,6 +113,7 @@ public class User implements UserDetails {
      */
     @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Basket basket;
+
 
     @CreationTimestamp
     @Column(name = "created_at")

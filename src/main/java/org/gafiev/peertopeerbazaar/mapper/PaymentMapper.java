@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PaymentMapper {
     private final PaymentProperties paymentProperties;
+    private final BuyerOrderMapper buyerOrderMapper;
 
     public PaymentResponse toPaymentResponse(Payment payment) {
         return PaymentResponse.builder()
@@ -23,6 +24,7 @@ public class PaymentMapper {
                 .paymentMode(payment.getPaymentMode())
                 .paymentStatus(payment.getPaymentStatus())
                 .completionDateTime(payment.getCompletionDateTime())
+                .buyerOrderResponseSet(buyerOrderMapper.toBuyerOrderResponseSet(payment.getBuyerOrderSet()))
                 .build();
     }
 

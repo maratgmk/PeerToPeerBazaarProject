@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrderStatus;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Builder
@@ -14,5 +15,6 @@ public record BuyerOrderResponse(
         BuyerOrderStatus status,
         Long paymentId,
         Set<PartOfferToBuyResponse> partOfferToBuyResponseSet,
+        Instant createdAt,
         Set<Long> deliveryIds) {
 }

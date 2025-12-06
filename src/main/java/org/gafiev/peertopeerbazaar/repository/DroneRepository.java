@@ -24,9 +24,4 @@ public interface DroneRepository extends JpaRepository<Drone,Long>, JpaSpecifica
     @Query("SELECT d FROM Drone d  WHERE d.id = :id")
     Optional<Drone> findByIdWithDeliveriesAndBuyerOrder(Long id);
 
-
-
-
-
-
 }

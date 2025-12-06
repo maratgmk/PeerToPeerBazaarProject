@@ -17,11 +17,13 @@ public class SellerOfferMapper {
         return SellerOfferResponse.builder()
                 .id(sellerOffer.getId())
                 .offerStatus(sellerOffer.getOfferStatus())
+                .comment(sellerOffer.getComment())
                 .creationDateTime(sellerOffer.getCreationDateTime())
                 .finishDateTime(sellerOffer.getFinishDateTime())
                 .productId(sellerOffer.getProduct().getId() != null ? sellerOffer.getProduct().getId() : null)
                 .userId(sellerOffer.getSeller().getId() != null ? sellerOffer.getSeller().getId() : null)
                 .addressId(sellerOffer.getAddress() != null ? sellerOffer.getAddress().getId() : null)
+                .createdAt(sellerOffer.getCreatedAt())
                 .partOfferToBuyResponseList(partOfferToBuyMapper.toPartOfferToBuyResponseList(sellerOffer.getPartOfferToBuyList()))
                 .build();
     }

@@ -13,7 +13,16 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.BuyerOrderService;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
@@ -29,23 +38,22 @@ public class BuyerOrderController {
     private final BuyerOrderService buyerOrderService;
 
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication )")
-    @PostMapping
+    @PostMapping("/create")
     public Set<BuyerOrderResponse> create(@NotNull @Positive @RequestParam Long buyerId, @Valid @RequestBody BuyerOrderCreateRequest candidate) {
         return buyerOrderService.create(buyerId, candidate);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication )") //TODO check buyerId, userId
-    @GetMapping(path = "/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
-    public BuyerOrderResponse get(@NotNull @Positive @RequestParam Long buyerId,
-                                  @NotNull @Positive @PathVariable Long id,
-                                  @NotNull @Positive @PathVariable Long userId) {
-        return buyerOrderService.get(buyerId, id);
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication )")
+    @GetMapping(path = "/{id}/user/{buyerId}", consumes = MediaType.ALL_VALUE)
+    public BuyerOrderResponse get(@NotNull @Positive @PathVariable Long id,
+                                  @NotNull @Positive @PathVariable Long buyerId) {
+        return buyerOrderService.get(id,buyerId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication )")
     @PostMapping(value = "/status", consumes = MediaType.ALL_VALUE)
-    public Set<BuyerOrderResponse> getAll(@NotNull @Positive @RequestParam Long buyerId, @NotNull @RequestParam BuyerOrderStatus buyerOrderStatus) {
-        return buyerOrderService.getAll(buyerId, buyerOrderStatus);
+    public Set<BuyerOrderResponse> getAllByStatus(@NotNull @Positive @RequestParam Long buyerId, @NotNull @RequestParam BuyerOrderStatus buyerOrderStatus) {
+        return buyerOrderService.getAllByStatus(buyerId, buyerOrderStatus);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -54,26 +62,24 @@ public class BuyerOrderController {
         return buyerOrderService.getAllBuyerOrders(filterRequest);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication )") //TODO check buyerId, userId
-    @PutMapping("/{id}/user/{userId}")
-    public BuyerOrderResponse update(@NotNull @Positive @RequestParam Long buyerId,
+    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication )")
+    @PutMapping("/{id}/user/{buyerId}")
+    public BuyerOrderResponse update(@NotNull @Positive @PathVariable Long buyerId,
                                      @NotNull @Positive @PathVariable Long id,
-                                     @NotNull @Positive @PathVariable Long  userId,
                                      @Valid @RequestBody BuyerOrderUpdateRequest requestNew) {
         return buyerOrderService.update(buyerId, id, requestNew);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}", consumes = MediaType.ALL_VALUE)
-    public void delete(@NotNull @Positive @RequestParam Long buyerId, @NotNull @Positive @PathVariable Long id) {
-        buyerOrderService.delete(buyerId, id);
+    public void delete(@NotNull @Positive @PathVariable Long id) {
+        buyerOrderService.delete( id);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication )")//TODO check buyerId, userId
-    @PatchMapping("/{id}/cancel/user/{userId}")
+    @PreAuthorize("@authz.isSelf(#buyerId, authentication)")
+    @PatchMapping("/cancel/{id}")
     public void cancel(@NotNull @Positive @RequestParam Long buyerId,
-                       @NotNull @Positive @PathVariable Long id,
-                       @NotNull @Positive @PathVariable Long  userId) {
+                       @NotNull @Positive @PathVariable Long id) {
         buyerOrderService.cancel(buyerId, id);
     }
 

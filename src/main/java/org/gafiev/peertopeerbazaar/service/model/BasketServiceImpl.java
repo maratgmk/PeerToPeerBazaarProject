@@ -4,7 +4,11 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.dto.api.response.BasketResponse;
-import org.gafiev.peertopeerbazaar.entity.order.*;
+import org.gafiev.peertopeerbazaar.entity.order.Basket;
+import org.gafiev.peertopeerbazaar.entity.order.OfferStatus;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuy;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuyStatus;
+import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
 import org.gafiev.peertopeerbazaar.exception.IllegalBusinessStateException;
@@ -49,7 +53,7 @@ public class BasketServiceImpl implements BasketService {
     }
 
     /**
-     * добавление в корзину partOfferToBuy по id покупателя, id оффера продавца и желаемого количества продукта
+     * Добавление в корзину partOfferToBuy по id покупателя, id оффера продавца и желаемого количества продукта
      *
      * @param userId, sellerOfferId, unitCount соответственно id покупателя, id оффера продавца, количество единиц измерения
      * @return DTO корзины
@@ -70,10 +74,9 @@ public class BasketServiceImpl implements BasketService {
         SellerOffer sellerOffer = sellerOfferRepository.findByIdWithPartOfferToBuy(sellerOfferId)
                 .orElseThrow(() -> new EntityNotFoundException(SellerOffer.class, Map.of("sellerOfferId", String.valueOf(sellerOfferId))));
 
-
-        if (sellerOffer.getActualUnitCount() < unitCount)
+        if (sellerOffer.getActualUnitCount() < unitCount) {
             throw new IllegalBusinessStateException("Cannot add %d unit to basket: actual amount is less".formatted(unitCount));
-
+        }
 
         Set<Long> partIds = new HashSet<>();
         for (int i = 0; i < unitCount; i++) {
@@ -85,7 +88,6 @@ public class BasketServiceImpl implements BasketService {
             basket.addPartOfferToBuy(partOfferToBuy);
             partIds.add(partOfferToBuy.getId());
         }
-
 
         basket = basketRepository.save(basket);
 
@@ -120,7 +122,7 @@ public class BasketServiceImpl implements BasketService {
         Set<Basket> baskets = basketRepository.findBasketsBySellerOfferStatuses(OFFER_STATUSES);
 
         for (Basket basket : baskets) {
-            log.info("!!!!! Начало сохранения корзины: basketId = {}, parts = {} " , basket.getId(),basket.getPartOfferToBuySet());
+            log.info("!!!!! Начало сохранения корзины: basketId = {}, parts = {} ", basket.getId(), basket.getPartOfferToBuySet());
 
             Iterator<PartOfferToBuy> iterator = basket.getPartOfferToBuySet().iterator();
             while (iterator.hasNext()) {
@@ -131,9 +133,9 @@ public class BasketServiceImpl implements BasketService {
                 }
             }
 
-            log.info("Перед сохранением корзины: basketId = {}, parts = {} " , basket.getId(),basket.getPartOfferToBuySet());
-            basket =  basketRepository.save(basket);
-            log.info("После сохранения корзины: basketId = {}, parts = {} " , basket.getId(),basket.getPartOfferToBuySet());
+            log.info("Перед сохранением корзины: basketId = {}, parts = {} ", basket.getId(), basket.getPartOfferToBuySet());
+            basket = basketRepository.save(basket);
+            log.info("После сохранения корзины: basketId = {}, parts = {} ", basket.getId(), basket.getPartOfferToBuySet());
 
         }
 

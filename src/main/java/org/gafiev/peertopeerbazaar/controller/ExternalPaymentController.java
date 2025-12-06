@@ -12,7 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @Validated
@@ -28,14 +32,14 @@ public class ExternalPaymentController {
                     .paymentStatus(paymentResponse.status())
                     .completionDateTime(paymentResponse.completionDateTime())
                     .build());
-            log.info("Платеж выполнен: {}", response);
-            return new ResponseEntity<>("Обратный вызов принят", HttpStatus.OK);
+            log.info("Payment completed : {}", response);
+            return new ResponseEntity<>("Callback accepted", HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             log.error("Платеж не найден для ID {}: {}", paymentId, e.getMessage());
-            return new ResponseEntity<>("Платеж не найден", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Payment is not found", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error("Ошибка при обработке обратного вызова платежа: {}", e.getMessage());
-            return new ResponseEntity<>("Внутренняя ошибка сервера", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

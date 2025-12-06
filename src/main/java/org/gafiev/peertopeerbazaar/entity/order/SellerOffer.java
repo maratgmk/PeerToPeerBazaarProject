@@ -1,7 +1,26 @@
 package org.gafiev.peertopeerbazaar.entity.order;
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.product.Product;
@@ -24,7 +43,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "seller_offer")
 public class SellerOffer {
 
@@ -53,15 +72,18 @@ public class SellerOffer {
      * время создания оффера
      */
     @Column(name = "creation_date_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime creationDateTime;
 
     /**
      * время окончания действия оффера
      */
     @Column(name = "finish_date_time")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime finishDateTime;
 
     @CreationTimestamp
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
     @Column(name = "created_at")
     private Instant createdAt;
 

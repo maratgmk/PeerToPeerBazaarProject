@@ -1,8 +1,23 @@
 package org.gafiev.peertopeerbazaar.entity.payment;
 
 import com.neovisionaries.i18n.CurrencyCode;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,6 +37,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString(exclude = "buyerOrderSet")
 @Entity
+@Builder(toBuilder = true)
 @Table(name = "payment")
 public class Payment {
     /**
@@ -73,6 +89,7 @@ public class Payment {
      * множество заказов, которое оплачено этим одним платежом,
      * если удалить платеж, то это множество будет сиротой и удалится из БД???
      */
+    @Builder.Default
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BuyerOrder> buyerOrderSet = new HashSet<>();
 
@@ -80,7 +97,7 @@ public class Payment {
      * метод добавления заказа покупателя во множество заказов по этому платежу
      * @param buyerOrder заказ покупателя
      */
-    public void addBuyerOrder(BuyerOrder buyerOrder){
+    public void   addBuyerOrder(BuyerOrder buyerOrder){
         buyerOrderSet.add(buyerOrder);
         buyerOrder.setPayment(this);
     }

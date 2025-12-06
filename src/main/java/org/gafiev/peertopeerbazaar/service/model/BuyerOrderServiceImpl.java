@@ -12,7 +12,13 @@ import org.gafiev.peertopeerbazaar.dto.api.request.DeliveryFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.BuyerOrderResponse;
 import org.gafiev.peertopeerbazaar.entity.delivery.Address;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
-import org.gafiev.peertopeerbazaar.entity.order.*;
+import org.gafiev.peertopeerbazaar.entity.order.Basket;
+import org.gafiev.peertopeerbazaar.entity.order.BuyerOrder;
+import org.gafiev.peertopeerbazaar.entity.order.BuyerOrderStatus;
+import org.gafiev.peertopeerbazaar.entity.order.OfferStatus;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuy;
+import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuyStatus;
+import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentMode;
 import org.gafiev.peertopeerbazaar.entity.payment.PaymentStatus;
@@ -23,7 +29,15 @@ import org.gafiev.peertopeerbazaar.exception.IllegalBusinessStateException;
 import org.gafiev.peertopeerbazaar.mapper.BuyerOrderMapper;
 import org.gafiev.peertopeerbazaar.mapper.ExternalDroneMapper;
 import org.gafiev.peertopeerbazaar.mapper.TimeSlotMapper;
-import org.gafiev.peertopeerbazaar.repository.*;
+import org.gafiev.peertopeerbazaar.repository.AddressRepository;
+import org.gafiev.peertopeerbazaar.repository.BasketRepository;
+import org.gafiev.peertopeerbazaar.repository.BuyerOrderRepository;
+import org.gafiev.peertopeerbazaar.repository.DeliveryRepository;
+import org.gafiev.peertopeerbazaar.repository.DroneRepository;
+import org.gafiev.peertopeerbazaar.repository.PartOfferToBuyRepository;
+import org.gafiev.peertopeerbazaar.repository.PaymentRepository;
+import org.gafiev.peertopeerbazaar.repository.SellerOfferRepository;
+import org.gafiev.peertopeerbazaar.repository.UserRepository;
 import org.gafiev.peertopeerbazaar.repository.specification.BuyerOrderSpecification;
 import org.gafiev.peertopeerbazaar.repository.specification.DeliverySpecification;
 import org.gafiev.peertopeerbazaar.service.integration.interfaces.ExternalDroneService;
@@ -31,7 +45,11 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.BuyerOrderService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,13 +74,13 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
     @Override
     public BuyerOrderResponse getByIdWithBuyer(Long buyerOrderId) {
         BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithBuyer(buyerOrderId)
-                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class,Map.of("id", String.valueOf(buyerOrderId))));
+                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId))));
         return buyerOrderMapper.toBuyerOrderResponse(buyerOrder);
 
     }
 
     @Override
-    public BuyerOrderResponse get(Long buyerId, Long buyerOrderId) {
+    public BuyerOrderResponse get(Long buyerOrderId, Long buyerId) {
         User buyer = userRepository.findByIdWithBuyerOrdersAndSellerOffers(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
         BuyerOrder buyerOrder = buyer.getBuyerOrderSet().stream()
@@ -75,7 +93,7 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
 
     @Override
     @Transactional
-    public Set<BuyerOrderResponse> getAll(Long buyerId, BuyerOrderStatus buyerOrderStatus) {
+    public Set<BuyerOrderResponse> getAllByStatus(Long buyerId, BuyerOrderStatus buyerOrderStatus) {
         User buyer = userRepository.findByIdWithBuyerOrdersAndSellerOffers(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
         Set<BuyerOrder> buyerOrderSet = buyer.getBuyerOrderSet().stream()
@@ -103,7 +121,6 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
         Set<SellerOffer> sellerOffers = basket.getPartOfferToBuySet().stream()
                 .map(PartOfferToBuy::getSellerOffer)
                 .collect(Collectors.toSet());
-
 
         // собираем множество, которое есть пересечение корзины пользователя и partsToOrder
         Set<PartOfferToBuy> parts = basket.getPartOfferToBuySet().stream()
@@ -175,15 +192,18 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId))));
         if (requestNew.deliveryIdsToRemove() != null && !requestNew.deliveryIdsToRemove().isEmpty()) {
-            buyerOrder.getDeliverySet().stream()
+            Set<Delivery> deliveriesToRemove = buyerOrder.getDeliverySet().stream()
                     .filter(delivery -> requestNew.deliveryIdsToRemove().contains(delivery.getId()))
-                    .forEach(buyerOrder::removeDelivery);
+                    .collect(Collectors.toSet());
+             deliveriesToRemove.forEach(buyerOrder::removeDelivery);
         }
         if (requestNew.partOfferToBuyIdsToRemove() != null && !requestNew.partOfferToBuyIdsToRemove().isEmpty()) {
-            buyerOrder.getPartOfferToBuySet().stream()
+            Set<PartOfferToBuy> partsToRemove = buyerOrder.getPartOfferToBuySet().stream()
                     .filter(partOfferToBuy -> requestNew.partOfferToBuyIdsToRemove().contains(partOfferToBuy.getId()))
-                    .forEach(buyerOrder::removePartOfferToBuy);
+                    .collect(Collectors.toSet());
+                   partsToRemove.forEach(buyerOrder::removePartOfferToBuy);
         }
+
         if (requestNew.deliveryIdsToAdd() != null && !requestNew.deliveryIdsToAdd().isEmpty()) {
             List<Delivery> deliveryList = deliveryRepository.findAll(DeliverySpecification.filterByParams(DeliveryFilterRequest
                     .builder()
@@ -205,9 +225,7 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
             if (!absentIds.isEmpty()) {
                 throw new EntityNotFoundException(PartOfferToBuy.class, Map.of("id", absentIds.toString()));
             }
-
             parts.forEach(buyerOrder::addPartOfferToBuy);
-
         }
         buyerOrder = buyerOrderRepository.save(buyerOrder);
         return buyerOrderMapper.toBuyerOrderResponse(buyerOrder);
@@ -231,15 +249,8 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
 
     @Override
     @Transactional
-    public void delete(Long buyerId, Long buyerOrderId) {
-        User buyer = userRepository.findByIdWithBuyerOrdersAndSellerOffers(buyerId)
-                .orElseThrow(() -> new EntityNotFoundException(User.class, Map.of("id", String.valueOf(buyerId))));
-        BuyerOrder buyerOrder = buyer.getBuyerOrderSet().stream()
-                .filter(order -> order.getId().equals(buyerOrderId))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId))));
-        buyer.removeBuyerOrder(buyerOrder);
-        userRepository.save(buyer);
+    public void delete( Long buyerOrderId) {
+        buyerOrderRepository.deleteById(buyerOrderId);
     }
 
     /**
@@ -258,7 +269,7 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
         Map<SellerOffer, Set<PartOfferToBuy>> updatedSellerOfferToOrderParts = sellerOfferToOrderParts.entrySet().stream()
                 .map(entry -> Map.entry(entry.getKey(), entry.getKey().getPartOfferToBuyList().stream()
                         .filter(p -> p.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))
-                        .limit(entry.getValue().size()) // чей размер?
+                        .limit(entry.getValue().size()) // чей размер? мой размер из риквеста
                         .collect(Collectors.toSet())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 

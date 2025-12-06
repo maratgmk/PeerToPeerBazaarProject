@@ -1,6 +1,7 @@
 package org.gafiev.peertopeerbazaar.mapper;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.dto.api.response.DeliveryResponse;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.DeliveryDroneRequest;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
@@ -11,10 +12,12 @@ import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class DeliveryMapper {
     private final BuyerOrderMapper buyerOrderMapper;
     private final AddressMapper addressMapper;
     private final TimeSlotMapper timeSlotMapper;
+
 
     public DeliveryResponse toDeliveryResponse(Delivery delivery) {
         return DeliveryResponse.builder()
@@ -33,11 +36,14 @@ public class DeliveryMapper {
     }
 
     public DeliveryDroneRequest toDeliveryDroneRequest(Delivery delivery) {
-        return DeliveryDroneRequest.builder()
+        DeliveryDroneRequest deliveryDroneRequest =  DeliveryDroneRequest.builder()
                 .timeSlot(delivery.getTimeSlot() == null ? null : timeSlotMapper.toTimeSlotResponse(delivery.getTimeSlot()))
                 .buyerOrder(buyerOrderMapper.toBuyerOrderDroneRequest(delivery.getBuyerOrder()))
                 .toAddress(addressMapper.toAddressDroneRequest(delivery.getToAddress()))
                 .fromAddress(addressMapper.toAddressDroneRequest(delivery.getFromAddress()))
                 .build();
+        log.debug("Mapped DeliveryDroneRequest: {}", deliveryDroneRequest);
+
+        return deliveryDroneRequest;
     }
 }

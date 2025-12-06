@@ -5,6 +5,7 @@ import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.DeliveryDroneRequest;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.ExternalDroneFilterRequest;
 import org.gafiev.peertopeerbazaar.dto.integreation.response.ExternalDroneResponse;
+import org.gafiev.peertopeerbazaar.entity.delivery.DroneStatus;
 
 import java.util.Set;
 
@@ -39,6 +40,14 @@ public interface ExternalDroneService {
     Set<TimeSlotResponse> requestDroneSchedule(DeliveryDroneRequest deliveryDroneRequest);
 
     /**
+     * изменение состояния дрона после доставки, после изменения условий или аварии и т.д.
+     * @param droneServiceId идентификатор дрона от внешнего сервиса
+     * @param status новый назначенный статус состояния дрона
+     * @return ответ от внешнего сервиса о подтверждении изменения статуса дрона
+     */
+    ExternalDroneResponse changeStatus(Long droneServiceId, DroneStatus status);
+
+    /**
      * получение информации о доступности обслуживания адреса
      * @param addressCreateRequest запрос на (проверку) создание адреса
      * @return код доступности адреса (код перечисления)
@@ -50,7 +59,7 @@ public interface ExternalDroneService {
      * @param droneServiceId идентификатор дрона от внешнего сервиса
      * @return ответ от внешнего сервиса
      */
-    ExternalDroneResponse cancelDrone(Long droneServiceId);
+    ExternalDroneResponse cancelDrone(Long droneServiceId,Long deliveryId);
 
 }
 

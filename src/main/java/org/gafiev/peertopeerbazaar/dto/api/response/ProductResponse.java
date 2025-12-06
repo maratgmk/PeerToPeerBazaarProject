@@ -6,6 +6,7 @@ import org.gafiev.peertopeerbazaar.entity.product.Category;
 import org.gafiev.peertopeerbazaar.entity.product.PortionUnit;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -17,12 +18,13 @@ public record ProductResponse(
         Category category,
         PortionUnit portionUnit,
         Integer portionUnitCount,
-        Double weight,
-        Double volume,
+        BigDecimal weight,
+        BigDecimal volume,
         BigDecimal price,
         String imageURI,
         String qrCode,
         Long userId,
+        Instant createdAt,
         Set<SellerOfferResponse> sellerOfferResponseSet
 ) {
 }

@@ -27,6 +27,7 @@ public class ProductMapper {
                 .qrCode(product.getQrCode())
                 .sellerOfferResponseSet(sellerOfferMapper.toSellerOfferResponseSet(product.getSellerOfferSet()))
                 .userId(product.getAuthor() == null ? null : product.getAuthor().getId())
+                .createdAt(product.getCreatedAt())
                 .build();
     }
 

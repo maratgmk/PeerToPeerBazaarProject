@@ -13,6 +13,7 @@ import org.gafiev.peertopeerbazaar.entity.delivery.Drone;
 import org.gafiev.peertopeerbazaar.entity.delivery.DroneStatus;
 import org.gafiev.peertopeerbazaar.entity.order.BuyerOrderStatus;
 import org.gafiev.peertopeerbazaar.entity.user.User;
+import org.gafiev.peertopeerbazaar.exception.DroneException;
 import org.gafiev.peertopeerbazaar.repository.DeliveryRepository;
 import org.gafiev.peertopeerbazaar.repository.DroneRepository;
 import org.gafiev.peertopeerbazaar.service.integration.interfaces.ExternalDroneService;
@@ -38,7 +39,7 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
      */
     public static final Set<DeliveryStatus> DELIVERY_STATUSES = Set.of(
             DeliveryStatus.DRONE_ASSIGNED,
-            DeliveryStatus.BACK_TO_SELLER,
+            DeliveryStatus.DELAYED,
             DeliveryStatus.ON_THE_WAY);
     private final RestClient droneOperatorClient;
     private final DeliveryRepository deliveryRepository;
@@ -67,8 +68,9 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
 
     @Override
     public ExternalDroneResponse requestDrone(DeliveryDroneRequest deliveryDroneRequest) {
+        log.info("Making HTTP call to drone service: {}", deliveryDroneRequest);
         return droneOperatorClient.post()
-                .uri("")
+                .uri("/assign")
                 .body(deliveryDroneRequest)
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -77,6 +79,8 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
 
     @Override
     public Set<TimeSlotResponse> requestDroneSchedule(DeliveryDroneRequest deliveryDroneRequest) {
+        log.debug("Sending DeliveryDroneRequest to drone operator: {}", deliveryDroneRequest);
+
         return droneOperatorClient.post()
                 .uri("/timeSlot")
                 .body(deliveryDroneRequest)
@@ -87,6 +91,41 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
     }
 
     @Override
+    public ExternalDroneResponse changeStatus(Long droneServiceId, DroneStatus status) {
+        return droneOperatorClient.get()
+//                .uri("/{droneServiceId}/status")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .retrieve()
+//                .body(ExternalDroneResponse.class);
+          .uri(uriBuilder -> uriBuilder
+                .path("/{droneServiceId}/status")
+                .queryParam("status", status)
+                .build(droneServiceId))
+                .retrieve()// Этот метод бросает HttpServerErrorException при 5xx от внешнего сервиса
+                .body(ExternalDroneResponse.class);
+    }
+
+    //TODO этот метод отсутствует во внешнем сервисе
+    @Override
+    public ExternalDroneResponse cancelDrone(Long droneServiceId, Long deliveryId) {
+        try {
+            return droneOperatorClient.get()
+//                    .uri("/cancel/%d?deliveryId=%d".formatted(droneServiceId, deliveryId))
+//                    .retrieve()// Этот метод бросает HttpServerErrorException при 5xx от внешнего сервиса
+//                    .body(ExternalDroneResponse.class);
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/cancel/{droneServiceId}")
+                            .queryParam("deliveryId", deliveryId)
+                            .build(droneServiceId))
+                    .retrieve()// Этот метод бросает HttpServerErrorException при 5xx от внешнего сервиса
+                    .body(ExternalDroneResponse.class);
+        } catch (Exception e){
+            log.error("Can't cancel drone droneServiceId = " + droneServiceId,e);
+            throw new DroneException("Can't cancel drone droneServiceId = " + droneServiceId, e);
+        }
+    }
+
+    @Override
     public String getCode(AddressCreateRequest addressCreateRequest) {
         return droneOperatorClient.post()
                 .uri("/code")
@@ -94,14 +133,6 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .body(String.class);
-    }
-
-    @Override
-    public ExternalDroneResponse cancelDrone(Long droneServiceId) {
-        return droneOperatorClient.get()
-                .uri("/cancel/" + droneServiceId)
-                .retrieve()
-                .body(ExternalDroneResponse.class);
     }
 
     @Transactional

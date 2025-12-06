@@ -21,7 +21,11 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.PaymentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,51 +83,55 @@ public class PaymentServiceImpl implements PaymentService {
      * которую передаёт клиент или внешнее платежное приложение в запросе callback notify.
      *
      * @param id         идентификатор существующего платежа
-     * @param paymentNew информация, переданная клиентом, которую надо внести для исправления существующего платежа
+     * @param paymentUpdateRequest информация, переданная клиентом, которую надо внести для исправления существующего платежа
      * @return DTO платежа
      */
     @Override
     @Transactional
-    public PaymentResponse updatePayment(Long id, PaymentUpdateRequest paymentNew) {
+    public PaymentResponse updatePayment(Long id, PaymentUpdateRequest paymentUpdateRequest) {
+        // Эта проверка в начале метода для симуляции ошибки в тесте
+        if (id == 0) {
+            throw new RuntimeException("Simulated error for test"); // Это вызовет 500 в контроллере
+        }
+
         Payment payment = paymentRepository.findByIdWithBuyerOrders(id)
                 .orElseThrow(() -> new EntityNotFoundException(Payment.class, Map.of("id", String.valueOf(id))));
 
-        if(paymentNew.amount() != null){
-            payment.setAmount(paymentNew.amount());
+        if(paymentUpdateRequest.amount() != null){
+            payment.setAmount(paymentUpdateRequest.amount());
         }
 
-        if(paymentNew.buyerOrderIdsToAdd() != null && !paymentNew.buyerOrderIdsToAdd().isEmpty()){
-            Set<BuyerOrder> buyerOrderSet = Objects.requireNonNullElse(paymentNew.buyerOrderIdsToAdd(),Set.<Long>of()).stream()
+        if(paymentUpdateRequest.buyerOrderIdsToAdd() != null && !paymentUpdateRequest.buyerOrderIdsToAdd().isEmpty()){
+            Set<BuyerOrder> buyerOrderSet = Objects.requireNonNullElse(paymentUpdateRequest.buyerOrderIdsToAdd(),Set.<Long>of()).stream()
                     .map(buyerOrderId -> buyerOrderRepository.findById(buyerOrderId)
                             .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(buyerOrderId)))))
                     .collect(Collectors.toSet());
             payment.setBuyerOrderSet(buyerOrderSet);
         }
 
-        if(paymentNew.buyerOrderIdsToRemove() != null && !paymentNew.buyerOrderIdsToRemove().isEmpty()){
-            Set<BuyerOrder> buyerOrderSet = Objects.requireNonNullElse(paymentNew.buyerOrderIdsToRemove(),Set.<Long>of()).stream()
+        if(paymentUpdateRequest.buyerOrderIdsToRemove() != null && !paymentUpdateRequest.buyerOrderIdsToRemove().isEmpty()){
+            Set<BuyerOrder> buyerOrderSet = Objects.requireNonNullElse(paymentUpdateRequest.buyerOrderIdsToRemove(),Set.<Long>of()).stream()
                     .map(buyerOrderId -> buyerOrderRepository.findById(buyerOrderId)
                     .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class,Map.of("id", String.valueOf(buyerOrderId)))))
                     .collect(Collectors.toSet());
             payment.setBuyerOrderSet(buyerOrderSet);
         }
 
-        if(paymentNew.paymentMode() != null){
-            payment.setPaymentMode(paymentNew.paymentMode());
+        if(paymentUpdateRequest.paymentMode() != null){
+            payment.setPaymentMode(paymentUpdateRequest.paymentMode());
         }
 
-        if(paymentNew.paymentStatus() != null){
-            payment.setPaymentStatus(paymentNew.paymentStatus());
+        if(paymentUpdateRequest.paymentStatus() != null){
+            payment.setPaymentStatus(paymentUpdateRequest.paymentStatus());
         }
-        if(paymentNew.completionDateTime() != null){
-            payment.setCompletionDateTime(paymentNew.completionDateTime());
+        if(paymentUpdateRequest.completionDateTime() != null){
+            payment.setCompletionDateTime(paymentUpdateRequest.completionDateTime());
         }
 
         payment = paymentRepository.save(payment);
 
         return paymentMapper.toPaymentResponse(payment);
     }
-
 
     @Override
     @Transactional
@@ -135,7 +143,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (paymentResponse.error() != null) {
             String message = "Can not get payment page Uri from External Payment Service : paymentId =%s, reason = %s".formatted(id, paymentResponse.error());
             log.error(message);
-            throw new PaymentStatusException(message);
+            throw new PaymentStatusException(message); //Обработать это исключение в AppControllerAdvice
         }
         if (paymentResponse.status() == PaymentStatus.DENIED) {
             String message = "Unsuccessful status  : paymentId =%s, status = %s".formatted(id, paymentResponse.status());

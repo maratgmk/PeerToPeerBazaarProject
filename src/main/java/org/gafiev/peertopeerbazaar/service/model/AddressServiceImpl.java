@@ -87,34 +87,29 @@ public class AddressServiceImpl implements AddressService {
         return addressMapper.toAddressResponseSet(myAddressSet);
     }
 
-    @Override
-    public Set<SellerOffer> getOffersByAddressId(Long id) {
-        Address address = addressRepository.findByIdWithSellerOffersAndDeliveries(id)
-                .orElseThrow(() -> new EntityNotFoundException(Address.class,Map.of("id", String.valueOf(id))));
-       return address.getSellerOfferSet();
-    }
 
     /**
      * создание нового адреса для проверки возможности обслуживания и
      * сохранения в БД.
      * производится приватный запрос во внешний сервис для проверки возможности обслуживания.
-     * @param candidate информация введённая пользователем
+     * @param createRequest информация введённая пользователем
      * @return DTO адрес
      */
     @Override
     @Transactional
-    public AddressResponse createAddress(AddressCreateRequest candidate) {
-        checkAddress(candidate);
+    public AddressResponse createAddress(AddressCreateRequest createRequest) {
+        checkAddress(createRequest);
 
         Address address = new Address();
-        address.setTown(candidate.town());
-        address.setStreet(candidate.street());
-        address.setNumberBuilding(candidate.numberBuilding());
-        address.setZipCode(candidate.zipCode());
-        address.setLatitude(candidate.latitude());
-        address.setLongitude(candidate.longitude());
-        address.setAttitude(candidate.attitude());
-        address.setAccuracy(candidate.accuracy());
+        address.setTown(createRequest.town());
+        address.setStreet(createRequest.street());
+        address.setNumberBuilding(createRequest.numberBuilding());
+        address.setZipCode(createRequest.zipCode());
+        address.setLatitude(createRequest.latitude());
+        address.setLongitude(createRequest.longitude());
+        address.setAttitude(createRequest.attitude());
+        address.setAccuracy(createRequest.accuracy());
+        address.setCreatedAt(createRequest.createdAt());
 
         address = addressRepository.save(address);
         return addressMapper.toAddressResponse(address);
@@ -124,7 +119,6 @@ public class AddressServiceImpl implements AddressService {
      * изменение существующего адреса.
      * производится приватный запрос во внешний сервис для проверки возможности обслуживания.
      * @param id         идентификатор существующего адреса
-     * @param userId     идентификатор пользователя
      * @param addressNew информация введённая пользователем
      * @return DTO адрес
      */
@@ -163,11 +157,24 @@ public class AddressServiceImpl implements AddressService {
      * приватный метод проверки на возможность вызова дрона по данному адресу.
      * @param addressCreateRequest  DTO запрос для создания или обновления адреса
      */
+//    private void checkAddress(AddressCreateRequest addressCreateRequest) {
+//        String code = externalDroneService.getCode(addressCreateRequest);
+//        CheckAddressResult result = CheckAddressResult.getByCode(code).orElseThrow();
+//        if (result != CheckAddressResult.ALLOWED)
+//            throw new DroneException(result.getDescription());
+//    }
+
     private void checkAddress(AddressCreateRequest addressCreateRequest) {
-        String code = externalDroneService.getCode(addressCreateRequest);
-        CheckAddressResult result = CheckAddressResult.getByCode(code).orElseThrow();
-        if (result != CheckAddressResult.ALLOWED)
-            throw new DroneException(result.getDescription());
+        try {
+            String code = externalDroneService.getCode(addressCreateRequest);
+            CheckAddressResult result = CheckAddressResult.getByCode(code)
+                    .orElseThrow(() -> new IllegalArgumentException("Unknown code: " + code));
+            if (result != CheckAddressResult.ALLOWED) {
+                throw new DroneException(result.getDescription());
+            }
+        } catch (Exception e) {
+            throw new DroneException("Failed to check address: " + e.getMessage());
+        }
     }
 }
 

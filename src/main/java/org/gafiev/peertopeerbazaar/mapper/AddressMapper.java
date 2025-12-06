@@ -24,7 +24,9 @@ public class AddressMapper {
                 .zipCode(address.getZipCode())
                 .latitude(address.getLatitude())
                 .longitude(address.getLongitude())
+                .attitude(address.getAttitude())
                 .accuracy(address.getAccuracy())
+                .createdAt(address.getCreatedAt())
                 .build();
     }
 
