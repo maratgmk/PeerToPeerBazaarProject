@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 012: Users -->
+    <changeSet id="012-users" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+        </preConditions>
+        <insert tableName="users">
+            <column name="first_name" value="John"/>
+            <column name="last_name" value="Doe"/>
+            <column name="email" value="user1@example.com"/>
+            <column name="password" value="password1"/>
+            <column name="phone" value="+1234567890"/>
+            <column name="rating_seller" valueNumeric="45"/>
+            <column name="rating_buyer" valueNumeric="48"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Jane"/>
+            <column name="last_name" value="Smith"/>
+            <column name="email" value="user2@example.com"/>
+            <column name="password" value="password2"/>
+            <column name="phone" value="+1234567891"/>
+            <column name="rating_seller" valueNumeric="42"/>
+            <column name="rating_buyer" valueNumeric="46"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Bob"/>
+            <column name="last_name" value="Johnson"/>
+            <column name="email" value="user3@example.com"/>
+            <column name="password" value="password3"/>
+            <column name="phone" value="+1234567892"/>
+            <column name="rating_seller" valueNumeric="40"/>
+            <column name="rating_buyer" valueNumeric="43"/>
+        </insert>
+        <insert tableName="users">
+            <column name="first_name" value="Alice"/>
+            <column name="last_name" value="Williams"/>
+            <column name="email" value="user4@example.com"/>
+            <column name="password" value="password4"/>
+            <column name="phone" value="+1234567893"/>
+            <column name="rating_seller" valueNumeric="47"/>
+            <column name="rating_buyer" valueNumeric="49"/>
+        </insert>
+    </changeSet>
+
+    <!-- 013: User Roles -->
+    <changeSet id="013-user-roles" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user_roles"/>
+        </preConditions>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="roles" value="USER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="roles" value="BUYER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="2"/>
+            <column name="roles" value="USER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="2"/>
+            <column name="roles" value="SELLER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="3"/>
+            <column name="roles" value="USER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="3"/>
+            <column name="roles" value="BUYER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="3"/>
+            <column name="roles" value="SELLER"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="user_id" valueNumeric="4"/>
+            <column name="roles" value="USER"/>
+        </insert>
+    </changeSet>
+
+    <!-- 014: Addresses -->
+    <changeSet id="014-addresses" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="address"/>
+        </preConditions>
+        <insert tableName="address">
+            <column name="town" value="Moscow"/>
+            <column name="street" value="Lenin St"/>
+            <column name="number_building" valueNumeric="10"/>
+            <column name="zip_code" valueNumeric="101000"/>
+            <column name="latitude" valueNumeric="55.7558"/>
+            <column name="longitude" valueNumeric="37.6173"/>
+            <column name="attitude" valueNumeric="150.0"/>
+            <column name="accuracy" valueNumeric="0.5"/>
+        </insert>
+        <insert tableName="address">
+            <column name="town" value="St. Petersburg"/>
+            <column name="street" value="Nevsky Prospekt"/>
+            <column name="number_building" valueNumeric="25"/>
+            <column name="zip_code" valueNumeric="190000"/>
+            <column name="latitude" valueNumeric="59.9343"/>
+            <column name="longitude" valueNumeric="30.3351"/>
+            <column name="attitude" valueNumeric="10.0"/>
+            <column name="accuracy" valueNumeric="0.3"/>
+        </insert>
+        <insert tableName="address">
+            <column name="town" value="Kazan"/>
+            <column name="street" value="Bauman St"/>
+            <column name="number_building" valueNumeric="5"/>
+            <column name="zip_code" valueNumeric="420000"/>
+            <column name="latitude" valueNumeric="55.7961"/>
+            <column name="longitude" valueNumeric="49.1064"/>
+            <column name="attitude" valueNumeric="80.0"/>
+            <column name="accuracy" valueNumeric="0.4"/>
+        </insert>
+        <insert tableName="address">
+            <column name="town" value="Ekaterinburg"/>
+            <column name="street" value="Lenin Ave"/>
+            <column name="number_building" valueNumeric="30"/>
+            <column name="zip_code" valueNumeric="620000"/>
+            <column name="latitude" valueNumeric="56.8389"/>
+            <column name="longitude" valueNumeric="60.6057"/>
+            <column name="attitude" valueNumeric="250.0"/>
+            <column name="accuracy" valueNumeric="0.6"/>
+        </insert>
+        <insert tableName="address">
+            <column name="town" value="Novosibirsk"/>
+            <column name="street" value="Red Prospekt"/>
+            <column name="number_building" valueNumeric="15"/>
+            <column name="zip_code" valueNumeric="630000"/>
+            <column name="latitude" valueNumeric="55.0084"/>
+            <column name="longitude" valueNumeric="82.9357"/>
+            <column name="attitude" valueNumeric="150.0"/>
+            <column name="accuracy" valueNumeric="0.5"/>
+        </insert>
+    </changeSet>
+
+    <!-- 015: Products -->
+    <changeSet id="015-product" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="product"/>
+        </preConditions>
+        <insert tableName="product">
+            <column name="name" value="Laptop"/>
+            <column name="description" value="Gaming laptop"/>
+            <column name="category" value="SOLID"/>
+            <column name="portion_unit" value="PIECE"/>
+            <column name="weight" valueNumeric="2.5"/>
+            <column name="volume" valueNumeric="0.01"/>
+            <column name="price" valueNumeric="1000.00"/>
+            <column name="author_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="product">
+            <column name="name" value="Book"/>
+            <column name="description" value="Programming book"/>
+            <column name="category" value="SOLID"/>
+            <column name="portion_unit" value="PIECE"/>
+            <column name="weight" valueNumeric="0.5"/>
+            <column name="volume" valueNumeric="0.005"/>
+            <column name="price" valueNumeric="50.00"/>
+            <column name="author_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="product">
+            <column name="name" value="Phone"/>
+            <column name="description" value="Smartphone"/>
+            <column name="category" value="SOLID"/>
+            <column name="portion_unit" value="PIECE"/>
+            <column name="weight" valueNumeric="0.2"/>
+            <column name="volume" valueNumeric="0.001"/>
+            <column name="price" valueNumeric="500.00"/>
+            <column name="author_id" valueNumeric="4"/>
+        </insert>
+    </changeSet>
+
+    <!-- 016: Drones -->
+    <changeSet id="016-drone" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="drone"/>
+        </preConditions>
+        <insert tableName="drone">
+            <column name="drone_service_id" valueNumeric="1001"/>
+            <column name="drone_status" value="AVAILABLE"/>
+        </insert>
+        <insert tableName="drone">
+            <column name="drone_service_id" valueNumeric="1002"/>
+            <column name="drone_status" value="IN_USE"/>
+        </insert>
+        <insert tableName="drone">
+            <column name="drone_service_id" valueNumeric="1003"/>
+            <column name="drone_status" value="MAINTENANCE"/>
+        </insert>
+    </changeSet>
+
+    <!-- 017: Payments -->
+    <changeSet id="017-payment" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="payment"/>
+        </preConditions>
+        <insert tableName="payment">
+            <column name="amount" valueNumeric="1050.00"/>
+            <column name="currency" value="USD"/>
+            <column name="payment_mode" value="PAY_PAL"/>
+            <column name="payment_status" value="SUCCESS"/>
+        </insert>
+        <insert tableName="payment">
+            <column name="amount" valueNumeric="550.00"/>
+            <column name="currency" value="USD"/>
+            <column name="payment_mode" value="BANK_TRANSFER"/>
+            <column name="payment_status" value="PROCESSING"/>
+        </insert>
+        <insert tableName="payment">
+            <column name="amount" valueNumeric="50.00"/>
+            <column name="currency" value="USD"/>
+            <column name="payment_mode" value="CRYPTO_CURRENCY"/>
+            <column name="payment_status" value="DENIED"/>
+        </insert>
+        <insert tableName="payment">
+            <column name="amount" valueNumeric="1500.00"/>
+            <column name="currency" value="USD"/>
+            <column name="payment_mode" value="BARTER"/>
+            <column name="payment_status" value="SUCCESS"/>
+        </insert>
+    </changeSet>
+
+    <!-- 018: Seller Offers -->
+    <changeSet id="018-insert-seller-offers" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="seller_offer"/>
+        </preConditions>
+        <insert tableName="seller_offer">
+            <column name="offer_status" value="OPENED"/>
+            <column name="comment" value="High quality laptop"/>
+            <column name="creation_date_time" value="2023-10-01T10:00:00"/>
+            <column name="finish_date_time" value="2023-10-10T10:00:00"/>
+            <column name="product_id" valueNumeric="1"/>
+            <column name="seller_id" valueNumeric="2"/>
+            <column name="address_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="seller_offer">
+            <column name="offer_status" value="OPENED"/>
+            <column name="comment" value="Best programming book"/>
+            <column name="creation_date_time" value="2023-10-02T11:00:00"/>
+            <column name="finish_date_time" value="2023-10-12T11:00:00"/>
+            <column name="product_id" valueNumeric="2"/>
+            <column name="seller_id" valueNumeric="3"/>
+            <column name="address_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="seller_offer">
+            <column name="offer_status" value="CLOSED"/>
+            <column name="comment" value="Latest smartphone"/>
+            <column name="creation_date_time" value="2023-10-03T12:00:00"/>
+            <column name="finish_date_time" value="2023-10-13T12:00:00"/>
+            <column name="product_id" valueNumeric="3"/>
+            <column name="seller_id" valueNumeric="4"/>
+            <column name="address_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="seller_offer">
+            <column name="offer_status" value="OPENED"/>
+            <column name="comment" value="Discounted laptop"/>
+            <column name="creation_date_time" value="2023-10-04T13:00:00"/>
+            <column name="finish_date_time" value="2023-10-14T13:00:00"/>
+            <column name="product_id" valueNumeric="1"/>
+            <column name="seller_id" valueNumeric="3"/>
+            <column name="address_id" valueNumeric="4"/>
+        </insert>
+        <insert tableName="seller_offer">
+            <column name="offer_status" value="OPENED"/>
+            <column name="comment" value="Rare book"/>
+            <column name="creation_date_time" value="2023-10-05T14:00:00"/>
+            <column name="finish_date_time" value="2023-10-15T14:00:00"/>
+            <column name="product_id" valueNumeric="2"/>
+            <column name="seller_id" valueNumeric="4"/>
+            <column name="address_id" valueNumeric="5"/>
+        </insert>
+    </changeSet>
+
+    <!-- 019: Buyer Orders -->
+    <changeSet id="019-insert-buyer-orders" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="buyer_order"/>
+        </preConditions>
+        <insert tableName="buyer_order">
+            <column name="buyer_order_status" value="CREATED"/>
+            <column name="buyer_id" valueNumeric="1"/>
+            <column name="payment_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="buyer_order">
+            <column name="buyer_order_status" value="PAID"/>
+            <column name="buyer_id" valueNumeric="3"/>
+            <column name="payment_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="buyer_order">
+            <column name="buyer_order_status" value="DELIVERED"/>
+            <column name="buyer_id" valueNumeric="1"/>
+            <column name="payment_id" valueNumeric="4"/>
+        </insert>
+    </changeSet>
+
+    <!-- 020: Part Offer To Buy -->
+    <changeSet id="020-insert-part-offer-to-buy" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="part_offer_to_buy"/>
+        </preConditions>
+        <insert tableName="part_offer_to_buy">
+            <column name="status" value="NOT_RESERVED"/>
+            <column name="seller_offer_id" valueNumeric="1"/>
+            <column name="buyer_order_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="part_offer_to_buy">
+            <column name="status" value="NOT_RESERVED"/>
+            <column name="seller_offer_id" valueNumeric="2"/>
+            <column name="buyer_order_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="part_offer_to_buy">
+            <column name="status" value="RESERVED"/>
+            <column name="seller_offer_id" valueNumeric="3"/>
+            <column name="buyer_order_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="part_offer_to_buy">
+            <column name="status" value="RESERVED"/>
+            <column name="seller_offer_id" valueNumeric="4"/>
+            <column name="buyer_order_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="part_offer_to_buy">
+            <column name="status" value="NOT_RESERVED"/>
+            <column name="seller_offer_id" valueNumeric="5"/>
+            <column name="buyer_order_id" valueNumeric="3"/>
+        </insert>
+    </changeSet>
+
+    <!-- 021: Basket -->
+    <changeSet id="021-insert-basket" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="basket"/>
+        </preConditions>
+        <insert tableName="basket">
+            <column name="buyer_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="basket">
+            <column name="buyer_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="basket">
+            <column name="buyer_id" valueNumeric="4"/>
+        </insert>
+    </changeSet>
+    <!-- 022: Basket Part -->
+    <changeSet id="022-insert-basket-part" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="basket_part"/>
+        </preConditions>
+        <insert tableName="basket_part">
+            <column name="buyer_id" valueNumeric="1"/>
+            <column name="part_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="basket_part">
+            <column name="buyer_id" valueNumeric="1"/>
+            <column name="part_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="basket_part">
+            <column name="buyer_id" valueNumeric="3"/>
+            <column name="part_id" valueNumeric="3"/>
+        </insert>
+        <insert tableName="basket_part">
+            <column name="buyer_id" valueNumeric="4"/>
+            <column name="part_id" valueNumeric="4"/>
+        </insert>
+    </changeSet>
+
+    <!-- 023: Delivery -->
+    <changeSet id="023-insert-delivery" author="Marat Gafiev" runOnChange="true" failOnError="false">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="delivery"/>
+        </preConditions>
+        <insert tableName="delivery">
+            <column name="delivery_status" value="CREATED"/>
+            <column name="start_slot" value="2023-10-01T10:00:00"/>
+            <column name="end_slot" value="2023-10-01T12:00:00"/>
+            <column name="buyer_order_id" valueNumeric="1"/>
+            <column name="to_address_id" valueNumeric="1"/>
+            <column name="from_address_id" valueNumeric="2"/>
+            <column name="drone_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="delivery">
+            <column name="delivery_status" value="DRONE_ASSIGNED"/>
+            <column name="start_slot" value="2023-10-02T11:00:00"/>
+            <column name="end_slot" value="2023-10-02T13:00:00"/>
+            <column name="buyer_order_id" valueNumeric="2"/>
+            <column name="to_address_id" valueNumeric="3"/>
+            <column name="from_address_id" valueNumeric="4"/>
+            <column name="drone_id" valueNumeric="2"/>
+        </insert>
+        <insert tableName="delivery">
+            <column name="delivery_status" value="DELIVERED"/>
+            <column name="start_slot" value="2023-10-03T12:00:00"/>
+            <column name="end_slot" value="2023-10-03T14:00:00"/>
+            <column name="buyer_order_id" valueNumeric="3"/>
+            <column name="to_address_id" valueNumeric="5"/>
+            <column name="from_address_id" valueNumeric="1"/>
+            <column name="drone_id" valueNumeric="3"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

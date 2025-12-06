@@ -2,6 +2,7 @@ package org.gafiev.peertopeerbazaar.service.model.interfaces;
 
 import org.gafiev.peertopeerbazaar.dto.api.request.ProductCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.ProductFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.ProductUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.ProductResponse;
 
 import java.util.Set;
@@ -18,7 +19,8 @@ public interface ProductService {
 
     ProductResponse createProduct(ProductCreateRequest product);
 
-    ProductResponse updateProduct(Long id, ProductCreateRequest productDetails);
+
+    ProductResponse updateProduct(Long id, ProductUpdateRequest updateRequest);
 
     void deleteProduct(Long id);
 

@@ -8,10 +8,7 @@ import org.gafiev.peertopeerbazaar.dto.api.response.DroneResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.dto.integreation.response.ExternalDroneResponse;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
-import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
 import org.gafiev.peertopeerbazaar.entity.delivery.Drone;
-import org.gafiev.peertopeerbazaar.entity.delivery.DroneStatus;
-import org.gafiev.peertopeerbazaar.entity.order.BuyerOrderStatus;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
 import org.gafiev.peertopeerbazaar.mapper.DeliveryMapper;
 import org.gafiev.peertopeerbazaar.mapper.DroneMapper;
@@ -23,7 +20,11 @@ import org.gafiev.peertopeerbazaar.service.integration.interfaces.ExternalDroneS
 import org.gafiev.peertopeerbazaar.service.model.interfaces.DroneService;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,12 +46,13 @@ public class DroneServiceImpl implements DroneService {
 
     @Override
     public DroneResponse getDroneByIdWithBuyerOrder(Long id) {
-        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id).orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
+        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id).orElseThrow(() -> new EntityNotFoundException(
+                Drone.class, Map.of("id", String.valueOf(id))));
         return droneMapper.toDroneResponse(drone);
     }
 
     /**
-     * в этом методе getAllDrones все данные из репозитория получаются обновленными согласно метода по расписанию?
+     * getAllDrones получение дронов из репозитория согласно фильтру (обновленными согласно метода по расписанию?)
      */
     @Override
     public Set<DroneResponse> getAllDrones(DroneFilterRequest filterRequest) {
@@ -59,9 +61,8 @@ public class DroneServiceImpl implements DroneService {
     }
 
     /**
-     * Это метод по загрузке и разгрузке дрона. Метод вызывается дважды, сначала при загрузке, затем, когда прилетит к покупателю, то будет разгрузка.
-     * метод по обновлению дрона, изначальные drone.getDeliverySet() затираются новыми доставками из droneRequest.deliveryIdsToAdd()
-     * и в добавок из нового множества полученных стираются ещё раз те, которые совпадают с droneRequest.deliveryIdsToRemove(). Зачем так?
+     * метод по обновлению дрона, к изначальному множеству доставок = drone.getDeliverySet() добавляются новые доставки из droneRequest.deliveriesToAdd()
+     * и удаляются доставки из droneRequest.deliveryIds().
      *
      * @param id           идентификатор дрона, который надо обновить
      * @param droneRequest DTO информация, необходимая для обновления дрона
@@ -71,48 +72,13 @@ public class DroneServiceImpl implements DroneService {
     public DroneResponse update(Long id, DroneCreateRequest droneRequest) {
         Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
-        Set<Long> droneDeliveryIds = drone.getDeliverySet().stream().map(Delivery::getId).collect(Collectors.toSet());
-
-        if (!droneDeliveryIds.equals(droneRequest.deliveryIdsToAdd())) {
-            Set<Delivery> deliveryNewSet = droneRequest.deliveryIdsToAdd().stream()
-                    .map(deliveryId -> deliveryRepository.findById(deliveryId)
-                            .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(deliveryId)))))
-                    .collect(Collectors.toSet());
-            drone.setDeliverySet(deliveryNewSet);//стерли первоначальный Set = drone.getDeliverySet(), и заменили на droneRequest.deliveryIdsToAdd().
-            // Это что за логика? Логика сейчас через месяц стала понятна.)  Но главный вопрос, откуда первоначально взялся первоначальный Set = drone.getDeliverySet()?
-            // Где произошла загрузка?
-        }
-
-        if (!droneDeliveryIds.equals(droneRequest.deliveryIdsToRemove())) {
-            Set<Delivery> deliveryNewSet = droneRequest.deliveryIdsToRemove().stream()
-                    .map(deliveryId -> deliveryRepository.findById(deliveryId)
-                            .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(deliveryId)))))
-                    .collect(Collectors.toSet());
-            drone.setDeliverySet(deliveryNewSet);
-        }
-        drone = droneRepository.save(drone);
-
-        return droneMapper.toDroneResponse(drone);
-    }
-
-    /**
-     * метод по обновлению дрона, к изначальному множеству доставок = drone.getDeliverySet() добавляются новые доставки из droneRequest.deliveryIdsToAdd()
-     * и удаляются доставки из droneRequest.deliveryIdsToRemove().
-     *
-     * @param id           идентификатор дрона, который надо обновить
-     * @param droneRequest DTO информация, необходимая для обновления дрона
-     * @return DTO изменённого дрона
-     */
-    @Override
-    public DroneResponse update2(Long id, DroneCreateRequest droneRequest) {
-        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
-                .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
 
         Set<Delivery> deliveryCurrentSet = new HashSet<>(drone.getDeliverySet());
 
-        Set<Long> deliveryIdsToAdd = droneRequest.deliveryIdsToAdd();
+        Set<Long> deliveryIdsToAdd = droneRequest.deliveriesToAdd();
+
         if (deliveryIdsToAdd != null && !deliveryIdsToAdd.isEmpty()) {
-            Set<Delivery> deliveryToAddSet = droneRequest.deliveryIdsToAdd().stream()
+            Set<Delivery> deliveryToAddSet = droneRequest.deliveriesToAdd().stream()
                     .filter(addId -> deliveryCurrentSet.stream().noneMatch(delivery -> delivery.getId().equals(addId)))
                     .map(addId -> deliveryRepository.findById(addId)
                             .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(addId)))))
@@ -123,13 +89,20 @@ public class DroneServiceImpl implements DroneService {
         drone.setDeliverySet(deliveryCurrentSet);
 
         Set<Long> deliveryIdsToRemove = droneRequest.deliveryIdsToRemove();
-        if (deliveryIdsToRemove != null && !deliveryIdsToRemove.isEmpty()) {
-            Set<Long> deliveryCurrentIdsSet = deliveryCurrentSet.stream().map(Delivery::getId).collect(Collectors.toSet());
 
-            for (Long deliveryId : deliveryIdsToRemove) {
-                if (!deliveryCurrentIdsSet.contains(deliveryId)) {
-                    throw new EntityNotFoundException(Delivery.class, Map.of("deliveryId", String.valueOf(deliveryId)));
-                }
+        if (deliveryIdsToRemove != null && !deliveryIdsToRemove.isEmpty()) {
+            Set<Long> deliveryCurrentIdsSet = deliveryCurrentSet.stream()
+                    .map(Delivery::getId)
+                    .collect(Collectors.toSet());
+
+            List<Long> missingIds = deliveryIdsToRemove.stream()
+                    .filter(removeId -> !deliveryCurrentIdsSet.contains(removeId))
+                    .toList();
+
+            if (!missingIds.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "The following delivery IDs are not assigned to the drone and cannot be removed: " + missingIds
+                );
             }
             deliveryCurrentSet.removeIf(delivery -> deliveryIdsToRemove.contains(delivery.getId()));
         }
@@ -139,9 +112,9 @@ public class DroneServiceImpl implements DroneService {
     }
 
     @Override
-    public List<TimeSlotResponse> getTimeSlots(Long id) {
-        Delivery delivery = deliveryRepository.findDeliveryByIdWithBuyerOrderWithAddresses(id)
-                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(id))));
+    public List<TimeSlotResponse> getTimeSlots(Long deliveryId) {
+        Delivery delivery = deliveryRepository.findDeliveryByIdWithBuyerOrderWithAddresses(deliveryId)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(deliveryId))));
 
         Set<TimeSlotResponse> timeSlotResponses = externalDroneService.requestDroneSchedule(deliveryMapper.toDeliveryDroneRequest(delivery));
 
@@ -149,26 +122,13 @@ public class DroneServiceImpl implements DroneService {
     }
 
     @Override
-    public DroneResponse observingFlightOfDrone(Long id) {
-        Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
-                .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
-
-        if (drone.getDroneStatus() == DroneStatus.OFFLOADED) {
-            drone.getDeliverySet().forEach(d -> {
-                d.setDeliveryStatus(DeliveryStatus.DELIVERED);
-                d.getBuyerOrder().setBuyerOrderStatus(BuyerOrderStatus.DELIVERED);
-            });
-            deliveryRepository.saveAll(drone.getDeliverySet());
-        }
-
-        return droneMapper.toDroneResponse(drone);
-    }
-
-    @Override
-    public DroneResponse cancelDrone(Long id) {
+    public DroneResponse cancelDrone(Long id, Long deliveryId) {
         Drone drone = droneRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
-        ExternalDroneResponse externalDroneResponse = externalDroneService.cancelDrone(drone.getDroneServiceId());
+        Delivery delivery = deliveryRepository.findById(deliveryId)
+                .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(deliveryId))));
+        ExternalDroneResponse externalDroneResponse = externalDroneService.cancelDrone(drone.getDroneServiceId(),delivery.getId());
+
         return droneMapper.toDroneResponse(externalDroneResponse);
     }
 }

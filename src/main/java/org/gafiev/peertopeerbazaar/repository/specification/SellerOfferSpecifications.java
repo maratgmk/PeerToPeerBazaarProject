@@ -40,54 +40,54 @@ public class SellerOfferSpecifications {
             }
 
             if (request.offerStatus() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("offer_status"), request.offerStatus().name()));
+                predicates.add(criteriaBuilder.equal(root.get("offerStatus"), request.offerStatus().name()));
             }
 
-            if (request.unitCountHigh() != null) {
-                predicates.add(criteriaBuilder.le(root.get("unit_count"), request.unitCountHigh()));
+//            if (request.unitCountHigh() != null) {
+//                predicates.add(criteriaBuilder.le(root.get("unit_count"), request.unitCountHigh()));
+//            }
+//
+//            if (request.unitCountLow() != null) {
+//                predicates.add(criteriaBuilder.ge(root.get("unit_count"), request.unitCountLow()));
+//            }
+
+            if (request.creationDateTimeAfter() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("creationDateTime"), request.creationDateTimeAfter()));
             }
 
-            if (request.unitCountLow() != null) {
-                predicates.add(criteriaBuilder.ge(root.get("unit_count"), request.unitCountLow()));
+            if (request.creationDateTimeBefore() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("creationDateTime"), request.creationDateTimeBefore()));
             }
 
-            if (request.creationDateTimeEarlier() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("creation_date_time"), request.creationDateTimeEarlier()));
-            }
-
-            if (request.creationDateTimeLater() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("creation_date_time"), request.creationDateTimeLater()));
-            }
-
-            if (request.creationDateTimeEarlier() != null && request.creationDateTimeLater() != null) {
-                if (request.creationDateTimeLater().isAfter(request.creationDateTimeEarlier())) {
+            if (request.creationDateTimeAfter() != null && request.creationDateTimeBefore() != null) {
+                if (request.creationDateTimeBefore().isAfter(request.creationDateTimeAfter())) {
                     return criteriaBuilder.conjunction(); // Возвращаем пустой предикат
                 } else {
                     predicates.add(criteriaBuilder.between(
                             root.get("creation_date_time"),
-                            request.creationDateTimeLater(),
-                            request.creationDateTimeEarlier()
+                            request.creationDateTimeBefore(),
+                            request.creationDateTimeAfter()
                     ));
                 }
             }
 
-            if (request.finishDateTimeEarlier() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("finish_date_time"), request.finishDateTimeEarlier()));
+            if (request.finishDateTimeAfter() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("finishDateTime"), request.finishDateTimeAfter()));
             }
 
-            if (request.creationDateTimeLater() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("finish_date_time"), request.creationDateTimeLater()));
+            if (request.creationDateTimeBefore() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("finishDateTime"), request.creationDateTimeBefore()));
             }
 
 
-            if (request.finishDateTimeEarlier() != null && request.finishDateTimeLater() != null) {
-                if (request.finishDateTimeLater().isAfter(request.finishDateTimeEarlier())) {
+            if (request.finishDateTimeAfter() != null && request.finishDateTimeBefore() != null) {
+                if (request.finishDateTimeBefore().isAfter(request.finishDateTimeAfter())) {
                     return criteriaBuilder.conjunction(); // Возвращаем пустой предикат
                 } else {
                     predicates.add(criteriaBuilder.between(
-                            root.get("finish_date_time"),
-                            request.finishDateTimeLater(),
-                            request.finishDateTimeEarlier()
+                            root.get("finishDateTime"),
+                            request.finishDateTimeBefore(),
+                            request.finishDateTimeAfter()
                     ));
                 }
             }

@@ -1,7 +1,10 @@
 package org.gafiev.peertopeerbazaar.dto.integreation.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.neovisionaries.i18n.CurrencyCode;
 import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Builder;
 import lombok.NonNull;
 
@@ -21,7 +24,12 @@ import java.math.BigDecimal;
 @Builder(toBuilder = true)
 public record ExternalPaymentRequest(
         @Nonnull @NonNull Long paymentId,
-        @Nonnull @NonNull BigDecimal amount,
+
+        @Nonnull @PositiveOrZero(message = "Price can not be negative")
+        @Digits(integer = 12, fraction = 2)
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "%.2f")
+        BigDecimal amount,
+
         @Nonnull @NonNull CurrencyCode currency,
         @Nonnull @NonNull String callbackUri,
         @Nonnull @NonNull String returnUri,

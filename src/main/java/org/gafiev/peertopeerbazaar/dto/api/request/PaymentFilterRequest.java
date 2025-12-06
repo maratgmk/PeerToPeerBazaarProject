@@ -30,8 +30,9 @@ public record PaymentFilterRequest(
         PaymentStatus paymentStatus,
 
         @PastOrPresent
-        LocalDateTime completionDateTimeEarlier,
+        LocalDateTime completionDateTimeBefore,
 
         @PastOrPresent
-        LocalDateTime completionDateTimeLater) {
+        LocalDateTime completionDateTimeAfter
+) {
 }

@@ -37,15 +37,15 @@ public class PaymentSpecification {
             }
 
             if(filterRequest.paymentMode() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("payment_mode"), filterRequest.paymentMode().name()));
+                predicates.add(criteriaBuilder.equal(root.get("paymentMode"), filterRequest.paymentMode().name()));
             }
 
             if(filterRequest.paymentStatus() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("payment_status"), filterRequest.paymentStatus().name()));
+                predicates.add(criteriaBuilder.equal(root.get("paymentStatus"), filterRequest.paymentStatus().name()));
             }
 
-            if(filterRequest.completionDateTimeEarlier() != null && filterRequest.completionDateTimeLater() != null) {
-                predicates.add(criteriaBuilder.between(root.get("completion_date_time"), filterRequest.completionDateTimeLater(), filterRequest.completionDateTimeEarlier()));
+            if(filterRequest.completionDateTimeBefore() != null && filterRequest.completionDateTimeAfter() != null) {
+                predicates.add(criteriaBuilder.between(root.get("completionDateTime"), filterRequest.completionDateTimeAfter(), filterRequest.completionDateTimeBefore()));
             }
 
 

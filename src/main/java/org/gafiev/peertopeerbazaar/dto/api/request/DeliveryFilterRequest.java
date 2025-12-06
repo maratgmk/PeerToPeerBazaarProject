@@ -6,7 +6,6 @@ import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
 import org.gafiev.peertopeerbazaar.entity.time.TimeSlot;
 
 import java.util.Set;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 public record DeliveryFilterRequest(
@@ -22,16 +21,14 @@ public record DeliveryFilterRequest(
         DeliveryStatus deliveryStatus,
 
         /**
-         * timeSlotEarlier верхняя временная граница,
-         * для поиска событий до этой временной метки
+         * Самое раннее допустимое время начала доставки (Deliveries must start AFTER or AT this time)
          */
-        TimeSlot timeSlotEarlier,
+        TimeSlot startTimeAfter,
 
         /**
-         * timeSlotTimeLater нижняя временная граница,
-         * для поиска событий после этой временной метки
+         * Самое позднее допустимое время окончания доставки (Deliveries must end BEFORE or AT this time)
          */
-        TimeSlot timeSlotTimeLater,
+        TimeSlot endTimeBefore,
 
         /**
          * идентификатор заказа покупателя, по которому происходит фильтрация

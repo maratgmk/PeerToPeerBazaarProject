@@ -35,9 +35,8 @@ public interface DroneService {
      * @param droneRequest DTO информация для обновления дрона
      * @return DTO обновленный дрон
      */
-    DroneResponse update(Long id, DroneCreateRequest droneRequest);
 
-    DroneResponse update2(Long id, DroneCreateRequest droneRequest);
+    DroneResponse update(Long id, DroneCreateRequest droneRequest);
 
     /**
      * получение информации о временных рамках доступности дронов, от внешнего сервиса дронов.
@@ -47,18 +46,11 @@ public interface DroneService {
     List<TimeSlotResponse> getTimeSlots(Long id);
 
     /**
-     * Наблюдение за местонахождением дрона по статусу состояний, и по координатам (в перспективе).
-     * @param id идентификатор дрона.
-     * @return DTO дрона с его "местонахождением".
-     */
-    DroneResponse observingFlightOfDrone(Long id);
-
-    /**
      * метод отмены дрона покупателем по его инициативе.
      * @param id идентификатор дрона в репозитории
      * @return DTO дрона, который решили отменить
      */
-    DroneResponse cancelDrone(Long id);
+    DroneResponse cancelDrone(Long id,Long deliveryId);
 }
 
 

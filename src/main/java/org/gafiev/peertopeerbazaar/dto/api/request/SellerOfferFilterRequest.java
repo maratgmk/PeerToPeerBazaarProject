@@ -1,8 +1,8 @@
 package org.gafiev.peertopeerbazaar.dto.api.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import org.gafiev.peertopeerbazaar.entity.order.OfferStatus;
@@ -26,36 +26,40 @@ public record SellerOfferFilterRequest(
         /**
          * нижняя граница выборки количества единиц измерения в оффере
          */
-        @Positive Integer unitCountLow,
+     //   @Positive Integer unitCountLow,
 
         /**
          * верхняя граница выборки количества единиц измерения в оффере
          */
-        @Positive Integer unitCountHigh,
+   //     @Positive Integer unitCountHigh,
 
         /**
-         * creationDateTimeEarlier верхняя временная граница,
+         * creationDateTimeAfter верхняя временная граница,
          * для поиска событий до этой даты
          */
-        @PastOrPresent LocalDateTime creationDateTimeEarlier,
-
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+        @PastOrPresent LocalDateTime creationDateTimeAfter,
         /**
-         * creationDateTimeLater нижняя временная граница,
+         *
+         * creationDateTimeBefore нижняя временная граница,
          * для поиска событий после этой даты
          */
-        @PastOrPresent LocalDateTime creationDateTimeLater,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+        @PastOrPresent LocalDateTime creationDateTimeBefore,
 
         /**
-         * finishDateTimeEarlier верхняя временная граница,
+         * finishDateTimeAfter верхняя временная граница,
          * для поиска событий до этой даты
          */
-        @PastOrPresent LocalDateTime finishDateTimeEarlier,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+        LocalDateTime finishDateTimeAfter,
 
         /**
-         * finishDateTimeLater нижняя временная граница,
+         * finishDateTimeBefore нижняя временная граница,
          * для поиска событий после этой даты
          */
-        @PastOrPresent LocalDateTime finishDateTimeLater,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
+        LocalDateTime finishDateTimeBefore,
 
         /**
          * набор идентификаторов продуктов, по которым идёт фильтрация.
@@ -72,3 +76,4 @@ public record SellerOfferFilterRequest(
          */
         @Size(min = 1) Set<Long> userIds) {
 }
+//TODO Integer unitCountLow, & Integer unitCountHigh,??? Set<partOfferToBuy> parts; unitCountLow = parts.length???

@@ -3,6 +3,8 @@ package org.gafiev.peertopeerbazaar.dto.api.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 
+import java.time.Instant;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record AddressResponse(
@@ -14,6 +16,8 @@ public record AddressResponse(
         Double latitude,
         Double longitude,
         Double attitude,
-        Double accuracy
-        ) {
+        Double accuracy,
+        Instant createdAt
+
+) {
 }

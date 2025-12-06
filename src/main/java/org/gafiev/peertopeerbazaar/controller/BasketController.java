@@ -9,7 +9,12 @@ import org.gafiev.peertopeerbazaar.service.model.interfaces.BasketService;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @Validated
@@ -40,6 +45,5 @@ public class BasketController {
     public BasketResponse removePartOfferToBuy(@NotNull @Positive @PathVariable Long id,@NotNull @Positive @RequestParam Long partOfferToBuyId){
         return basketService.removePartOfferToBuy(id,partOfferToBuyId);
     }
-
 }
 

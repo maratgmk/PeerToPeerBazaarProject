@@ -12,7 +12,7 @@ import java.util.Set;
 @Builder
 public record UserFilterRequest(
         @Size(min = 1) Set<Long> ids,
-        Role role,
+        Set<Role> roles,
         @PositiveOrZero Integer ratingSellerLow,
         @PositiveOrZero Integer ratingSellerHigh,
         @PositiveOrZero Integer ratingBuyerLow,

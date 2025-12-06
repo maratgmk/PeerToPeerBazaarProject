@@ -1,12 +1,31 @@
 package org.gafiev.peertopeerbazaar.entity.order;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import org.gafiev.peertopeerbazaar.entity.delivery.Delivery;
 import org.gafiev.peertopeerbazaar.entity.payment.Payment;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,9 +40,9 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "buyer_order")
-public class    BuyerOrder {
+public class BuyerOrder {
     /**
      * id это идентификатор заказа покупателя
      */
@@ -37,7 +56,8 @@ public class    BuyerOrder {
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "buyer_order_status")
-    private BuyerOrderStatus buyerOrderStatus;
+    @Builder.Default
+    private BuyerOrderStatus buyerOrderStatus = BuyerOrderStatus.CREATED;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -51,7 +71,6 @@ public class    BuyerOrder {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User buyer;
-
 
     /**
      * payment есть платёж по заказу покупателя.
@@ -138,19 +157,19 @@ public class    BuyerOrder {
      * получение общего веса заказа в кг
      * @return веса заказа
      */
-    public double getWeightKg(){
+    public BigDecimal getWeightKg(){
         return partOfferToBuySet.stream()
-                .mapToDouble(part -> part.getSellerOffer().getProduct().getWeightKg())
-                .sum();
+                .map(part -> part.getSellerOffer().getProduct().getWeightKg())
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 
     /**
      * получение общего объема заказа в литрах
      * @return объема заказа
      */
-    public double getVolumeLtr(){
+    public BigDecimal getVolumeLtr(){
         return partOfferToBuySet.stream()
-                .mapToDouble(part -> part.getSellerOffer().getProduct().getVolumeLtr())
-                .sum();
+                .map(part -> part.getSellerOffer().getProduct().getVolumeLtr())
+                .reduce(BigDecimal.ZERO,BigDecimal::add);
     }
 }

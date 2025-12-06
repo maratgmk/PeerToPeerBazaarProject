@@ -59,8 +59,8 @@ public interface DeliveryRepository extends JpaRepository<Delivery,Long>, JpaSpe
     @Query("SELECT d FROM Delivery d WHERE d.id =:id")
     Optional<Delivery> findDeliveryByIdWithDrone(Long id);
 
-    @EntityGraph(attributePaths = { "buyerOrder.buyer", "buyerOrder.partOfferToBuySet.sellerOffer.seller" })
+    @EntityGraph(attributePaths = { "buyerOrder.buyer", "buyerOrder.partOfferToBuySet.sellerOffer.seller" ,"drone", "buyerOrder.payment"})
     @Query("SELECT d FROM Delivery d WHERE d.id = :id")
-    Optional<Delivery> findByIdWithBuyerAndSeller(Long id);
+    Optional<Delivery> findByIdWithBuyerAndSellerAndDroneAndPayment(Long id);
 }
 

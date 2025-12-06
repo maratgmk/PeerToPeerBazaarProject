@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * утилитарный класс определяющий метод поиска в БД согласно переданного в запросе фильтра
  */
@@ -20,45 +21,31 @@ public class AddressSpecifications {
             List<Predicate> predicates = new ArrayList<>();
             if (request == null) return criteriaBuilder.conjunction();
 
-            if (request.ids() != null && !request.ids().isEmpty()) {
+            if (!request.ids().isEmpty()) {
                 predicates.add(root.get("id").in(request.ids()));
             }
+            predicates.add(criteriaBuilder.le(root.get("longitude"), request.longitudeRight()));
 
-            if (request.longitudeRight() != null) {
-                predicates.add(criteriaBuilder.le(root.get("longitude"), request.longitudeRight()));
-            }
+            predicates.add(criteriaBuilder.ge(root.get("longitude"), request.longitudeLeft()));
 
-            if (request.longitudeLeft() != null) {
-                predicates.add(criteriaBuilder.ge(root.get("longitude"), request.longitudeLeft()));
-            }
+            predicates.add(criteriaBuilder.le(root.get("latitude"), request.latitudeNorth()));
 
-            if (request.latitudeNorth() != null) {
-                predicates.add(criteriaBuilder.le(root.get("latitude"), request.latitudeNorth()));
-            }
+            predicates.add(criteriaBuilder.ge(root.get("latitude"), request.latitudeSouth()));
 
-            if (request.latitudeSouth() != null) {
-                predicates.add(criteriaBuilder.ge(root.get("latitude"), request.latitudeSouth()));
-            }
+            predicates.add(criteriaBuilder.le(root.get("attitude"), request.attitudeHigh()));
 
-            if (request.attitudeHigh() != null) {
-                predicates.add(criteriaBuilder.le(root.get("attitude"), request.attitudeHigh()));
-            }
+            predicates.add(criteriaBuilder.ge(root.get("attitude"), request.attitudeLow()));
 
-            if (request.attitudeLow() != null) {
-                predicates.add(criteriaBuilder.ge(root.get("attitude"), request.attitudeLow()));
+            if (!request.town().isBlank()) {
+                predicates.add(criteriaBuilder.equal(root.get("town"), request.town()));
             }
-
-            if (request.town() != null && !request.town().isBlank()) {
-                predicates.add(criteriaBuilder.equal(root.get("town"),  request.town()));
-            }
-            if (request.street() != null && !request.street().isBlank()) {
+            if (!request.street().isBlank()) {
                 predicates.add(criteriaBuilder.equal(root.get("street"), request.street()));
             }
-            if (request.numberBuilding() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("number_building"), request.numberBuilding()));
+            if (!request.numbers().isEmpty()) {
+                predicates.add(root.get("numberBuilding").in(request.numbers()));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-
         };
     }
 }

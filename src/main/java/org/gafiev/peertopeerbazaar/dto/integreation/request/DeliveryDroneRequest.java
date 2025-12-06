@@ -1,6 +1,7 @@
 package org.gafiev.peertopeerbazaar.dto.integreation.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 
@@ -14,8 +15,8 @@ import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
 public record DeliveryDroneRequest(
-        TimeSlotResponse timeSlot,
-        BuyerOrderDroneRequest buyerOrder,
-        AddressDroneRequest toAddress,
-        AddressDroneRequest fromAddress) {
+        @JsonProperty("timeSlot") TimeSlotResponse timeSlot,
+        @JsonProperty("buyerOrder") BuyerOrderDroneRequest buyerOrder,
+        @JsonProperty("toAddress") AddressDroneRequest toAddress,
+        @JsonProperty("fromAddress") AddressDroneRequest fromAddress) {
 }

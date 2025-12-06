@@ -85,9 +85,15 @@
       <column name="description" type="TEXT"/>
       <column name="category" type="VARCHAR(32)"/>
       <column name="portion_unit" type="VARCHAR(32)"/>
-      <column name="weight" type="DOUBLE PRECISION"/>
-      <column name="volume" type="DOUBLE PRECISION"/>
-      <column name="price" type="DECIMAL(19,4)"/>
+      <column name="weight" type="NUMERIC(6,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="volume" type="NUMERIC(6,2)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="price" type="NUMERIC(12,2)">
+        <constraints nullable="false"/>
+      </column>
       <column name="image_uri" type="VARCHAR(512)"/>
       <column name="qr_code" type="VARCHAR(256)"/>
       <column name="author_id" type="BIGINT">
@@ -245,7 +251,7 @@
       </preConditions>
       <createTable tableName="part_offer_to_buy">
         <column name="id" type="BIGINT" autoIncrement="true">
-          <constraints primaryKey="true" nullable="false"/>
+          <constraints primaryKey="true" nullable="true"/>
         </column>
         <column name="status" type="VARCHAR(32)" defaultValue="NOT_RESERVED">
           <constraints nullable="false"/>
@@ -330,7 +336,7 @@
       </preConditions>
       <createTable tableName="delivery">
         <column name="id" type="BIGINT" autoIncrement="true">
-          <constraints primaryKey="true" nullable="false"/>
+          <constraints primaryKey="true" nullable="true"/>
         </column>
         <column name="delivery_status" type="VARCHAR(32)">
           <constraints nullable="false"/>

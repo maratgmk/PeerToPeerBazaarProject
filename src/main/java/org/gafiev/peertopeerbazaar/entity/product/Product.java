@@ -1,7 +1,24 @@
 package org.gafiev.peertopeerbazaar.entity.product;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.gafiev.peertopeerbazaar.entity.order.SellerOffer;
 import org.gafiev.peertopeerbazaar.entity.user.User;
 import org.hibernate.annotations.CreationTimestamp;
@@ -21,6 +38,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder(toBuilder = true)
 @Table(name = "product")
 public class Product {
     /**
@@ -60,32 +78,31 @@ public class Product {
     /**
      * weight это вес одной порции продукта
      */
-    @Column(name = "weight")
-    private Double weightKg;
-
+    @Column(name = "weight", precision = 6, scale = 2, nullable = false)
+    private BigDecimal weightKg;
     /**
      * volume это объём одной порции продукта
      */
-    @Column(name = "volume")
-    private Double volumeLtr;
+    @Column(name = "volume", precision = 6, scale = 2, nullable = false)
+    private BigDecimal volumeLtr;
 
     /**
      * price есть цена за порцию продукта
      */
-    @Column(name = "price")
+    @Column(name = "price", precision = 12, scale = 2, nullable = false)
     private BigDecimal price;
 
     /**
      * imageURI изображение продукта
      */
-    @Column(name = "image_uri") //TODO сделать интеграцию с базой фото
+    @Column(name = "image_uri")
     private String imageURI;
 
     /**
      * qrCode является ссылкой на страницу продукта
      */
     @Column(name = "qr_code")
-    private String qrCode; //TODO сделать интеграцию с базой QR
+    private String qrCode;
 
     /**
      * создатель продукта
