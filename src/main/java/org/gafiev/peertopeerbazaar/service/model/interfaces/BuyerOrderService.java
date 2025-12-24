@@ -9,69 +9,75 @@ import org.gafiev.peertopeerbazaar.entity.order.BuyerOrderStatus;
 import java.util.Set;
 
 /**
- * интерфейс описывает методы получения заказа покупателя по id покупателя и id заказа покупателя,
- * метод получения всех заказов покупателя по id покупателя и согласно статуса заказов покупателя,
- * метод создания заказа покупателя,
- * удаление заказа покупателя, метод отмены конкретного заказа покупателя
+ * Provides methods for BuyerOrder data operations.
  */
 public interface BuyerOrderService {
 
-    BuyerOrderResponse getByIdWithBuyer(Long buyerOrderId);
     /**
-     * метод получения DTO заказа покупателя по двум идентификаторам.
+     * Retrieves BuyerOrder response DTO by identifier with buyer (User entity).
      *
-     * @param buyerId  идентификатор покупателя
-     * @param buyerOrderId идентификатор заказа покупателя
-     * @return buyerOrderResponse
+     * @param buyerOrderId Unique BuyerOrder identifier.
+     * @return BuyerOrder response DTO.
+     */
+    BuyerOrderResponse getByIdWithBuyer(Long buyerOrderId);
+
+    /**
+     * Retrieves BuyerOrder response DTO by identifier and buyer identifier.
+     *
+     * @param buyerId      Unique User identifier.
+     * @param buyerOrderId Unique BuyerOrder identifier.
+     * @return BuyerOrder response DTO.
      */
     BuyerOrderResponse get(Long buyerOrderId, Long buyerId);
 
     /**
-     * метод получения множества DTO заказов покупателя, соответствующих определённому статусу.
+     * Retrieves Set of BuyerOrder responses DTOs by status and buyer identifier.
      *
-     * @param buyerId идентификатор покупателя
-     * @param buyerOrderStatus состояние заказа покупателя
-     * @return buyerOrderResponseSet
+     * @param buyerId          Unique User identifier.
+     * @param buyerOrderStatus Current buyer order status.
+     * @return Set of BuyerOrder response DTOs.
      */
     Set<BuyerOrderResponse> getAllByStatus(Long buyerId, BuyerOrderStatus buyerOrderStatus);
 
     /**
-     * поиск всех заказов покупателя, удовлетворяющих заданным критериям.
-     * @param filterRequest фильтр по которому происходит выборка заказов покупателя
-     * @return множество DTO заказов покупателя
+     * Retrieves Set of BuyerOrder response DTOs by filter criteria.
+     *
+     * @param filterRequest BuyerOrderFilterRequest DTO with filter criteria.
+     * @return Set of BuyerOrder response DTOs.
      */
     Set<BuyerOrderResponse> getAllBuyerOrders(BuyerOrderFilterRequest filterRequest);
 
     /**
-     * метод создания множества новых заказов покупателя.
+     * Creates new BuyerOrder from BuyerOrderCreateRequest DTO.
      *
-     * @param buyerId идентификатор покупателя
-     * @param candidate информация от покупателя, необходимая для создания нового заказа
-     * @return множество заказов разделённых по поставщикам, адресам забора товаров дронами, временем забора товаров
+     * @param buyerId   Unique User identifier.
+     * @param candidate BuyerOrderCreateRequest DTO with creation data.
+     * @return Set of BuyerOrder response DTOs.
      */
     Set<BuyerOrderResponse> create(Long buyerId, BuyerOrderCreateRequest candidate);
 
     /**
+     * Updates existing BuyerOrder from BuyerOrderUpdateRequest DTO.
      *
-     * @param buyerId
-     * @param requestNew
-     * @return
+     * @param buyerId      Unique User identifier.
+     * @param buyerOrderId Unique BuyerOrder identifier.
+     * @param requestNew   BuyerOrderUpdateRequest DTO with update data.
+     * @return BuyerOrder response DTO.
      */
     BuyerOrderResponse update(Long buyerId, Long buyerOrderId, BuyerOrderUpdateRequest requestNew);
 
     /**
-     * метод отмены заказа покупателя.
+     * Cancels BuyerOrder by buyer.
      *
-     * @param buyerId идентификатор покупателя
-     * @param buyerOrderId идентификатор заказа покупателя
+     * @param buyerId      Unique User identifier.
+     * @param buyerOrderId Unique BuyerOrder identifier.
      */
     void cancel(Long buyerId, Long buyerOrderId);
 
     /**
-     * метод удаления заказа покупателя из БД.
+     * Deletes BuyerOrder from database.
      *
-     * @param buyerOrderId идентификатор заказа покупателя
+     * @param buyerOrderId Unique BuyerOrder identifier.
      */
     void delete(Long buyerOrderId);
-
 }

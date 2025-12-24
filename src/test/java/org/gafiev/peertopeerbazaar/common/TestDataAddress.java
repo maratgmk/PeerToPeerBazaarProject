@@ -31,7 +31,7 @@ public class TestDataAddress {
         return Address.builder()
                 .town(faker.address().cityName())
                 .street(faker.address().streetName())
-                .numberBuilding(faker.number().numberBetween(1,500))
+                .buildingNumber(faker.number().numberBetween(1,500))
                 .zipCode(faker.number().numberBetween(100000, 999999))
                 .latitude(latitude)
                 .longitude(longitude)

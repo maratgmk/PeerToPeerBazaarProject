@@ -1,6 +1,6 @@
 package org.gafiev.peertopeerbazaar.service.integration;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gafiev.peertopeerbazaar.dto.api.request.AddressCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
@@ -32,12 +32,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ExternalDroneServiceImpl implements ExternalDroneService {
     /**
-     * статусы доставок, при которых нужно отслеживать статусы дронов.
+     * Delivery statuses that require drone status tracking.
+     * Only deliveries in these states will be synchronized with the external drone service.
      */
-    public static final Set<DeliveryStatus> DELIVERY_STATUSES = Set.of(
+    public static final Set<DeliveryStatus> MONITORED_DELIVERY_STATUSES = Set.of(
             DeliveryStatus.DRONE_ASSIGNED,
             DeliveryStatus.DELAYED,
             DeliveryStatus.ON_THE_WAY);
@@ -93,35 +94,27 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
     @Override
     public ExternalDroneResponse changeStatus(Long droneServiceId, DroneStatus status) {
         return droneOperatorClient.get()
-//                .uri("/{droneServiceId}/status")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .retrieve()
-//                .body(ExternalDroneResponse.class);
-          .uri(uriBuilder -> uriBuilder
-                .path("/{droneServiceId}/status")
-                .queryParam("status", status)
-                .build(droneServiceId))
-                .retrieve()// Этот метод бросает HttpServerErrorException при 5xx от внешнего сервиса
+                .uri(uriBuilder -> uriBuilder
+                        .path("/{droneServiceId}/status")
+                        .queryParam("status", status)
+                        .build(droneServiceId))
+                .retrieve()
                 .body(ExternalDroneResponse.class);
     }
 
-    //TODO этот метод отсутствует во внешнем сервисе
     @Override
     public ExternalDroneResponse cancelDrone(Long droneServiceId, Long deliveryId) {
         try {
             return droneOperatorClient.get()
-//                    .uri("/cancel/%d?deliveryId=%d".formatted(droneServiceId, deliveryId))
-//                    .retrieve()// Этот метод бросает HttpServerErrorException при 5xx от внешнего сервиса
-//                    .body(ExternalDroneResponse.class);
                     .uri(uriBuilder -> uriBuilder
                             .path("/cancel/{droneServiceId}")
                             .queryParam("deliveryId", deliveryId)
                             .build(droneServiceId))
-                    .retrieve()// Этот метод бросает HttpServerErrorException при 5xx от внешнего сервиса
+                    .retrieve()
                     .body(ExternalDroneResponse.class);
-        } catch (Exception e){
-            log.error("Can't cancel drone droneServiceId = " + droneServiceId,e);
-            throw new DroneException("Can't cancel drone droneServiceId = " + droneServiceId, e);
+        } catch (Exception e) {
+            log.error("Failed to cancel drone. droneServiceId: {}, deliveryId: {}", droneServiceId, deliveryId, e);
+            throw new DroneException("External service failed to cancel drone with ID: " + droneServiceId, e);
         }
     }
 
@@ -138,23 +131,27 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
     @Transactional
     @Scheduled(cron = "${cron.expression}")
     public void checkAllDroneStatus() {
-        log.info("checkAllDroneStatus started");
-        Set<Delivery> deliveries = deliveryRepository.findAllByStatusesWithDroneAndBuyerOrderAndBuyer(DELIVERY_STATUSES);
+        // Fetch active deliveries with all necessary relations to avoid N+1
+        Set<Delivery> deliveries = deliveryRepository.findAllByStatusesWithDroneAndBuyerOrderAndBuyer(MONITORED_DELIVERY_STATUSES);
         Map<Long, Drone> drones = deliveries.stream()
                 .map(Delivery::getDrone)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(Drone::getDroneServiceId, drone -> drone));
+        log.info("Starting drone status synchronization for {} active deliveries", deliveries.size());
 
+        // Call external service to get actual drone statuses
         Set<ExternalDroneResponse> externalDrones = getAllDronesExternal(ExternalDroneFilterRequest.builder()
                 .droneServiceIds(drones.keySet())
                 .build());
 
-        log.info("Данные получены от getAllDronesExternal: externalDrones = {}", externalDrones);
+        log.info("Received data from external service: externalDrones = {}", externalDrones);
 
         externalDrones.forEach(externalDrone -> {
             Drone drone = drones.get(externalDrone.droneServiceId());
             if (drone == null) return;
             drone.setDroneStatus(externalDrone.droneStatus());
+
+            // If the drone has finished unloading, complete the delivery process
             if (drone.getDroneStatus() == DroneStatus.OFFLOADED) {
                 Delivery delivery = deliveries.stream()
                         .filter(d -> d.getDrone().equals(drone))
@@ -162,9 +159,12 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
                 delivery.setDeliveryStatus(DeliveryStatus.DELIVERED);
 
                 delivery.getBuyerOrder().setBuyerOrderStatus(BuyerOrderStatus.DELIVERED);
+                // Update buyer rating
                 int currentRatingBuyer = delivery.getBuyerOrder().getBuyer().getRatingBuyer() != null ? delivery.getBuyerOrder().getBuyer().getRatingBuyer() : 0;
                 delivery.getBuyerOrder().getBuyer().setRatingBuyer(currentRatingBuyer + 2);
 
+                // Since one BuyerOrder always belongs to a single seller, we take the first available one
+                // Each order is strictly limited to one seller by design (see BuyerOrderService.create)
                 Optional<User> sellerOpt = delivery.getBuyerOrder().getPartOfferToBuySet().stream()
                         .map(p -> p.getSellerOffer().getSeller())
                         .findFirst();
@@ -176,6 +176,6 @@ public class ExternalDroneServiceImpl implements ExternalDroneService {
             }
         });
         droneRepository.saveAll(drones.values());
-        log.info("Данные после обновления дронов и сохранении в репозитории : {}", drones.values());
+        log.info("Drone statuses and related entities successfully updated for {} drones", drones.size());
     }
 }

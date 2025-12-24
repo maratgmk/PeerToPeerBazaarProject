@@ -8,20 +8,20 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface DroneRepository extends JpaRepository<Drone,Long>, JpaSpecificationExecutor<Drone> {
+/**
+ * Spring Data JPA repository for Drone entities.
+ * Supports basic CRUD operations and dynamic query execution via JpaSpecificationExecutor.
+ */
+public interface DroneRepository extends JpaRepository<Drone, Long>, JpaSpecificationExecutor<Drone> {
 
     /**
-     * Получает сущность Drone по её ID со связанными доставками.
-     * Этот метод использует аннотацию @EntityGraph для жадной загрузки
-     * коллекции deliverySet, что позволяет избежать проблемы N+1
-     * при извлечении данных.
+     * Retrieves a drone by ID, eagerly fetching its deliveries
+     * and the associated buyer order.
      *
-     * @param id ID дрона, которого нужно получить
-     * @return Optional, содержащий дрон, если он найден,
-     * или пустой Optional, если пользователь с указанным ID не существует
+     * @param id Drone identifier.
+     * @return Optional containing the drone if found.
      */
-    @EntityGraph(attributePaths = {"deliverySet","deliverySet.buyerOrder"})
-    @Query("SELECT d FROM Drone d  WHERE d.id = :id")
+    @EntityGraph(attributePaths = {"deliverySet", "deliverySet.buyerOrder"})
+    @Query("SELECT d FROM Drone d WHERE d.id = :id")
     Optional<Drone> findByIdWithDeliveriesAndBuyerOrder(Long id);
-
 }

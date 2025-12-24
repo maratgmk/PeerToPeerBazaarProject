@@ -37,12 +37,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final ExternalPaymentService externalPaymentService;
 
-    /**
-     * получение DTO платежа из БД по его Id
-     *
-     * @param id идентификатор платежа
-     * @return DTO payment
-     */
     @Override
     public PaymentResponse getPaymentById(Long id) {
         Payment payment = paymentRepository.findById(id)
@@ -50,13 +44,6 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toPaymentResponse(payment);
     }
 
-    /**
-     * получение DTO платежа из БД по его Id вместе
-     * с его ленивой частью BuyerOrderSet.
-     *
-     * @param id идентификатор платежа
-     * @return DTO платежа вместе с множеством заказов, оплаченных этим платежом
-     */
     @Override
     public PaymentResponse getPaymentByIdWithBuyerOrders(Long id) {
         Payment payment = paymentRepository.findByIdWithBuyerOrders(id)
@@ -64,12 +51,6 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toPaymentResponse(payment);
     }
 
-    /**
-     * получение множества всех DTO платежей согласно условий и параметров поиска
-     *
-     * @param filterRequest фильтр поиска в БД
-     * @return множество DTO платежей, отфильтрованных согласно параметров и условий поиска
-     */
     @Override
     public Set<PaymentResponse> getAllPaymentSet(PaymentFilterRequest filterRequest) {
         List<Payment> paymentList = paymentRepository.findAll(PaymentSpecification.filterByParams(filterRequest));
@@ -77,22 +58,9 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toPaymentResponseSet(paymentSet);
     }
 
-
-    /**
-     * исправление или замена данных в уже существующем платеже на информацию,
-     * которую передаёт клиент или внешнее платежное приложение в запросе callback notify.
-     *
-     * @param id         идентификатор существующего платежа
-     * @param paymentUpdateRequest информация, переданная клиентом, которую надо внести для исправления существующего платежа
-     * @return DTO платежа
-     */
     @Override
     @Transactional
     public PaymentResponse updatePayment(Long id, PaymentUpdateRequest paymentUpdateRequest) {
-        // Эта проверка в начале метода для симуляции ошибки в тесте
-        if (id == 0) {
-            throw new RuntimeException("Simulated error for test"); // Это вызовет 500 в контроллере
-        }
 
         Payment payment = paymentRepository.findByIdWithBuyerOrders(id)
                 .orElseThrow(() -> new EntityNotFoundException(Payment.class, Map.of("id", String.valueOf(id))));
@@ -124,6 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
         if(paymentUpdateRequest.paymentStatus() != null){
             payment.setPaymentStatus(paymentUpdateRequest.paymentStatus());
         }
+
         if(paymentUpdateRequest.completionDateTime() != null){
             payment.setCompletionDateTime(paymentUpdateRequest.completionDateTime());
         }
@@ -143,7 +112,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (paymentResponse.error() != null) {
             String message = "Can not get payment page Uri from External Payment Service : paymentId =%s, reason = %s".formatted(id, paymentResponse.error());
             log.error(message);
-            throw new PaymentStatusException(message); //Обработать это исключение в AppControllerAdvice
+            throw new PaymentStatusException(message);
         }
         if (paymentResponse.status() == PaymentStatus.DENIED) {
             String message = "Unsuccessful status  : paymentId =%s, status = %s".formatted(id, paymentResponse.status());

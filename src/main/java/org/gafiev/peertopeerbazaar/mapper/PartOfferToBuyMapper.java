@@ -9,11 +9,19 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper class for converting PartOfferToBuy entities to various DTOs (Data Transfer Objects).
+ */
 @Component
 @AllArgsConstructor
 public class PartOfferToBuyMapper {
 
-
+    /**
+     * Converts PartOfferToBuy entity to PartOfferToBuyResponse DTO.
+     *
+     * @param partOfferToBuy PartOfferToBuy entity.
+     * @return PartOfferToBuyResponse DTO.
+     */
     public PartOfferToBuyResponse toPartOfferToBuyResponse(PartOfferToBuy partOfferToBuy) {
         return PartOfferToBuyResponse.builder()
                 .id(partOfferToBuy.getId())
@@ -25,6 +33,12 @@ public class PartOfferToBuyMapper {
                 .build();
     }
 
+    /**
+     * Converts List<PartOfferToBuy> entities to List<PartOfferToBuyResponse>  DTOs.
+     *
+     * @param partOfferToBuyList List<PartOfferToBuy> of PartOfferToBuy entity.
+     * @return List<PartOfferToBuyResponse> of PartOfferToBuyResponse DTO.
+     */
     public List<PartOfferToBuyResponse> toPartOfferToBuyResponseList(List<PartOfferToBuy> partOfferToBuyList) {
         return partOfferToBuyList == null ? null : partOfferToBuyList.stream()
                 .map(this::toPartOfferToBuyResponse)

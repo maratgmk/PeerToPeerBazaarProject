@@ -58,10 +58,10 @@
       <column name="town" type="VARCHAR(255)"/>
       <column name="street" type="VARCHAR(255)"/>
       <column name="number_building" type="INTEGER"/>
-      <column name="zip_code" type="INTEGER"/>
+      <column name="post_code" type="INTEGER"/>
       <column name="latitude" type="DOUBLE PRECISION"/>
       <column name="longitude" type="DOUBLE PRECISION"/>
-      <column name="attitude" type="DOUBLE PRECISION"/>
+      <column name="altitude" type="DOUBLE PRECISION"/>
       <column name="accuracy" type="DOUBLE PRECISION"/>
       <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
         <constraints nullable="false"/>

@@ -11,27 +11,41 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * интерфейс для работы с БД методами CRUD
- * и созданными кастомными методами
+ * Spring Data JPA repository for SellerOffer entity.
+ * Extends JpaRepository for basic CRUD operations and JpaSpecificationExecutor for dynamic queries.
  */
 @Repository
 public interface SellerOfferRepository extends JpaRepository<SellerOffer, Long>, JpaSpecificationExecutor<SellerOffer> {
+
     /**
-     * получение из БД оффера продавца по его Id с подтягиванием всех выбранных уже частей заказа покупателя,
-     * подтягивание ленивой части
-     * @param id идентификатор оффера
-     * @return Optional оффера
+     * Retrieves SellerOffer by its identifier, eagerly fetching the associated List of PartOfferToBuy entities.
+     *
+     * @param id Unique SellerOffer identifier.
+     * @return Optional containing SellerOffer entity if found, otherwise empty.
      */
     @EntityGraph(attributePaths = {"partOfferToBuyList"})
-    @Query("SELECT o FROM SellerOffer o  WHERE o.id = :id")
+    @Query("SELECT o FROM SellerOffer o WHERE o.id = :id")
     Optional<SellerOffer> findByIdWithPartOfferToBuy(Long id);
 
+    /**
+     * Retrieves SellerOffer by its identifier, eagerly fetching the associated seller (User) entity.
+     *
+     * @param id Unique SellerOffer identifier.
+     * @return Optional containing SellerOffer entity if found, otherwise empty.
+     */
     @EntityGraph(attributePaths = {"seller"})
-    @Query("SELECT o FROM SellerOffer o  WHERE o.id = :id")
+    @Query("SELECT o FROM SellerOffer o WHERE o.id = :id")
     Optional<SellerOffer> findByIdWithSeller(Long id);
 
-
-    @EntityGraph(attributePaths = {"product", "address"})
+    /**
+     * Retrieves SellerOffer by the related product, address, seller Ids, eagerly fetching the associated Product, Address and User (seller) entities.
+     *
+     * @param productId Unique Product identifier.
+     * @param addressId Unique Address identifier.
+     * @param sellerId Unique User identifier.
+     * @return Optional containing SellerOffer entity if found, otherwise empty.
+     */
+    @EntityGraph(attributePaths = {"product","address","seller"})
     @Query("SELECT o FROM SellerOffer o WHERE o.product.id = :productId AND o.address.id = :addressId AND o.seller.id = :sellerId")
     Optional<SellerOffer> findByProductIdAndAddressIdAndSellerId(
             @Param("productId") Long productId,

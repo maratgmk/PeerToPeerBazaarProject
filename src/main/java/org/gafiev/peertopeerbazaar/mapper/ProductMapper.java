@@ -8,11 +8,20 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper class for converting Product entities to various DTOs (Data Transfer Objects).
+ */
 @Component
 @AllArgsConstructor
 public class ProductMapper {
     private SellerOfferMapper sellerOfferMapper;
 
+    /**
+     * Converts Product entity to ProductResponse DTO.
+     *
+     * @param product Product entity.
+     * @return ProductResponse DTO.
+     */
     public ProductResponse toProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
@@ -31,6 +40,12 @@ public class ProductMapper {
                 .build();
     }
 
+    /**
+     * Converts Set of Product entities to Set of ProductResponse DTOs.
+     *
+     * @param productSet Set of Product entities.
+     * @return Set of ProductResponse DTOs.
+     */
     public Set<ProductResponse> toProductResponseSet(Set<Product> productSet) {
         return productSet == null ? null : productSet.stream()
                 .map(this::toProductResponse)

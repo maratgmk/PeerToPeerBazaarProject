@@ -10,19 +10,18 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * интерфейс предоставляет методы для получения и сохранения платежей в БД,
- * включая стандартные методы CRUD и кастомные методы.
+ * Spring Data JPA repository for Payment entity.
+ * Extends JpaRepository for basic CRUD operations and JpaSpecificationExecutor for dynamic queries.
  */
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpecificationExecutor<Payment> {
 
     /**
-     * Находит платеж Id вместе с подтягиванием ленивой части - множества заказов покупателя
+     * Retrieves Payment by its identifier, eagerly fetching the associated BuyerOrder entities.
      *
-     * @param id идентификатор платежа
-     * @return Optional платеж
+     * @param id Unique Payment identifier.
+     * @return Optional containing SellerOffer entity if found, otherwise empty.
      */
     @Query("SELECT p FROM Payment p JOIN FETCH p.buyerOrderSet b WHERE p.id = :id")
     Optional<Payment> findByIdWithBuyerOrders(@Param("id") Long id);
-
 }

@@ -28,7 +28,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Сущность Payment описывает процесс оплаты заказа
+ * The Payment entity represents a specific transaction made through an external payment service.
+ * It manages the amount, status, currency, and the associated buyer orders paid by this transaction
  */
 @Getter
 @Setter
@@ -41,7 +42,7 @@ import java.util.Set;
 @Table(name = "payment")
 public class Payment {
     /**
-     * id есть идентификатор платежа.
+     * The unique identifier for the payment record.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,66 +50,69 @@ public class Payment {
     private Long id;
 
     /**
-     * amount есть полная сумма платежа за заказ.
+     * The total monetary value of the transaction.
      */
     @Column(name = "amount")
     private BigDecimal amount;
 
     /**
-     * валюта.
+     * The currency code used for the transaction (ISO 4217).
      */
     @Column(name = "currency")
     @Enumerated(EnumType.STRING)
     private CurrencyCode currency;
 
     /**
-     * способ оплаты.
+     * The method utilized to process the payment (e.g., Credit Card, Crypto).
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_mode")
     private PaymentMode paymentMode;
 
     /**
-     * состояние платежа.
+     * The payment status as recorded in the database.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
     /**
-     * дата и время подтверждения оплаты.
+     * The timestamp provided by the external payment provider upon payment completion.
      */
     @Column(name = "completion_date_time")
     private LocalDateTime completionDateTime;
 
+    /**
+     * The timestamp when this payment record was created in the database.
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * множество заказов, которое оплачено этим одним платежом,
-     * если удалить платеж, то это множество будет сиротой и удалится из БД???
+     * Set of buyer orders paid by this transaction.
      */
     @Builder.Default
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BuyerOrder> buyerOrderSet = new HashSet<>();
 
     /**
-     * метод добавления заказа покупателя во множество заказов по этому платежу
-     * @param buyerOrder заказ покупателя
+     * Associates a buyer order with this payment and sets up the bidirectional relationship.
+     *
+     * @param buyerOrder BuyerOrder entity to add.
      */
-    public void   addBuyerOrder(BuyerOrder buyerOrder){
+    public void addBuyerOrder(BuyerOrder buyerOrder) {
         buyerOrderSet.add(buyerOrder);
         buyerOrder.setPayment(this);
     }
 
     /**
-     * метод удаления заказа покупателя из множества заказов, если он не оплачен
-     * @param buyerOrder заказ покупателя
+     * Removes a buyer order from this payment and breaks the bidirectional relationship.
+     *
+     * @param buyerOrder BuyerOrder entity.
      */
-    public void removeBuyerOrder(BuyerOrder buyerOrder){
+    public void removeBuyerOrder(BuyerOrder buyerOrder) {
         buyerOrderSet.remove(buyerOrder);
         buyerOrder.setPayment(null);
     }
-
 }

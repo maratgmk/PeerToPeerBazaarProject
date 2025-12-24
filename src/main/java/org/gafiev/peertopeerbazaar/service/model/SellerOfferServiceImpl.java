@@ -42,12 +42,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
     private final AddressRepository addressRepository;
     private final SellerOfferMapper sellerOfferMapper;
 
-    /**
-     * получение предложения продавца по его Id
-     *
-     * @param id идентификатор предложения продавца
-     * @return DTO оффера
-     */
     @Override
     public SellerOfferResponse getSellerOfferById(Long id) {
         SellerOffer sellerOffer = sellerOfferRepository.findById(id)
@@ -55,13 +49,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
-    /**
-     * получение предложения продавца по его Id вместе с подтягиванием всех выбранных уже частей данного заказа покупателя,
-     * подтягивание ленивой части,
-     *
-     * @param id идентификатор предложения продавца
-     * @return DTO оффера
-     */
     @Override
     public SellerOfferResponse getSellerOfferByIdWithPartOfferToBuy(Long id) {
         SellerOffer sellerOffer = sellerOfferRepository.findByIdWithPartOfferToBuy(id)
@@ -69,12 +56,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
-    /**
-     * получения множества всех офферов продавца по клиентскому Id
-     *
-     * @param sellerId идентификатор пользователя
-     * @return DTO sellerOfferSet
-     */
     @Override
     public Set<SellerOfferResponse> getAllMySellerOffers(Long sellerId) {
         User user = userRepository.findByIdWithBuyerOrdersAndSellerOffers(sellerId)
@@ -82,25 +63,12 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         return sellerOfferMapper.toSellerOfferResponseSet(user.getSellerOfferSet());
     }
 
-    /**
-     * получение множества офферов всех продавцов из БД согласно настроенного фильтра
-     *
-     * @param filterRequest фильтр определяющий условия и параметры поиска
-     * @return DTO sellerOfferSet
-     */
     @Override
     public Set<SellerOfferResponse> getAllSellerOffers(SellerOfferFilterRequest filterRequest) {
         List<SellerOffer> sellerOfferList = sellerOfferRepository.findAll(SellerOfferSpecifications.filterByParams(filterRequest));
         return sellerOfferMapper.toSellerOfferResponseSet(new HashSet<>(sellerOfferList));
     }
 
-    /**
-     * создание нового оффера продавца
-     *
-     * @param sellerId идентификатор пользователя
-     * @param sellerOfferCreate информация от продавца на создание оффера
-     * @return DTO оффера
-     */
     @Override
     @Transactional
     public SellerOfferResponse createSellerOffer(Long sellerId, SellerOfferCreateRequest sellerOfferCreate) {
@@ -113,7 +81,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         Address address = addressRepository.findByIdWithSellerOffersAndDeliveries(sellerOfferCreate.addressId())
                 .orElseThrow(() -> new EntityNotFoundException(Address.class, Map.of("id", String.valueOf(sellerOfferCreate.addressId()))));
 
-
         SellerOffer sellerOffer = new SellerOffer();
         for (int i = 0; i < sellerOfferCreate.unitCount(); i++) {
             PartOfferToBuy partOfferToBuy = PartOfferToBuy.builder().build();
@@ -123,7 +90,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         sellerOffer.setOfferStatus(sellerOfferCreate.offerStatus());
         sellerOffer.setComment(sellerOfferCreate.comment());
 
-        // Проверяем условия для creationDateTime
         LocalDateTime creationDateTime = sellerOfferCreate.creationDateTime();
         if ((sellerOfferCreate.offerStatus() == OfferStatus.PRESALE && creationDateTime.isBefore(LocalDateTime.now())) ||
                 (sellerOfferCreate.offerStatus() == OfferStatus.OPENED && creationDateTime.isAfter(LocalDateTime.now()))) {
@@ -131,9 +97,9 @@ public class SellerOfferServiceImpl implements SellerOfferService {
             throw new IllegalArgumentException("Invalid creation date time for the given offer status.");
         }
         sellerOffer.setCreationDateTime(creationDateTime);
-        sellerOffer.setFinishDateTime(sellerOfferCreate.finishedDateTime());
+        sellerOffer.setFinishDateTime(sellerOfferCreate.finishDateTime());
         product.addSellerOffer(sellerOffer);
-        log.debug("Address sellerOfferSet: {}", address.getSellerOfferSet());
+        log.info("Address sellerOfferSet: {}", address.getSellerOfferSet());
         address.addSellerOffer(sellerOffer);
         seller.addSellerOffer(sellerOffer);
         seller.setCreatedAt(sellerOfferCreate.createdAt());
@@ -142,21 +108,12 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
-    /**
-     * обновление существующего оффера продавца.
-     * обновление рейтинга продавца при отмене оффера.
-     *
-     * @param id идентификатор существующего оффера
-     * @param sellerOfferNew информация от продавца, что необходимо поменять
-     * @return DTO оффера
-     */
     @Override
     @Transactional
     public SellerOfferResponse updateMySellerOffer(Long sellerId, Long id, SellerOfferCreateRequest sellerOfferNew) {
         SellerOffer sellerOffer = sellerOfferRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(SellerOffer.class, Map.of("id", String.valueOf(id))));
 
-        // Проверка, принадлежит ли оффер этому продавцу
         if (!sellerOffer.getSeller().getId().equals(sellerId)) {
             throw new IllegalBusinessStateException("You do not have permission to update this offer.");
         }
@@ -181,9 +138,8 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         sellerOffer.setOfferStatus(sellerOfferNew.offerStatus());
         sellerOffer.setComment(sellerOfferNew.comment());
         sellerOffer.setCreationDateTime(sellerOfferNew.creationDateTime());
-        sellerOffer.setFinishDateTime(sellerOfferNew.finishedDateTime());
+        sellerOffer.setFinishDateTime(sellerOfferNew.finishDateTime());
 
-        // Логика по изменению рейтинга продавца при отмене оффера
         if (sellerOfferNew.offerStatus() == OfferStatus.CANCELLED) {
             int currentRating = sellerOffer.getSeller().getRatingSeller() != null ? sellerOffer.getSeller().getRatingSeller() : 0;
             sellerOffer.getSeller().setRatingSeller(Math.max(0, currentRating - 1));
@@ -195,11 +151,6 @@ public class SellerOfferServiceImpl implements SellerOfferService {
         return sellerOfferMapper.toSellerOfferResponse(sellerOffer);
     }
 
-    /**
-     * удаление оффера из БД по его Id
-     *
-     * @param id идентификатор оффера
-     */
     @Override
     @Transactional
     public void deleteSellerOffer(Long id) {

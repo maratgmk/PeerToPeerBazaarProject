@@ -4,6 +4,9 @@ import org.gafiev.peertopeerbazaar.entity.order.PartOfferToBuy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Spring Data JPA repository for PartOfferToBuy entity.
+ */
 @Repository
 public interface PartOfferToBuyRepository extends JpaRepository<PartOfferToBuy,Long> {
 

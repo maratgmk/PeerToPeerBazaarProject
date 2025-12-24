@@ -1,8 +1,8 @@
 package org.gafiev.peertopeerbazaar.common;
 
 import com.github.javafaker.Faker;
-import org.gafiev.peertopeerbazaar.dto.api.request.DroneCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DroneFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DroneUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.AddressDroneRequest;
 import org.gafiev.peertopeerbazaar.dto.integreation.request.BuyerOrderDroneRequest;
@@ -68,8 +68,8 @@ public class TestDataDrone {
                 .build();
     }
 
-    public static DroneCreateRequest getDroneCreateRequest(Set<Long> idsToRemove, Set<Long> idsToAdd) {
-        return new DroneCreateRequest(idsToRemove, idsToAdd);
+    public static DroneUpdateRequest getDroneCreateRequest(Set<Long> idsToRemove, Set<Long> idsToAdd) {
+        return new DroneUpdateRequest(idsToRemove, idsToAdd);
     }
 
     public static BuyerOrderDroneRequest getBuyerOrderDroneRequest() {
@@ -84,12 +84,12 @@ public class TestDataDrone {
         return AddressDroneRequest.builder()
                 .id(ThreadLocalRandom.current().nextLong())
                 .town(address.getTown())
-                .zipCode(address.getZipCode())
+                .zipCode(address.getPostCode())
                 .street(address.getStreet())
-                .numberBuilding(address.getNumberBuilding())
+                .numberBuilding(address.getBuildingNumber())
                 .longitude(address.getLongitude())
                 .latitude(address.getLatitude())
-                .attitude(address.getAttitude())
+                .attitude(address.getAltitude())
                 .accuracy(address.getAccuracy())
                 .build();
     }

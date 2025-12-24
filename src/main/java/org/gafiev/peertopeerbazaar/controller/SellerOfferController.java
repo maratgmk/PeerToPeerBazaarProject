@@ -1,5 +1,8 @@
 package org.gafiev.peertopeerbazaar.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
+@Tag(name = "SellerOffers", description = "Provides endpoints for managing seller offer data.")
 @Validated
 @RestController
 @RequiredArgsConstructor
@@ -32,18 +36,24 @@ import java.util.Set;
 public class SellerOfferController {
     private final SellerOfferService sellerOfferService;
 
+    @Operation(summary = "Creates a seller offer.", description = "Allows a user to create a new seller offer using data from the DTO.")
     @PreAuthorize("@authz.isSelf(#sellerId, authentication)")
     @PostMapping
-    public SellerOfferResponse createSellerOffer(@NotNull @Positive @RequestParam Long sellerId, @Valid @RequestBody SellerOfferCreateRequest sellerOfferCreate) {
+    public SellerOfferResponse createSellerOffer(@NotNull @Positive @RequestParam Long sellerId,
+                                                 @Parameter(description = "Data for seller offer creation.", required = true)
+                                                 @Valid @RequestBody SellerOfferCreateRequest sellerOfferCreate) {
         return sellerOfferService.createSellerOffer(sellerId, sellerOfferCreate);
     }
 
+    @Operation(summary = "Retrieves a seller offer by ID.", description = "Allows a user to retrieve a specific seller offer using its ID.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
     @GetMapping(path = "/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
-    public SellerOfferResponse getSellerOfferById(@NotNull @Positive @PathVariable Long id,@NotNull @Positive @PathVariable Long userId) {
+    public SellerOfferResponse getSellerOfferById(@NotNull @Positive @PathVariable Long id, @NotNull @Positive @PathVariable Long userId) {
         return sellerOfferService.getSellerOfferById(id);
     }
 
+    @Operation(summary = "Retrieves a seller offer along with associated parts.",
+            description = "Retrieves a seller offer, including all associated parts (eagerly fetched).")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#sellerId, authentication)")
     @GetMapping(path = "/{id}/part/user/{sellerId}", consumes = MediaType.ALL_VALUE)
     SellerOfferResponse getSellerOfferByIdWithPartOfferToBuy(@NotNull @Positive @PathVariable Long id, @NotNull @Positive @PathVariable Long sellerId, @RequestParam(
@@ -53,29 +63,39 @@ public class SellerOfferController {
         return isPart ? sellerOfferService.getSellerOfferByIdWithPartOfferToBuy(id) : sellerOfferService.getSellerOfferById(id);
     }
 
+    @Operation(summary = "Retrieves all seller offers for a specific seller.",
+            description = "Retrieves all seller offers created by the user.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#sellerId, authentication)")
     @GetMapping(path = "/allMy", consumes = MediaType.ALL_VALUE)
     public Set<SellerOfferResponse> getAllMySellerOffers(@NotNull @Positive @RequestParam Long sellerId) {
         return sellerOfferService.getAllMySellerOffers(sellerId);
     }
 
+    @Operation(summary = "Retrieves seller offers using a filter.",
+            description = "Helps a user with ADMIN role to retrieve seller offers based on the filter criteria.")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/all")
-    public Set<SellerOfferResponse> getAllSellerOffers(@Valid @RequestBody SellerOfferFilterRequest filterRequest) {
+    public Set<SellerOfferResponse> getAllSellerOffers(
+            @Parameter(description = "Filter criteria data for the dynamic SQL query\"", required = true)
+            @Valid @RequestBody SellerOfferFilterRequest filterRequest) {
         return sellerOfferService.getAllSellerOffers(filterRequest);
     }
 
+    @Operation(summary = "Updates an existing seller offer.",
+            description = "Allows a user to update the details of his own seller offer.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#sellerId, authentication)")
     @PutMapping(path = "{id}/user/{sellerId}")
     public SellerOfferResponse updateMySellerOffer(@NotNull @Positive @PathVariable Long id,
                                                    @NotNull @Positive @PathVariable Long sellerId,
+                                                   @Parameter(description = "New data for updating the seller offer.", required = true)
                                                    @Valid @RequestBody SellerOfferCreateRequest sellerOfferNew) {
         return sellerOfferService.updateMySellerOffer(sellerId, id, sellerOfferNew);
     }
 
+    @Operation(summary = "Deletes a seller offer by ID.", description = "Allows a user to delete his seller offer using its ID.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#sellerId, authentication)")
-    @DeleteMapping(path = "{id}/user/{sellerId}",consumes = MediaType.ALL_VALUE)
-    public void deleteSellerOffer(@NotNull @Positive @PathVariable Long id,@NotNull @Positive @PathVariable Long sellerId) {
+    @DeleteMapping(path = "{id}/user/{sellerId}", consumes = MediaType.ALL_VALUE)
+    public void deleteSellerOffer(@NotNull @Positive @PathVariable Long id, @NotNull @Positive @PathVariable Long sellerId) {
         sellerOfferService.deleteSellerOffer(id);
     }
 }

@@ -11,36 +11,40 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Spring Data JPA repository for Basket entity.
+ * Extends JpaRepository for basic CRUD operations.
+ */
 @Repository
 public interface BasketRepository extends JpaRepository<Basket, Long> {
+
     /**
-     * чтобы обойти FETCH.LAZY
-     * запрос JPQL в методе поиска basket вместе с partOfferToBuySet
+     * Retrieves Basket by its identifier, eagerly fetching associated Set of PartOfferToBuy parts.
      *
-     * @param userId это basketIds (userId)
-     * @return basket, если она есть
+     * @param userId Unique User identifier.
+     * @return Optional containing Basket entity if found, otherwise empty.
      */
     @Query("SELECT b FROM Basket b LEFT JOIN FETCH b.partOfferToBuySet WHERE b.id = :userId")
     Optional<Basket> findByIdWithPartOfferToBuy(@Param("userId") Long userId);
 
     /**
-     * Получение корзины со всеми выбранными частями разных офферов и соответствующего оффера к каждой части.
-     * @param userId идентификатор пользователя
-     * @return корзину
+     * Retrieves Basket by its identifier, eagerly fetching associated Set of PartOfferToBuy parts and
+     * SellerOffer entity.
+     *
+     * @param userId Unique User identifier.
+     * @return Optional containing Basket entity if found, otherwise empty.
      */
     @EntityGraph(attributePaths = {"partOfferToBuySet", "partOfferToBuySet.sellerOffer"})
     @Query("SELECT b FROM Basket b WHERE b.id = :userId")
     Optional<Basket> findByIdWithPartOfferToBuySetAndSellerOffer(@Param("userId") Long userId);
 
-
-
     /**
-     * Получить корзины, у которых есть части заказа от предложений с любыми из переданных статусов.
+     * Retrieves Basket entities by associated SellerOffer statuses.
      *
-     * @param statuses набор статусов OfferStatus
-     * @return список корзин с загруженными частями заказа и предложениями (eager fetch)
+     * @param statuses Set of SellerOffer statuses.
+     * @return Set of Basket entities matching criteria.
      */
-    @EntityGraph(attributePaths = {"partOfferToBuySet", "partOfferToBuySet.sellerOffer", "partOfferToBuySet.buyerOrder"})
+    @EntityGraph(attributePaths = {"partOfferToBuySet", "partOfferToBuySet.sellerOffer"})
     @Query("SELECT b FROM Basket b " +
             "JOIN b.partOfferToBuySet p " +
             "JOIN p.sellerOffer s " +

@@ -26,7 +26,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.Instant;
 
 /**
- * Доставка заказа покупателя от адреса продавца на адрес покупателя конкретным дроном.
+ * Represents a delivery process from a seller's address to a buyer's address.
+ * This entity tracks the delivery status, associated locations, the original buyer order,
+ *  and the assigned time window for the drone service.
  */
 @Getter
 @Setter
@@ -39,7 +41,7 @@ import java.time.Instant;
 @Table(name = "delivery")
 public class Delivery {
     /**
-     * идентификатор доставки заказа.
+     * Unique identifier  for the delivery.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,48 +49,46 @@ public class Delivery {
     private Long id;
 
     /**
-     * соcтояние доставки заказа.
+     * The current lifecycle status of the delivery.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
 
     /**
-     * Временной диапазон доставки заказа.
-     * в таблице @Table(name = "delivery") столбец time_slot может указывать на нулевую ссылку.
+     * The scheduled time window for the delivery.
+     * This field is optional (nullable) and is populated once the drone service confirms a slot.
      */
     @Embedded
-    @Column(name = "time_slot",nullable = true)
     private TimeSlot timeSlot;
 
+    /**
+     * Timestamp when the Delivery entity was first recorded in the database.
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * заказ покупателя.
-     * связь - много доставок по одному заказу покупателя.
-     * fetch = FetchType.LAZY относится к полю BuyerOrder, что означает, что при загрузке из БД доставки заказ покупателя загружаться не будет.
-     * cascade = {CascadeType.MERGE, CascadeType.PERSIST} это относится к полю BuyerOrder, при обновлении и сохранении заказа каскадно будет обновляться связанный заказ покупателя.
+     * The buyer's order associated with this delivery.
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private BuyerOrder buyerOrder;
 
     /**
-     * Адрес покупателя.
+     * The destination address where the buyer's order will be delivered.
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private Address toAddress;
 
     /**
-     * Адрес продавца.
+     * The origin address where the drone picks up the order.
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private Address fromAddress;
 
     /**
-     * дрон осуществляющий доставку.
-     * один drone совершает множество доставок.
+     * The drone assigned to perform this delivery.
      */
     @ManyToOne (fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
     private Drone drone;

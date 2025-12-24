@@ -11,25 +11,37 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Репозиторий для работы с сущностями Product.
- * Этот интерфейс предоставляет методы запросов продуктов из БД,
- * включая стандартные операции CRUD и кастомные запросы.
+ * Spring Data JPA repository for Product entity.
+ * Extending JpaRepository provides basic CRUD operations, while JpaSpecificationExecutor enables dynamic queries.
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     /**
-     * Находит все продукты, созданные указанным автором.
-     * @param authorId идентификатор пользователя
-     * @return список продуктов, созданных указанным автором
+     * Retrieves Set of Product entities by author identifier.
+     *
+     * @param authorId Unique author (User) identifier (ID).
+     * @return Set of Product entities.
      */
     Set<Product> findByAuthorId(Long authorId);
 
+    /**
+     * Retrieves Product by identifier, eagerly fetching associated Set of SellerOffer entities.
+     *
+     * @param id Unique product identifier (ID).
+     * @return Optional containing Product entity if found, otherwise empty.
+     */
     @EntityGraph(attributePaths = {"sellerOfferSet"})
-    @Query("SELECT p FROM Product p  WHERE p.id = :id")
+    @Query("SELECT p FROM Product p WHERE p.id = :id")
     Optional<Product> findByIdWithSellerOffers(Long id);
 
+    /**
+     * Retrieves Product by identifier, eagerly fetching associated author (User) entity along with his associated Product entities.
+     *
+     * @param id Unique product identifier (ID).
+     * @return Optional containing Product entity if found, otherwise empty.
+     */
     @EntityGraph(attributePaths = {"author","author.productSet"})
-    @Query("SELECT p FROM Product p  WHERE p.id = :id")
+    @Query("SELECT p FROM Product p WHERE p.id = :id")
     Optional<Product> findByIdWithAuthor(Long id);
 }

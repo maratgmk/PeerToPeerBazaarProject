@@ -31,10 +31,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * заказ покупателя
+ * This entity captures the state, details, and relationships of an order placed by a buyer.
+ * The main domain entity representing a complete buyer order.
+ * It links together the buyer (user), payment information,
+ * delivery details, and the specific parts of seller offer being purchased.
  */
-@EqualsAndHashCode(exclude = {"partOfferToBuySet","deliverySet"})
-@ToString(exclude = {"partOfferToBuySet","deliverySet"})
+@EqualsAndHashCode(exclude = {"partOfferToBuySet", "deliverySet"})
+@ToString(exclude = {"partOfferToBuySet", "deliverySet"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -44,7 +47,7 @@ import java.util.Set;
 @Table(name = "buyer_order")
 public class BuyerOrder {
     /**
-     * id это идентификатор заказа покупателя
+     * Unique buyer order identifier.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,91 +55,70 @@ public class BuyerOrder {
     private Long id;
 
     /**
-     * состояние заказа покупателя
+     * Current buyer order status.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "buyer_order_status")
     @Builder.Default
     private BuyerOrderStatus buyerOrderStatus = BuyerOrderStatus.CREATED;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private Instant createdAt;
-
     /**
-     * buyer покупатель, который осуществляет заказ.
-     * BuyerOrder является владеющей стороной, владеет внешним ключом покупателя.
-     * fetch = FetchType.LAZY означает, что при вызове BuyerOrder из БД
-     * buyer загружаться не будет без дополнительного запроса
+     * User entity represents buyer.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User buyer;
 
     /**
-     * payment есть платёж по заказу покупателя.
-     * BuyerOrder является владеющей стороной, владеет внешним ключом платежа.
-     * fetch = FetchType.LAZY означает, что при вызове BuyerOrder из БД
-     * payment загружаться не будет без дополнительного запроса
-     * CascadeType.MERGE, CascadeType.PERSIST при всех изменениях в BuyerOrder
-     * каскадно произойдут изменения в платеже
+     * Payment entity representing payment information for this order.
      */
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private Payment payment;
 
     /**
-     * partOfferToBuySet есть множество частей предложений от разных продавцов, которые покупатель заказал.
-     *
-     * части partOfferToBuy могут относится к разным офферам одного и того же продавца,
-     * при условии, что адреса офферов одинаковые, (чтобы дрон собирал все части по одному адресу)
-     * mappedBy = "buyerOrder" означает, что в PartOfferToBuy есть поле buyerOrder, которое является обратной стороной,
-     * передавая внешний ключ buyerOrderId владеющей стороне PartOfferToBuy.
-     * cascade = CascadeType.ALL означает, что при всех изменениях в BuyerOrder,
-     * каскадно произойдут изменения в partOfferToBuySet.
-     * orphanRemoval = true означает, что при применении метода partOfferToBuySet.remove(partOfferToBuy),
-     * также удалится из БД partOfferToBuy
+     * Set of parts offer to buy associated with choice of buyer.
      */
     @Builder.Default
     @OneToMany(mappedBy = "buyerOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PartOfferToBuy> partOfferToBuySet = new HashSet<>();
 
     /**
-     * deliverySet есть множество доставок по одному заказу покупателя.
-     *
-     * mappedBy = "buyerOrder" означает, что в Delivery есть поле buyerOrder, которое является обратной стороной,
-     * передавая внешний ключ buyerOrderId владеющей стороне Delivery.
-     * cascade = CascadeType.ALL означает, что при всех изменениях в BuyerOrder,
-     * каскадно произойдут изменения в deliverySet.
-     * orphanRemoval = true означает, что при применении метода deliverySet.remove(delivery),
-     * также удалится из БД delivery
+     * Set of deliveries handles this buyer order.
      */
     @Builder.Default
     @OneToMany(mappedBy = "buyerOrder", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Delivery> deliverySet = new HashSet<>();
 
-    /**
-     * метод добавления partOfferToBuy во множество частей предложений продавцов partOfferToBuySet, которое покупатель сформировал.
-     *
-     * @param partOfferToBuy часть предложения продавца, которое заказал покупатель
+    /*
+     * Timestamp of BuyerOrder entity creation.
      */
-    public void addPartOfferToBuy(PartOfferToBuy partOfferToBuy){
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    /**
+     * Adds PartOfferToBuy to this BuyerOrder.
+     *
+     * @param partOfferToBuy Part offer to buy that chosen by buyer.
+     */
+    public void addPartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.add(partOfferToBuy);
         partOfferToBuy.setBuyerOrder(this);
     }
 
     /**
-     * метод удаления partOfferToBuy из множества частей предложений продавцов partOfferToBuySet, которое покупатель сформировал.
+     * Removes PartOfferToBuy from this BuyerOrder.
      *
-     * @param partOfferToBuy часть предложения продавца, которое заказал покупатель
+     * @param partOfferToBuy Part offer to buy that chosen by buyer.
      */
-    public void removePartOfferToBuy(PartOfferToBuy partOfferToBuy){
+    public void removePartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.remove(partOfferToBuy);
         partOfferToBuy.setBuyerOrder(null);
     }
 
     /**
-     * метод addDelivery добавляет доставку во множество доставок к данному заказу.
+     * Adds Delivery to this BuyerOrder.
      *
-     * @param delivery есть доставка заказа.
+     * @param delivery Delivery for this BuyerOrder.
      */
     public void addDelivery(@NonNull Delivery delivery) {
         deliverySet.add(delivery);
@@ -144,9 +126,9 @@ public class BuyerOrder {
     }
 
     /**
-     * метод removeOrderProduct удаляет продукт из множества продуктов в заказе.
+     * Removes Delivery from this BuyerOrder.
      *
-     * @param delivery есть доставка заказа.
+     * @param delivery Delivery for this BuyerOrder.
      */
     public void removeDelivery(@NonNull Delivery delivery) {
         deliverySet.remove(delivery);
@@ -154,22 +136,24 @@ public class BuyerOrder {
     }
 
     /**
-     * получение общего веса заказа в кг
-     * @return веса заказа
+     * Determines total weight of buyer order.
+     *
+     * @return Weight of buyer order.
      */
-    public BigDecimal getWeightKg(){
+    public BigDecimal getWeightKg() {
         return partOfferToBuySet.stream()
                 .map(part -> part.getSellerOffer().getProduct().getWeightKg())
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     /**
-     * получение общего объема заказа в литрах
-     * @return объема заказа
+     * Determines total volume of buyer order.
+     *
+     * @return Volume of buyer order.
      */
-    public BigDecimal getVolumeLtr(){
+    public BigDecimal getVolumeLtr() {
         return partOfferToBuySet.stream()
                 .map(part -> part.getSellerOffer().getProduct().getVolumeLtr())
-                .reduce(BigDecimal.ZERO,BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

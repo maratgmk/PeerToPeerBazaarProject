@@ -10,65 +10,62 @@ import org.gafiev.peertopeerbazaar.entity.delivery.DeliveryStatus;
 import java.util.List;
 import java.util.Set;
 
-
+/**
+ * Service interface for managing delivery operations.
+ */
 public interface DeliveryService {
 
     /**
-     * получение доставки из БД по идентификатору.
-     * @param id идентификатор доставки
-     * @return DTO доставки
+     * @param id Delivery ID.
+     * @return Delivery details.
      */
     DeliveryResponse getDeliveryById(Long id);
 
     /**
-     * получение множества доставок по идентификатору заказа покупателя.
-     * @param buyerOrderId  идентификатор заказа покупателя
-     * @return множество DTO доставок
+     * @param buyerOrderId Associated buyer order ID.
+     * @return Deliveries linked to the order.
      */
     Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(Long buyerOrderId);
 
     /**
-     * получение DTO доставок по заданному клиентом в запросе фильтру.
-     * @param filterRequest фильтр задающий параметры поиска и ограничений
-     * @return множество всех DTO доставок, полученных по этому фильтру
+     * @param filterRequest Filter criteria.
+     * @return Deliveries matching the criteria.
      */
     Set<DeliveryResponse> getAllDeliveriesByFilter(DeliveryFilterRequest filterRequest);
 
-
     /**
-     * создать доставку.
-     * @param request данные от покупателя для доставки.
-     * @return доставка до покупателя.
+     * @param request Data for creation.
+     * @return Created delivery details.
      */
     DeliveryResponse create(DeliveryCreateRequest request);
 
     /**
-     * запрос покупателем доступного времени доставки от внешнего сервиса.
-     * @param id идентификатор доставки.
-     * @return список временных диапазонов.
+     * Fetches time slots from external drone service.
+     *
+     * @param id Delivery ID.
+     * @return Available time slots.
      */
     List<TimeSlotResponse> takeTimeSlots(Long id);
 
     /**
-     * Установка требуемого временного интервала для существующей (созданной) доставки.
-     * @param id идентификатор доставки, которую следует обновить
-     * @param updateRequest DTO информация от покупателя на установку временного интервала
-     * @return DTO обновленной доставки
+     * /**
+     * Assigns drone for the buyer's chosen time window.
+     *
+     * @param id            Delivery ID.
+     * @param updateRequest Chosen time window.
+     * @return Updated delivery details.
      */
     DeliveryResponse assignDroneForDelivery(Long id, DeliveryUpdateTime updateRequest);
 
     /**
-     * метод обновления статуса у delivery и изменения рейтинга продавца и покупателя.
-     * @param id идентификатор delivery
-     * @param status доставки
-     * @return DTO доставки
+     * @param id     Delivery ID.
+     * @param newStatus New delivery newStatus.
+     * @return Updated delivery details.
      */
-    DeliveryResponse updateStatus(Long id, DeliveryStatus status);
-
+    DeliveryResponse updateStatus(Long id, DeliveryStatus newStatus);
     /**
-     * удаление доставки по идентификатору из БД.
-     * @param id идентификатор доставки
+     *
+     * @param id Delivery ID.
      */
     void deleteDelivery(Long id);
-
 }

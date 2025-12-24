@@ -35,8 +35,10 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                        .requestMatchers("callback/notify/**").permitAll() // TODO сделать системного пользователя и аутентификацию по Jwt для этого эндпойтнта
-                        .anyRequest().hasAnyRole(Role.USER.name(), Role.SELLER.name(), Role.BUYER.name(), Role.AUTHOR.name(), Role.ADMIN.name()))
+                        .requestMatchers("callback/notify/**").permitAll()
+                        .requestMatchers("swagger-ui/index.html").permitAll()
+                        .anyRequest().hasAnyRole(Role.USER.name(), Role.SELLER.name(), Role.BUYER.name(),
+                                Role.AUTHOR.name(), Role.ADMIN.name()))
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter())));
         return http.build();
     }

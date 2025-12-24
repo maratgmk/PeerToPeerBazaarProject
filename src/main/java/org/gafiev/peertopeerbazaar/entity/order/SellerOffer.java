@@ -33,11 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * предложение (оффер) продавца
+ * The SellerOffer entity represents a specific offer made by a seller for a product.
+ * It manages the status, timing, associated address, and available product units (parts).
  */
 @Slf4j
-@EqualsAndHashCode(exclude ={ "partOfferToBuyList","product","seller","address"})
-@ToString(exclude = {"partOfferToBuyList","product","seller","address"})
+@EqualsAndHashCode(exclude = {"partOfferToBuyList", "product", "seller", "address"})
+@ToString(exclude = {"partOfferToBuyList", "product", "seller", "address"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -48,7 +49,7 @@ import java.util.List;
 public class SellerOffer {
 
     /**
-     * id идентификатор предложения продавца
+     * id Unique seller offer identifier.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,79 +57,69 @@ public class SellerOffer {
     private Long id;
 
     /**
-     * состояние оффера
+     * Current status of the seller offer.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "offer_status")
     private OfferStatus offerStatus;
 
     /**
-     * комментарии к предложению продавца
+     * Special comments or notes related to the seller offer.
      */
     @Column(name = "comment")
     private String comment;
 
     /**
-     * время создания оффера
+     * Seller offer start date/time.
      */
     @Column(name = "creation_date_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime creationDateTime;
 
     /**
-     * время окончания действия оффера
+     * Seller offer end date/time.
      */
     @Column(name = "finish_date_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime finishDateTime;
 
+    /**
+     * Timestamp when the SellerOffer entity was first recorded in the database.
+     */
     @CreationTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", timezone = "UTC")
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * продукт созданный данным продавцом
-     * fetch = FetchType.LAZY значит что при загрузке sellerOffer продукт загружаться не будет,
-     * но productId по умолчанию доступен, так как это внешний ключ для SellerOffer
+     * The product offered by the seller (author).
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
     /**
-     * продавец - создатель оффера
-     * fetch = FetchType.LAZY значит что при загрузке sellerOffer продавец загружаться не будет,
-     * но userId по умолчанию доступен, так как это внешний ключ для SellerOffer
+     * The seller who created this seller offer.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User seller;
 
     /**
-     * адрес, откуда дрон заберёт часть оффера (заказ)
-     * fetch = FetchType.LAZY значит что при загрузке sellerOffer адрес загружаться не будет,
-     * но addressId по умолчанию доступен, так как это внешний ключ для SellerOffer
+     * The address from which the product will be picked up.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private Address address;
 
     /**
-     * partOfferToBuyList список частей предложения продавца.
-     * PartOfferToBuy содержит внешний ключ от SellerOffer, и является владеющей стороной,
-     * что отражено в mappedBy = "sellerOffer", что означает, что в PartOfferToBuy есть поле SellerOffer.
-     * SellerOffer есть родительская сущность и управляет жизненным циклом PartOfferToBuy,
-     * то есть все изменения в SellerOffer каскадом переходят в PartOfferToBuy (cascade = CascadeType.ALL).
-     * orphanRemoval = true означает, что при методе partOfferToBuyList.remove(partOfferToBuy),
-     * автоматом удаляется partOfferToBuy из БД. Это заслуга Hibernate.
-     * List<PartOfferToBuy> необходим в BuyerOrderServiceImpl, когда применяется метод limit().
+     * A collection of PartOfferToBuy entities (parts) available for purchase under this offer.
      */
     @Builder.Default
     @OneToMany(mappedBy = "sellerOffer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PartOfferToBuy> partOfferToBuyList = new ArrayList<>();
 
     /**
-     * метод добавления заказанной части оффера к множеству всех заказанных частей данного оффера
+     * Associates a part offer with this seller offer (bidirectional).
      *
-     * @param partOfferToBuy часть оффера продавца, заказанного покупателем
+     * @param partOfferToBuy The part offer to add.
      */
     public void addPartOfferToBuy(@NonNull PartOfferToBuy partOfferToBuy) {
         partOfferToBuyList.add(partOfferToBuy);
@@ -136,9 +127,9 @@ public class SellerOffer {
     }
 
     /**
-     * метод удаления заказанной части оффера из множества всех заказанных частей данного оффера
+     * Disassociates a part offer from this seller offer (breaks relationship).
      *
-     * @param partOfferToBuy часть оффера продавца, заказанного покупателем
+     * @param partOfferToBuy The part offer to remove.
      */
     public void removePartOfferToBuySet(@NonNull PartOfferToBuy partOfferToBuy) {
         partOfferToBuyList.remove(partOfferToBuy);
@@ -146,12 +137,12 @@ public class SellerOffer {
     }
 
     /**
-     * количество единиц товара в оффере или количество частей, которые ещё не заказаны.
+     * Calculates the current count of units that are not yet reserved.
      *
-     * @return количество незаказанных (частей) = единиц товара
+     * @return The number of actual available units.
      */
     public int getActualUnitCount() {
-       return (int) partOfferToBuyList.stream()
+        return (int) partOfferToBuyList.stream()
                 .filter(part -> part.getStatus().equals(PartOfferToBuyStatus.NOT_RESERVED))
                 .count();
     }
