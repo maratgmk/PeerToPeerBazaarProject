@@ -11,55 +11,62 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Репозиторий для работы с сущностью User
- * интерфейс предоставляет методы для выполнения операций CRUD (создание, чтение, обновление, удаление)
- * с пользователями в базе данных. Он наследует стандартные методы из JpaRepository,
- * что позволяет легко управлять сущностями User без необходимости написания
- * дополнительного кода для реализации этих операций.
- * Дополнительно, можно добавлять свои собственные методы для выполнения специфических запросов,
- * таких как поиск пользователя по электронной почте или по рейтингу.
+ * Spring Data JPA repository for the User entity.
+ * Extends JPARepository for basic CRUD operations and JpaSpecificationExecutor for dynamic queries.
  */
-
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
-
-
+    /**
+     * Retrieves a User by his email.
+     *
+     * @param email User's email.
+     * @return Optional containing User entity if found, otherwise empty.
+     */
     Optional<User> findByEmail(String email);
 
     /**
-     * Находит пользователя по его идентификатору и загружает связанные сущности.
-     * Этот метод использует аннотацию EntityGraph для загрузки связанных
-     * сущностей, таких как продукты, заказы продавца, заказы покупателя и платежные
-     * аккаунты, что позволяет избежать проблемы N+1 при доступе к связанным данным.
+     * Retrieves a User by his ID, eagerly fetching the associated Product, SellerOffer, and BuyerOrder entities.
      *
-     * @param id идентификатор пользователя, которого нужно найти.
-     * @return {@link Optional<User>} объект, содержащий найденного пользователя с его
-     * связанными сущностями, если он существует, или пустой объект {@link Optional},
-     * если пользователь не найден.
+     * @param id Unique User identifier.
+     * @return Optional containing User entity if found, otherwise empty.
      */
     @EntityGraph(attributePaths = {"productSet", "sellerOfferSet", "buyerOrderSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdFull(Long id);
 
+    /**
+     * Retrieves a User entity, eagerly fetching the associated Product entities.
+     *
+     * @param id Unique User identifier.
+     * @return Optional containing User entity if found, otherwise empty.
+     */
     @EntityGraph(attributePaths = {"productSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithProducts(Long id);
 
 
+    /**
+     * Retrieves a User entity, eagerly fetching the associated BuyerOrder and SellerOffer entities.
+     *
+     * @param id Unique User identifier.
+     * @return Optional containing User entity if found, otherwise empty.
+     */
     @EntityGraph(attributePaths = {"buyerOrderSet", "sellerOfferSet"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithBuyerOrdersAndSellerOffers(@Param("id") Long id);
 
-
-
     /**
-     * метод использует аннотацию EntityGraph
-     * метод получения покупателя вместе с корзиной, и вместе со множеством частей оффера,
-     * и вместе с самим оффером, и вместе с адресом, откуда надо забрать оффер
+     * Retrieves a User entity, eagerly fetching the associated Basket and its complex nested entities.
+     * The fetch joins include:
      *
-     * @param id ID пользователя, которого нужно получить
-     * @return Optional, содержащий пользователя, если он найден, или пустой Optional,
-     * если пользователь с указанным ID не существует
+     * 1. The user's Basket entity.
+     * 2. The Set of PartOfferToBuy entities within the basket.
+     * 3. The SellerOffer entities associated with the PartOfferToBuy entities.
+     * 4. The Address entity associated with the SellerOffer.
+     * 5. The Product entity associated with the Address.
+     *
+     * @param id Unique User identifier.
+     * @return Optional containing User entity if found, otherwise empty.
      */
     @EntityGraph(attributePaths = {
             "basket",
@@ -69,7 +76,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "basket.partOfferToBuySet.sellerOffer.product"})
     @Query("SELECT u FROM User u  WHERE u.id = :id")
     Optional<User> findByIdWithBasket(Long id);
-
 }
 
 

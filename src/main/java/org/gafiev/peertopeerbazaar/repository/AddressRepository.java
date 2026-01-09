@@ -10,20 +10,19 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Репозиторий для работы с сущностями Address.
- * Этот интерфейс предоставляет методы для выполнения операций с адресами пользователя,
- * включая стандартные операции CRUD и кастомные запросы.
+ * Spring Data JPA repository for the Address entity.
+ * Extends JpaRepository for basic CRUD operations and JpaSpecificationExecutor for dynamic queries.
  */
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long>, JpaSpecificationExecutor<Address> {
 
     /**
-     * метод поиска адреса по его идентификатору с подтягиванием набора доставок и набора предложений продавца
-     * @param id идентификатор адреса
-     * @return Optional адрес
+     * Retrieves Address entity by its identifier, eagerly fetching associated Set of SellerOffer and Set of Delivery.
+     *
+     * @param id Address identifier.
+     * @return Optional containing Address entity if found, otherwise empty.
      */
     @EntityGraph(attributePaths = {"sellerOfferSet", "deliverySet"})
     @Query("SELECT a FROM Address a  WHERE a.id = :id")
     Optional<Address> findByIdWithSellerOffersAndDeliveries(Long id);
-
 }

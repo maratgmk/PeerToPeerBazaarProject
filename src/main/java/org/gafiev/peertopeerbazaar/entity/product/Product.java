@@ -29,7 +29,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Продукт, создаётся продавцом (автором) для продажи покупателям.
+ * The Product entity outlines the key characteristics of a product.
+ * It connects the author (who is also the user) and set of seller offers that include this product.
  */
 @Getter
 @Setter
@@ -42,7 +43,7 @@ import java.util.Set;
 @Table(name = "product")
 public class Product {
     /**
-     * id идентификатор продукта
+     * Unique product identifier.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,92 +51,96 @@ public class Product {
     private Long id;
 
     /**
-     * название продукта
+     * Product name.
      */
     @Column(name = "name")
     private String name;
 
     /**
-     * описание продукта
+     * Product description details the time and method of creation.
      */
     @Column(name = "description")
     private String description;
 
     /**
-     * обобщенная характеристика продукта
+     * Product category (e.g., type of transportation or storage) as the general characteristics of the product.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
     private Category category;
 
     /**
-     * единица измерения одной порции продукта
+     * Unit of measurement used to count the product quantity.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "portion_unit")
     private PortionUnit portionUnit;
 
     /**
-     * weight это вес одной порции продукта
+     * Product weight per portion unit (in kg).
      */
     @Column(name = "weight", precision = 6, scale = 2, nullable = false)
     private BigDecimal weightKg;
     /**
-     * volume это объём одной порции продукта
+     * Product volume per portion unit (in ltr/liters).
      */
     @Column(name = "volume", precision = 6, scale = 2, nullable = false)
     private BigDecimal volumeLtr;
 
     /**
-     * price есть цена за порцию продукта
+     * Product price per portion unit.
      */
     @Column(name = "price", precision = 12, scale = 2, nullable = false)
     private BigDecimal price;
 
     /**
-     * imageURI изображение продукта
+     * Image Uniform Resource Identifier (URI) for the product.
      */
     @Column(name = "image_uri")
     private String imageURI;
 
     /**
-     * qrCode является ссылкой на страницу продукта
+     * Quick Response Code (QR code) URL for product information access.
      */
     @Column(name = "qr_code")
     private String qrCode;
 
     /**
-     * создатель продукта
+     * Author of product (User).
      */
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private User author;
 
+    /**
+     * Timestamp of when the product entity was created/recorded.
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * множество предложений продавца, связанное с данным product
+     * Set of SellerOffer entities that include the product.
      */
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
     /**
-     * добавление предложения продавца во множество предложений, связанных с данным продуктом
-     * @param sellerOffer предложение продавца
+     * Adds a seller offer to a set of offers that include the product.
+     *
+     * @param sellerOffer SellerOffer entity.
      */
-    public void addSellerOffer(SellerOffer sellerOffer){
+    public void addSellerOffer(SellerOffer sellerOffer) {
         sellerOfferSet.add(sellerOffer);
         sellerOffer.setProduct(this);
     }
 
     /**
-     * удаление предложения продавца из множества предложений, связанное с данным продуктом
-     * @param sellerOffer предложение продавца
+     * Removes a seller offer to a set of offers that include the product.
+     *
+     * @param sellerOffer SellerOffer entity.
      */
-    public void removeSellerOffer(SellerOffer sellerOffer){
+    public void removeSellerOffer(SellerOffer sellerOffer) {
         sellerOfferSet.remove(sellerOffer);
         sellerOffer.setProduct(null);
     }
-
 }

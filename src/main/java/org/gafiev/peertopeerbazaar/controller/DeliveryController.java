@@ -1,5 +1,8 @@
 package org.gafiev.peertopeerbazaar.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Set;
 
+@Tag(name = "Deliveries", description = "Operations for managing deliveries and tracking history.")
 @Slf4j
 @Validated
 @RequiredArgsConstructor
@@ -39,42 +43,55 @@ import java.util.Set;
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
+    @Operation(summary = "Get delivery by ID", description = "Retrieves details of a specific delivery using its unique identifier.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#userId, authentication)")
     @GetMapping(path = "/{id}/user/{userId}", consumes = MediaType.ALL_VALUE)
     public DeliveryResponse getDeliveryById(@NotNull @Positive @PathVariable Long id, @NotNull @Positive @PathVariable Long userId) {
         return deliveryService.getDeliveryById(id);
     }
 
+    @Operation(summary = "Get buyer deliveries by order ID",
+            description = "Retrieves all deliveries associated with a specific buyer order identifier.\n")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
     @GetMapping(path = "/order/{buyerOrderId}/user/{buyerId}", consumes = MediaType.ALL_VALUE)
     public Set<DeliveryResponse> getMyDeliveriesByBuyerOrderId(@NotNull @Positive @PathVariable Long buyerOrderId, @NotNull @Positive @PathVariable Long buyerId) {
         return deliveryService.getMyDeliveriesByBuyerOrderId(buyerOrderId);
     }
 
+    @Operation(summary = "Filter deliveries",
+            description = "Allows users with the ADMIN role to retrieve deliveries matching specific filter criteria.")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/filter")
-    public Set<DeliveryResponse> getAllDeliveriesByFilter(@Valid @RequestBody DeliveryFilterRequest filterRequest) {
+    public Set<DeliveryResponse> getAllDeliveriesByFilter(
+            @Parameter(description = "Filter criteria for searching deliveries.", required = true)
+            @Valid @RequestBody DeliveryFilterRequest filterRequest) {
         return deliveryService.getAllDeliveriesByFilter(filterRequest);
     }
 
+    @Operation(summary = "Create delivery", description = "Creates a new delivery record using the provided request data.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
     @PostMapping(path = "/user/{buyerId}")
-    public DeliveryResponse create(@NotNull @Positive @PathVariable Long buyerId, @Valid @NotNull @RequestBody DeliveryCreateRequest request) {
+    public DeliveryResponse create(@NotNull @Positive @PathVariable Long buyerId,
+                                   @Parameter(description = "Data for creating a new delivery.", required = true)
+                                   @Valid @NotNull @RequestBody DeliveryCreateRequest request) {
         return deliveryService.create(request);
     }
 
+    @Operation(summary = "Get available time slots", description = "Retrieves available delivery time slots from the external drone service.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
     @GetMapping(path = "/{id}/time/user/{buyerId}", consumes = MediaType.ALL_VALUE)
     public List<TimeSlotResponse> getTimeSlots(@Positive @NotNull @PathVariable Long id, @Positive @NotNull @PathVariable Long buyerId) {
         List<TimeSlotResponse> responseList = deliveryService.takeTimeSlots(id);
-        log.info("Полученные времена от сервиса дронов {}", responseList);
+        log.info("Available time slots from the external drone service{}", responseList);
         return responseList;
     }
 
+    @Operation(summary = "Assign drone to delivery", description = "Assigns a drone for a specific time slot via the external drone service.")
     @PreAuthorize("@authz.isSelf(#buyerId, authentication)")
     @PutMapping("/{id}/user/{buyerId}")
     public DeliveryResponse assignDroneForDelivery(@NotNull @Positive @PathVariable Long id,
                                                    @NotNull @Positive @PathVariable Long buyerId,
+                                                   @Parameter(description = "Details of the selected time slot.", required = true)
                                                    @Valid @RequestBody DeliveryUpdateTime updateRequest) {
         log.info("Updating delivery time slot for delivery ID: {}", id);
         log.info("Received update request: {}", updateRequest);
@@ -88,13 +105,14 @@ public class DeliveryController {
         }
     }
 
+    @Operation(summary = "Cancel delivery", description = "Allows a user with ADMIN or BUYER role to cancel a delivery.")
     @PreAuthorize("hasRole('ADMIN') or @authz.isSelf(#buyerId, authentication)")
     @GetMapping(value = "/{id}/cancel/user/{buyerId}", consumes = MediaType.ALL_VALUE)
     public DeliveryResponse cancelMyDelivery(@NotNull @Positive @PathVariable Long id, @NotNull @Positive @PathVariable Long buyerId) {
         return deliveryService.updateStatus(id, DeliveryStatus.CANCELLED_BY_BUYER);
     }
-    // DeliveryStatus.CANCELLED_BY_BUYER эта константа передаётся в сервис, только один вариант отмены
 
+    @Operation(summary = "Delete delivery", description = "Permanently removes a delivery record. Access restricted to ADMIN users.")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "{id}", consumes = MediaType.ALL_VALUE)
     public void deleteDelivery(@NotNull @Positive @PathVariable Long id) {

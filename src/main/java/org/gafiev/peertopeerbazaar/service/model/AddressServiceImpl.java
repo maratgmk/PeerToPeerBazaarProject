@@ -36,12 +36,6 @@ public class AddressServiceImpl implements AddressService {
     private final @Lazy AddressMapper addressMapper;
     private final ExternalDroneService externalDroneService;
 
-    /**
-     * получение DTO адреса по его идентификатору.
-     *
-     * @param id идентификатор адреса
-     * @return DTO адрес
-     */
     @Override
     public AddressResponse getAddressById(Long id) {
         Address address = addressRepository.findById(id)
@@ -49,12 +43,6 @@ public class AddressServiceImpl implements AddressService {
         return addressMapper.toAddressResponse(address);
     }
 
-    /**
-     * получение множества адресов из БД согласно настроенного фильтра.
-     *
-     * @param filterRequest фильтр определяющий условия и параметры поиска
-     * @return DTO addressSet
-     */
     @Override
     public Set<AddressResponse> getAllAddresses(AddressFilterRequest filterRequest) {
         List<Address> addressList = addressRepository.findAll(AddressSpecifications.filterByParams(filterRequest));
@@ -62,12 +50,6 @@ public class AddressServiceImpl implements AddressService {
         return addressMapper.toAddressResponseSet(addressSet);
     }
 
-    /**
-     * получение всех адресов, связанных с данным пользователем.
-     *
-     * @param userId идентификатор пользователя
-     * @return DTO addressSet
-     */
     @Override
     public Set<AddressResponse> getAllMyAddresses(Long userId) {
         User user = userRepository.findByIdWithBuyerOrdersAndSellerOffers(userId)
@@ -87,41 +69,26 @@ public class AddressServiceImpl implements AddressService {
         return addressMapper.toAddressResponseSet(myAddressSet);
     }
 
-
-    /**
-     * создание нового адреса для проверки возможности обслуживания и
-     * сохранения в БД.
-     * производится приватный запрос во внешний сервис для проверки возможности обслуживания.
-     * @param createRequest информация введённая пользователем
-     * @return DTO адрес
-     */
     @Override
     @Transactional
     public AddressResponse createAddress(AddressCreateRequest createRequest) {
-        checkAddress(createRequest);
+//        checkAddress(createRequest);
 
         Address address = new Address();
         address.setTown(createRequest.town());
         address.setStreet(createRequest.street());
-        address.setNumberBuilding(createRequest.numberBuilding());
-        address.setZipCode(createRequest.zipCode());
+        address.setBuildingNumber(createRequest.buildingNumber());
+        address.setPostCode(createRequest.postCode());
         address.setLatitude(createRequest.latitude());
         address.setLongitude(createRequest.longitude());
-        address.setAttitude(createRequest.attitude());
+        address.setAltitude(createRequest.altitude());
         address.setAccuracy(createRequest.accuracy());
-        address.setCreatedAt(createRequest.createdAt());
+//        address.setCreatedAt(createRequest.createdAt());
 
         address = addressRepository.save(address);
         return addressMapper.toAddressResponse(address);
     }
 
-    /**
-     * изменение существующего адреса.
-     * производится приватный запрос во внешний сервис для проверки возможности обслуживания.
-     * @param id         идентификатор существующего адреса
-     * @param addressNew информация введённая пользователем
-     * @return DTO адрес
-     */
     @Override
     @Transactional
     public AddressResponse updateMyAddress(Long id, AddressCreateRequest addressNew) {
@@ -132,38 +99,29 @@ public class AddressServiceImpl implements AddressService {
 
         address.setTown(addressNew.town());
         address.setStreet(addressNew.street());
-        address.setNumberBuilding(addressNew.numberBuilding());
-        address.setZipCode(addressNew.zipCode());
+        address.setBuildingNumber(addressNew.buildingNumber());
+        address.setPostCode(addressNew.postCode());
         address.setLatitude(addressNew.latitude());
         address.setLongitude(addressNew.longitude());
-        address.setAttitude(addressNew.attitude());
+        address.setAltitude(addressNew.altitude());
         address.setAccuracy(addressNew.accuracy());
 
         address = addressRepository.save(address);
         return addressMapper.toAddressResponse(address);
     }
 
-    /**
-     * удаление адреса по его идентификатору из БД
-     *
-     * @param id идентификатор адреса
-     */
+    @Override
     @Transactional
     public void deleteAddress(Long id) {
         addressRepository.deleteById(id);
     }
 
     /**
-     * приватный метод проверки на возможность вызова дрона по данному адресу.
-     * @param addressCreateRequest  DTO запрос для создания или обновления адреса
+     * Validates allowed address using external drone service API call.
+     *
+     * @param addressCreateRequest Address creation request DTO containing Address details.
+     * @throws DroneException if validation fails or service call encounters an error.
      */
-//    private void checkAddress(AddressCreateRequest addressCreateRequest) {
-//        String code = externalDroneService.getCode(addressCreateRequest);
-//        CheckAddressResult result = CheckAddressResult.getByCode(code).orElseThrow();
-//        if (result != CheckAddressResult.ALLOWED)
-//            throw new DroneException(result.getDescription());
-//    }
-
     private void checkAddress(AddressCreateRequest addressCreateRequest) {
         try {
             String code = externalDroneService.getCode(addressCreateRequest);

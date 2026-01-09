@@ -1,7 +1,7 @@
 package org.gafiev.peertopeerbazaar.service.model.interfaces;
 
-import org.gafiev.peertopeerbazaar.dto.api.request.DroneCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DroneFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DroneUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.DroneResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 
@@ -9,48 +9,60 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * сервис для работы с дронами на стороне приложения PTPB.
+ * Service interface for managing drone operations and external service integrations.
  */
 
 public interface DroneService {
 
     /**
-     * получение дрона по идентификатору из БД.
-     * @param id идентификатор дрона
-     * @return DTO дрона
+     * Retrieves drone details by its internal identifier.
+     *
+     * @param id Unique internal drone ID.
+     * @return Drone response DTO.
      */
     DroneResponse getDroneById(Long id);
 
+    /**
+     *Retrieves a drone along with its associated buyer order details.
+     *
+     * @param id Unique internal drone ID.
+     * @return Drone response DTO including order information.
+     */
     DroneResponse getDroneByIdWithBuyerOrder(Long id);
 
     /**
-     * получение всех дронов согласно фильтра.
-     * @param filterRequest фильтр указывающий параметры или ограничения поиска
-     * @return множество DTO дронов
+     * Searches for drones matching the specified filter criteria.
+     *
+     * @param filterRequest Filter criteria DTO.
+     * @return A set of drones matching the filters.
      */
     Set<DroneResponse> getAllDrones(DroneFilterRequest filterRequest);
 
     /**
-     * метод для обновления дрона (для добавления или удаления доставок).
-     * @param droneRequest DTO информация для обновления дрона
-     * @return DTO обновленный дрон
+     * Updates drone delivery assignments (adds or removes deliveries).
+     *
+     * @param id           Unique internal drone ID.
+     * @param droneRequest Update request data containing changes.
+     * @return Updated drone details.
      */
-
-    DroneResponse update(Long id, DroneCreateRequest droneRequest);
-
-    /**
-     * получение информации о временных рамках доступности дронов, от внешнего сервиса дронов.
-     * @param id идентификатор доставки покупателя.
-     * @return список DTO возможных временных диапазонов, предоставляемых внешним сервисом дронов.
-     */
-    List<TimeSlotResponse> getTimeSlots(Long id);
+    DroneResponse update(Long id, DroneUpdateRequest droneRequest);
 
     /**
-     * метод отмены дрона покупателем по его инициативе.
-     * @param id идентификатор дрона в репозитории
-     * @return DTO дрона, который решили отменить
+     * Fetches time slots from external drone service.
+     *
+     * @param deliveryId Delivery ID.
+     * @return Collection of time slot responses.
      */
-    DroneResponse cancelDrone(Long id,Long deliveryId);
+    List<TimeSlotResponse> getTimeSlots(Long deliveryId);
+
+    /**
+     * Cancels a drone assignment for a specific delivery via external service.
+     *
+     * @param id         Drone ID.
+     * @param deliveryId Delivery ID assigned to this drone.
+     * @return Drone details after cancel.
+     */
+    DroneResponse cancelDrone(Long id, Long deliveryId);
 }
 
 

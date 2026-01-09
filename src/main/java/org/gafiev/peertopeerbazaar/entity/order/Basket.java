@@ -25,10 +25,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Сущность корзина показывает, что выбрал покупатель из разных предложений разных продавцов
+ * Basket entity associated with User entity.
+ * Represents parts within the basket selected from a seller's offer.
  */
-@EqualsAndHashCode(exclude = {"partOfferToBuySet","buyer"})
-@ToString(exclude = {"partOfferToBuySet","buyer"})
+@EqualsAndHashCode(exclude = {"partOfferToBuySet", "buyer"})
+@ToString(exclude = {"partOfferToBuySet", "buyer"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -37,29 +38,28 @@ import java.util.Set;
 @Table(name = "basket")
 public class Basket {
     /**
-     * id уникальный идентификатор корзины, который совпадает с id покупателя
+     * Unique basket identifier, shared with the User ID.
      */
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY) // это вызывает конфликт с @MapsId????
     @Column(name = "buyer_id")
     private Long id;
 
     /**
-     * buyer это покупатель передаёт свой id корзине
+     * The owner of this basket.
      */
-    @OneToOne(fetch = FetchType.LAZY) //, cascade = CascadeType.ALL Cascade должен быть только на owning side (User.basket)
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     private User buyer;
 
+    /**
+     * Timestamp when the basket was created.
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * Множество частей офферов всех продавцов, которые выбрал покупатель и положил в корзину.
-     * partOfferToBuy это часть любого оффера от любого продавца.
-     * параметр FetchType.LAZY означает, что при загрузке корзины partOfferToBuySet загружаться не будет
-     * чтобы это обойти создаётся кастомный метод в репозитории с помощью JPQL запроса
+     * Set of parts currently held in this basket.
      */
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "basket_part",
@@ -69,9 +69,12 @@ public class Basket {
     private Set<PartOfferToBuy> partOfferToBuySet = new HashSet<>();
 
     /**
-     * Метод добавления части предложения в корзину.
+     * Adds the part to the set of parts contained within this basket
+     * and ensures bidirectional consistency.
      *
-     * @param partOfferToBuy выбранная покупателем часть предложения продавца
+     * A single part unit can simultaneously belong to the part sets of multiple baskets.
+     *
+     * @param partOfferToBuy The part to be added to this basket's associated set.
      */
     public void addPartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.add(partOfferToBuy);
@@ -79,9 +82,10 @@ public class Basket {
     }
 
     /**
-     * Метод удаления части предложения из корзины.
+     * Removes the part from the set of parts contained within this basket
+     * and breaks the bidirectional relationship.
      *
-     * @param partOfferToBuy выбранная покупателем часть предложения продавца
+     * @param partOfferToBuy The part to be removed from this basket.
      */
     public void removePartOfferToBuy(PartOfferToBuy partOfferToBuy) {
         partOfferToBuySet.removeIf(partOfferToBuy::equals);

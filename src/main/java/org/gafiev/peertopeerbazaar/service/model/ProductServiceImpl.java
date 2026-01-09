@@ -30,11 +30,6 @@ public class ProductServiceImpl implements ProductService {
     private final UserRepository userRepository;
     private final ProductMapper productMapper;
 
-    /**
-     * получение DTO продукта по его Id из БД
-     * @param id идентификатор продукта
-     * @return DTO product
-     */
     @Override
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
@@ -42,11 +37,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponse(product);
     }
 
-    /**
-     * получение множества всех DTO продуктов согласно фильтра,
-     * в котором устанавливаются различные условия и параметры отбора
-     * @return DTO productSet
-     */
     @Override
     public Set<ProductResponse> getAllProducts(ProductFilterRequest filterRequest) {
         List<Product> productList = productRepository.findAll(ProductSpecifications.filterByParams(filterRequest));
@@ -54,11 +44,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toProductResponseSet(productSet);
     }
 
-    /**
-     * создание нового продукта
-     * @param candidate информация от клиента в виде DTO
-     * @return DTO продукт
-     */
     @Transactional
     @Override
     public ProductResponse createProduct(ProductCreateRequest candidate) {
@@ -75,23 +60,16 @@ public class ProductServiceImpl implements ProductService {
         product.setQrCode(candidate.qrCode());
         product.setImageURI(candidate.imageURI());
         product.setAuthor(user);
-        if(!user.getRoles().contains(Role.SELLER)){
+        if (!user.getRoles().contains(Role.SELLER)) {
             user.addRole(Role.SELLER);
         }
         product.setCreatedAt(Instant.now());
 
-        product =  productRepository.save(product);
+        product = productRepository.save(product);
 
         return productMapper.toProductResponse(product);
     }
 
-    /**
-     * обновление существующего продукта по новым параметрам
-     *
-     * @param id         идентификатор существующего продукта
-     * @param updateRequest информация для обновления в виде DTO
-     * @return DTO обновленного продукта
-     */
     @Transactional
     @Override
     public ProductResponse updateProduct(Long id, ProductUpdateRequest updateRequest) {
@@ -102,23 +80,17 @@ public class ProductServiceImpl implements ProductService {
         product.setName(updateRequest.name());
         product.setDescription(updateRequest.description());
         product.setCategory(updateRequest.category());
-        product.setPortionUnit(updateRequest.portionUnit());
         product.setWeightKg(updateRequest.weight());
         product.setVolumeLtr(updateRequest.volume());
         product.setPrice(updateRequest.price());
         product.setImageURI(updateRequest.imageURI());
         product.setQrCode(updateRequest.qrCode());
 
-        product =  productRepository.save(product);
+        product = productRepository.save(product);
 
         return productMapper.toProductResponse(product);
     }
 
-    /**
-     * удаление продукта из БД по его ID
-     *
-     * @param id идентификатор продукта
-     */
     @Transactional
     @Override
     public void deleteProduct(Long id) {
@@ -126,18 +98,13 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException(Product.class, Map.of("id", String.valueOf(id))));
         User author = product.getAuthor();
         author.removeProduct(product);
-       if(author.getProductSet().isEmpty()) {
-           author.removeRole(Role.SELLER);
-       }
+        if (author.getProductSet().isEmpty()) {
+            author.removeRole(Role.SELLER);
+        }
         userRepository.save(author);
         productRepository.deleteById(id);
     }
 
-    /**
-     * получение множества всех DTO продуктов созданных одним автором.
-     * @param authorId идентификатор клиента
-     * @return DTO productSet
-     */
     @Override
     public Set<ProductResponse> getProductByAuthorId(Long authorId) {
         Set<Product> productSet = productRepository.findByAuthorId(authorId);

@@ -5,15 +5,17 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * настройки системы сервиса дронов
+ * Configuration properties for the external drone service.
+ * This class holds settings loaded from application properties
+ * with the prefix "bazaar.drone".
  */
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "bazaar.drone")
 public class DroneProperties {
     /**
-     * Uri на который шлет запрос наше приложение в качестве клиента
+     * The base URI of the drone page on the external drone service side,
+     * used for assigning delivery drones.
      */
     private String clientUri;
-
 }

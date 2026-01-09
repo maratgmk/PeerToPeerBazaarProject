@@ -9,58 +9,69 @@ import org.gafiev.peertopeerbazaar.entity.delivery.DroneStatus;
 
 import java.util.Set;
 
-
+/**
+ * Service interface for interacting with the external drone service.
+ * This interface defines the contract for drone assignment,
+ * retrieving available delivery time slots, and verifying serviceability of specified addresses.
+ */
 public interface ExternalDroneService {
     /**
-     * получение информации от внешнего сервиса по идентификатору дрона от внешнего сервиса.
-     * @param droneServiceId идентификатор дрона от внешнего сервиса
-     * @return DTO информация о дроне от внешнего сервиса
+     * Retrieves drone information from the external service by the drone's service identifier.
+     *
+     * @param droneServiceId the unique identifier of the drone in the external service.
+     * @return a DTO containing the drone information.
      */
     ExternalDroneResponse getDroneById(Long droneServiceId);
 
     /**
-     * получение множества всех DTO дронов по фильтру от внешнего сервиса.
-     * @param filterRequest фильтр, задающий параметры поиска и отбора дронов из внешнего сервиса
-     * @return множество DTO информаций о дронах от внешнего сервиса
+     * Retrieves a set of drones from the external service based on the provided filtering criteria.
+     *
+     * @param filterRequest the criteria for searching and filtering drones.
+     * @return a set of DTOs representing the filtered drones.
      */
     Set<ExternalDroneResponse> getAllDronesExternal(ExternalDroneFilterRequest filterRequest);
 
     /**
-     * получение дрона от внешнего сервиса по данным о доставке
-     * @param deliveryDroneRequest запрос дрона по данным о доставке
-     * @return получение DTO дрона от внешнего сервиса
+     * Requests a drone from the external service for a specific delivery.
+     *
+     * @param deliveryDroneRequest the delivery details used to match an appropriate drone.
+     * @return a DTO containing the assigned drone's information.
      */
     ExternalDroneResponse requestDrone(DeliveryDroneRequest deliveryDroneRequest);
 
     /**
-     * получение множества доступных временных диапазонов.
-     * @param deliveryDroneRequest запрос дрона по данным о доставке
-     * @return множество временных диапазонов
+     * Retrieves a set of available delivery time slots based on the drone delivery request.
+     *
+     * @param deliveryDroneRequest the delivery details used to calculate available slots.
+     * @return a set of available time slots.
      */
     Set<TimeSlotResponse> requestDroneSchedule(DeliveryDroneRequest deliveryDroneRequest);
 
     /**
-     * изменение состояния дрона после доставки, после изменения условий или аварии и т.д.
-     * @param droneServiceId идентификатор дрона от внешнего сервиса
-     * @param status новый назначенный статус состояния дрона
-     * @return ответ от внешнего сервиса о подтверждении изменения статуса дрона
+     * Updates the drone's status in the external service (e.g., after delivery completion,
+     * schedule changes, or in case of an accident).
+     *
+     * @param droneServiceId the unique identifier of the drone in the external service.
+     * @param status the new status to be assigned.
+     * @return the external service response confirming the status update.
      */
     ExternalDroneResponse changeStatus(Long droneServiceId, DroneStatus status);
 
     /**
-     * получение информации о доступности обслуживания адреса
-     * @param addressCreateRequest запрос на (проверку) создание адреса
-     * @return код доступности адреса (код перечисления)
+     * Checks if the specified address is serviceable by the drone delivery system.
+     *
+     * @param addressCreateRequest the address details to be verified.
+     * @return a serviceability code (enum-based string).
      */
     String getCode(AddressCreateRequest addressCreateRequest);
 
     /**
-     * отмена дрона по идентификатору от внешнего сервиса.
-     * @param droneServiceId идентификатор дрона от внешнего сервиса
-     * @return ответ от внешнего сервиса
+     * Cancels a drone assignment or reservation via the external service.
+     *
+     * @param droneServiceId the unique identifier of the drone in the external service.
+     * @param deliveryId the unique identifier of the delivery to be cancelled.
+     * @return the external service response confirming the cancellation.
      */
     ExternalDroneResponse cancelDrone(Long droneServiceId,Long deliveryId);
-
 }
 
-//   TODO добавить метод для отмены бронирования дронов здесь и в стороннем сервисе

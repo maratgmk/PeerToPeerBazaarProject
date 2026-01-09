@@ -39,12 +39,6 @@ public class BasketServiceImpl implements BasketService {
             OfferStatus.CLOSED
     );
 
-    /**
-     * получение корзины по id покупателя.
-     *
-     * @param userId идентификатор корзины
-     * @return DTO корзины
-     */
     @Override
     public BasketResponse get(Long userId) {
         Basket basket = basketRepository.findByIdWithPartOfferToBuy(userId)
@@ -52,12 +46,6 @@ public class BasketServiceImpl implements BasketService {
         return basketMapper.toBasketResponse(basket);
     }
 
-    /**
-     * Добавление в корзину partOfferToBuy по id покупателя, id оффера продавца и желаемого количества продукта
-     *
-     * @param userId, sellerOfferId, unitCount соответственно id покупателя, id оффера продавца, количество единиц измерения
-     * @return DTO корзины
-     */
     @Override
     @Transactional
     public BasketResponse addPartOfferToBuy(Long userId, Long sellerOfferId, Integer unitCount) {
@@ -94,13 +82,6 @@ public class BasketServiceImpl implements BasketService {
         return basketMapper.toBasketResponse(basket);
     }
 
-
-    /**
-     * удаление из корзины partOfferToBuy по id покупателя и по id части предложения продавца
-     *
-     * @param userId, partOfferToBuyId  id покупателя
-     * @return DTO корзины
-     */
     @Override
     @Transactional
     public BasketResponse removePartOfferToBuy(Long userId, Long partOfferToBuyId) {
@@ -114,7 +95,7 @@ public class BasketServiceImpl implements BasketService {
     }
 
     /**
-     * очищение корзины по расписанию.
+     * Clears Basket of parts belonging to Seller Offers with CLOSED status.
      */
     @Scheduled(cron = "${diapason.limit}")
     @Transactional
@@ -132,14 +113,10 @@ public class BasketServiceImpl implements BasketService {
                     partOfferToBuy.getBasketSet().remove(basket);
                 }
             }
-
             log.info("Перед сохранением корзины: basketId = {}, parts = {} ", basket.getId(), basket.getPartOfferToBuySet());
             basket = basketRepository.save(basket);
             log.info("После сохранения корзины: basketId = {}, parts = {} ", basket.getId(), basket.getPartOfferToBuySet());
-
         }
-
         log.info("Корзины очищены от всех частей предложений со статусом OfferStatus.CLOSED");
     }
-
 }

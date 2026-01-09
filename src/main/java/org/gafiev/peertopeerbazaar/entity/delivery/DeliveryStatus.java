@@ -1,36 +1,39 @@
 package org.gafiev.peertopeerbazaar.entity.delivery;
 
+/**
+ * Represents the status of a delivery.
+ */
 public enum DeliveryStatus {
     /**
-     * Доставка создана, когда платеж осуществлен. Дрон не назначен.
+     * Delivery has been created after payment completion. A drone is not yet assigned.
      */
     CREATED,
     /**
-     * Дрон назначен для доставки.
+     * A drone has been assigned to the delivery.
      */
     DRONE_ASSIGNED,
     /**
-     * Доставка завершена успешно.
+     * Delivery has been successfully completed.
      */
     DELIVERED,
     /**
-     * Доставка в процессе выполнения.
+     * Delivery is currently in progress.
      */
     ON_THE_WAY,
     /**
-     * Доставка выполняется, но будет выполнена позже заявленного интервала времени.
+     * Delivery is delayed and will arrive later than the scheduled time slot.
      */
     DELAYED,
     /**
-     * Доставка провалена.
+     * Delivery attempt failed.
      */
     FAILED,
     /**
-     * Доставка отменена покупателем.
+     * Delivery was cancelled by the buyer.
      */
     CANCELLED_BY_BUYER,
     /**
-     * Доставка отменена продавцом.
+     * Delivery was cancelled by the seller.
      */
     CANCELLED_BY_SELLER
 }

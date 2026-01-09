@@ -9,8 +9,8 @@ import org.gafiev.peertopeerbazaar.common.TestDataAddress;
 import org.gafiev.peertopeerbazaar.common.TestDataDrone;
 import org.gafiev.peertopeerbazaar.common.TestDataPayment;
 import org.gafiev.peertopeerbazaar.common.TestDataUser;
-import org.gafiev.peertopeerbazaar.dto.api.request.DroneCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DroneFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DroneUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.DroneResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.dto.error.ErrorResponse;
@@ -375,9 +375,9 @@ public class DroneControllerTest extends BaseIntegrationTest {
         assertNotNull(user);
         assertNotNull(user.getId());
 
-        DroneCreateRequest droneCreateRequest = TestDataDrone.getDroneCreateRequest(Set.of(
+        DroneUpdateRequest droneUpdateRequest = TestDataDrone.getDroneCreateRequest(Set.of(
                 delivery1.getId(), delivery2.getId()), Set.of(delivery3.getId(), delivery4.getId()));
-        String requestJson = toJson(droneCreateRequest);
+        String requestJson = toJson(droneUpdateRequest);
 
         // TEST
         long userId = isAdmin ? EXISTING_ADMIN1_ID : user.getId();

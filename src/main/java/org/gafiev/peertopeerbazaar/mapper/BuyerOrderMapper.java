@@ -11,11 +11,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper class for converting BuyerOrder entities to various DTOs (Data Transfer Objects).
+ */
 @Component
 @AllArgsConstructor
 public class BuyerOrderMapper {
     private final PartOfferToBuyMapper partOfferToBuyMapper;
 
+    /**
+     * Converts BuyerOrder entity to BuyerOrderResponse DTO.
+     *
+     * @param buyerOrder BuyerOrder entity to convert.
+     * @return Resulting BuyerOrderResponse DTO.
+     */
     public BuyerOrderResponse toBuyerOrderResponse(BuyerOrder buyerOrder) {
         return BuyerOrderResponse.builder()
                 .id(buyerOrder.getId())
@@ -27,12 +36,25 @@ public class BuyerOrderMapper {
                 .build();
     }
 
+    /**
+     * Converts Set of BuyerOrder entities to Set of BuyerOrderResponse DTOs.
+     *
+     * @param buyerOrderSet Set of BuyerOrder entities.
+     * @return Resulting Set of BuyerOrderResponse DTOs.
+     */
     public Set<BuyerOrderResponse> toBuyerOrderResponseSet(Set<BuyerOrder> buyerOrderSet) {
         return buyerOrderSet == null ? null : buyerOrderSet.stream()
                 .map(this::toBuyerOrderResponse)
                 .collect(Collectors.toSet());
     }
-    public BuyerOrderDroneRequest toBuyerOrderDroneRequest(BuyerOrder buyerOrder){
+
+    /**
+     * Converts BuyerOrder entity to BuyerOrderDroneRequest DTO.
+     *
+     * @param buyerOrder BuyerOrder entity to convert.
+     * @return Resulting BuyerOrderDroneRequest DTO.
+     */
+    public BuyerOrderDroneRequest toBuyerOrderDroneRequest(BuyerOrder buyerOrder) {
         return BuyerOrderDroneRequest.builder()
                 .weightKg(buyerOrder.getWeightKg())
                 .volumeLtr(buyerOrder.getVolumeLtr())

@@ -107,10 +107,10 @@
             <column name="town" value="Вятские поляны"/>
             <column name="street" value="Шорина"/>
             <column name="number_building" valueNumeric="28"/>
-            <column name="zip_code" valueNumeric="612964"/>
+            <column name="post_code" valueNumeric="612964"/>
             <column name="latitude" valueNumeric="56.220234"/>
             <column name="longitude" valueNumeric="51.070336"/>
-            <column name="attitude" valueNumeric="74.90"/>
+            <column name="altitude" valueNumeric="74.90"/>
             <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 10:00:00"/>
         </insert>
@@ -119,10 +119,10 @@
             <column name="town" value="Вятские поляны"/>
             <column name="street" value="Кирова"/>
             <column name="number_building" valueNumeric="7"/>
-            <column name="zip_code" valueNumeric="612963"/>
+            <column name="post_code" valueNumeric="612963"/>
             <column name="latitude" valueNumeric="56.221099"/>
             <column name="longitude" valueNumeric="51.071028"/>
-            <column name="attitude" valueNumeric="81.90"/>
+            <column name="altitude" valueNumeric="81.90"/>
             <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 11:00:00"/>
         </insert>
@@ -131,10 +131,10 @@
             <column name="town" value="Вятские поляны"/>
             <column name="street" value="Кукина"/>
             <column name="number_building" valueNumeric="62"/>
-            <column name="zip_code" valueNumeric="612965"/>
+            <column name="post_code" valueNumeric="612965"/>
             <column name="latitude" valueNumeric="56.224843"/>
             <column name="longitude" valueNumeric="51.066043"/>
-            <column name="attitude" valueNumeric="92.10"/>
+            <column name="altitude" valueNumeric="92.10"/>
             <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 12:00:00"/>
         </insert>
@@ -143,10 +143,10 @@
             <column name="town" value="Вятские поляны"/>
             <column name="street" value="Кукина"/>
             <column name="number_building" valueNumeric="92"/>
-            <column name="zip_code" valueNumeric="612965"/>
+            <column name="post_code" valueNumeric="612965"/>
             <column name="latitude" valueNumeric="56.222861"/>
             <column name="longitude" valueNumeric="51.058014"/>
-            <column name="attitude" valueNumeric="98.70"/>
+            <column name="altitude" valueNumeric="98.70"/>
             <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 13:00:00"/>
         </insert>
@@ -155,10 +155,10 @@
             <column name="town" value="Вятские поляны"/>
             <column name="street" value="Садовая"/>
             <column name="number_building" valueNumeric="26"/>
-            <column name="zip_code" valueNumeric="612965"/>
+            <column name="post_code" valueNumeric="612965"/>
             <column name="latitude" valueNumeric="56.222962"/>
             <column name="longitude" valueNumeric="51.055152"/>
-            <column name="attitude" valueNumeric="101.60"/>
+            <column name="altitude" valueNumeric="101.60"/>
             <column name="accuracy" valueNumeric="0.20"/>
             <column name="created_at" valueDate="2025-09-23 14:00:00"/>
         </insert>
@@ -381,24 +381,7 @@
         </insert>
     </changeSet>
 
-    <!-- 017: Insert sample seller offer -->
-<!--    <changeSet id="017-seller-offer" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
-<!--        <preConditions onFail="MARK_RAN">-->
-<!--            <tableExists tableName="seller_offer"/>-->
-<!--            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM seller_offer</sqlCheck>-->
-<!--        </preConditions>-->
-<!--        <insert tableName="seller_offer">-->
-<!--            <column name="id" value="1"/>-->
-<!--            <column name="offer_status" value="OPENED"/>-->
-<!--            <column name="comment" value="Available for delivery today"/>-->
-<!--            <column name="creation_date_time" valueDate="2025-09-23 10:30:00"/>-->
-<!--            <column name="finish_date_time" valueDate="2025-09-24 23:59:59"/>-->
-<!--            <column name="product_id" valueNumeric="1"/>-->
-<!--            <column name="seller_id" valueNumeric="1"/>-->
-<!--            <column name="address_id" valueNumeric="1"/>-->
-<!--            <column name="created_at" valueDate="2025-09-23 10:30:00"/>-->
-<!--        </insert>-->
-<!--    </changeSet>-->
+
     <!-- 018: Insert sample part offer to buy (for the seller offer) -->
 <!--    <changeSet id="018-part-offer-to-buy" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
 <!--        <preConditions onFail="MARK_RAN">-->
@@ -413,6 +396,7 @@
 <!--            <column name="created_at" valueDate="2025-09-23 13:00:00"/>-->
 <!--        </insert>-->
 <!--    </changeSet>-->
+
     <!-- 019: Insert baskets for buyers -->
 <!--    <changeSet id="019-baskets" author="Marat Gafiev" runOnChange="true" failOnError="false">-->
 <!--        <preConditions onFail="MARK_RAN">-->

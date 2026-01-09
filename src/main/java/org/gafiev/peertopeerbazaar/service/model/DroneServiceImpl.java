@@ -2,8 +2,8 @@ package org.gafiev.peertopeerbazaar.service.model;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.gafiev.peertopeerbazaar.dto.api.request.DroneCreateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.request.DroneFilterRequest;
+import org.gafiev.peertopeerbazaar.dto.api.request.DroneUpdateRequest;
 import org.gafiev.peertopeerbazaar.dto.api.response.DroneResponse;
 import org.gafiev.peertopeerbazaar.dto.api.response.TimeSlotResponse;
 import org.gafiev.peertopeerbazaar.dto.integreation.response.ExternalDroneResponse;
@@ -12,7 +12,6 @@ import org.gafiev.peertopeerbazaar.entity.delivery.Drone;
 import org.gafiev.peertopeerbazaar.exception.EntityNotFoundException;
 import org.gafiev.peertopeerbazaar.mapper.DeliveryMapper;
 import org.gafiev.peertopeerbazaar.mapper.DroneMapper;
-import org.gafiev.peertopeerbazaar.repository.BuyerOrderRepository;
 import org.gafiev.peertopeerbazaar.repository.DeliveryRepository;
 import org.gafiev.peertopeerbazaar.repository.DroneRepository;
 import org.gafiev.peertopeerbazaar.repository.specification.DroneSpecification;
@@ -35,7 +34,6 @@ public class DroneServiceImpl implements DroneService {
     private final ExternalDroneService externalDroneService;
     private final DroneMapper droneMapper;
     private final DeliveryRepository deliveryRepository;
-    private final BuyerOrderRepository buyerOrderRepository;
     private final DeliveryMapper deliveryMapper;
 
     @Override
@@ -51,34 +49,23 @@ public class DroneServiceImpl implements DroneService {
         return droneMapper.toDroneResponse(drone);
     }
 
-    /**
-     * getAllDrones получение дронов из репозитория согласно фильтру (обновленными согласно метода по расписанию?)
-     */
     @Override
     public Set<DroneResponse> getAllDrones(DroneFilterRequest filterRequest) {
         List<Drone> droneList = droneRepository.findAll(DroneSpecification.filterByParams(filterRequest));
         return droneMapper.toDroneResponseSet(new HashSet<>(droneList));
     }
 
-    /**
-     * метод по обновлению дрона, к изначальному множеству доставок = drone.getDeliverySet() добавляются новые доставки из droneRequest.deliveriesToAdd()
-     * и удаляются доставки из droneRequest.deliveryIds().
-     *
-     * @param id           идентификатор дрона, который надо обновить
-     * @param droneRequest DTO информация, необходимая для обновления дрона
-     * @return DTO изменённого дрона
-     */
     @Override
-    public DroneResponse update(Long id, DroneCreateRequest droneRequest) {
+    public DroneResponse update(Long id, DroneUpdateRequest droneRequest) {
         Drone drone = droneRepository.findByIdWithDeliveriesAndBuyerOrder(id)
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
 
         Set<Delivery> deliveryCurrentSet = new HashSet<>(drone.getDeliverySet());
 
-        Set<Long> deliveryIdsToAdd = droneRequest.deliveriesToAdd();
+        Set<Long> deliveryIdsToAdd = droneRequest.deliveryIdsToAdd();
 
         if (deliveryIdsToAdd != null && !deliveryIdsToAdd.isEmpty()) {
-            Set<Delivery> deliveryToAddSet = droneRequest.deliveriesToAdd().stream()
+            Set<Delivery> deliveryToAddSet = droneRequest.deliveryIdsToAdd().stream()
                     .filter(addId -> deliveryCurrentSet.stream().noneMatch(delivery -> delivery.getId().equals(addId)))
                     .map(addId -> deliveryRepository.findById(addId)
                             .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(addId)))))
@@ -127,7 +114,7 @@ public class DroneServiceImpl implements DroneService {
                 .orElseThrow(() -> new EntityNotFoundException(Drone.class, Map.of("id", String.valueOf(id))));
         Delivery delivery = deliveryRepository.findById(deliveryId)
                 .orElseThrow(() -> new EntityNotFoundException(Delivery.class, Map.of("id", String.valueOf(deliveryId))));
-        ExternalDroneResponse externalDroneResponse = externalDroneService.cancelDrone(drone.getDroneServiceId(),delivery.getId());
+        ExternalDroneResponse externalDroneResponse = externalDroneService.cancelDrone(drone.getDroneServiceId(), delivery.getId());
 
         return droneMapper.toDroneResponse(externalDroneResponse);
     }

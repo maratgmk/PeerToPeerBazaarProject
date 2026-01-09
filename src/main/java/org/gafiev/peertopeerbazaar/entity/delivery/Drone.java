@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *  Drone осуществляет доставку заказов между пользователями.
+ * Represents a drone responsible for completing deliveries from sellers to buyers.
  */
 @EqualsAndHashCode(exclude = "deliverySet")
 @ToString(exclude = "deliverySet")
@@ -37,8 +37,9 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @Table(name = "drone")
 public class Drone {
+
     /**
-     * идентификатор дрона.
+     * Unique internal identifier for the drone.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,35 +47,36 @@ public class Drone {
     private Long id;
 
     /**
-     * идентификатор дрона в стороннем сервисе.
+     * Unique identifier assigned by the external drone service.
      */
     @Column(name = "drone_service_id", unique = true)
     private Long droneServiceId;
 
-
     /**
-     * состояние дрона.
+     * Current operational status of the drone.
      */
     @Enumerated(EnumType.STRING)
     @Column(name = "drone_status")
     private DroneStatus droneStatus;
 
+    /**
+     * Timestamp when the drone record was created in the database.
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * deliverySet есть множество доставок.
-     * один drone осуществляет много доставок,
+     * Set of deliveries assigned to this drone.
      */
     @Builder.Default
     @OneToMany(mappedBy = "drone", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Delivery> deliverySet = new HashSet<>();
 
     /**
-     * метод добавления доставки во множество доставок этого дрона.
+     * Associates a delivery with this drone and establishes a bidirectional relationship.
      *
-     * @param delivery доставка
+     * @param delivery The delivery entity to associate.
      */
     public void addDelivery(Delivery delivery) {
         deliverySet.add(delivery);
@@ -82,13 +84,12 @@ public class Drone {
     }
 
     /**
-     * метод удаления доставки из множества доставок этого дрона.
+     * Disassociates a delivery from this drone and breaks the bidirectional relationship.
      *
-     * @param delivery доставка
+     * @param delivery The delivery entity to remove.
      */
     public void removeDelivery(Delivery delivery) {
         deliverySet.remove(delivery);
         delivery.setDrone(null);
     }
-
 }

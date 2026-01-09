@@ -124,7 +124,7 @@ public class AddressControllerTest extends BaseIntegrationTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(addressSample.getId()))
                 .andExpect(jsonPath("$.attitude").exists())
-                .andExpect(jsonPath("$.attitude").value(addressSample.getAttitude()))
+                .andExpect(jsonPath("$.attitude").value(addressSample.getAltitude()))
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.createdAt")
                         .value(addressSample.getCreatedAt().getEpochSecond() + "." + addressSample.getCreatedAt().getNano()));

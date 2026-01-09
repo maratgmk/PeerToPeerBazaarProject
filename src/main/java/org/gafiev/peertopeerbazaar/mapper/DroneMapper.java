@@ -10,10 +10,18 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Mapper class for converting Drone entities to various DTOs (Data Transfer Objects).
+ */
 @Component
 @AllArgsConstructor
 public class DroneMapper {
-
+    /**
+     * Converts Drone entity to DroneResponse DTO.
+     *
+     * @param drone Drone entity.
+     * @return DroneResponse DTO.
+     */
     public DroneResponse toDroneResponse(Drone drone) {
         return DroneResponse.builder()
                 .id(drone.getId())
@@ -23,26 +31,50 @@ public class DroneMapper {
                 .build();
     }
 
+    /**
+     * Converts Set of Drone entities to Set of DroneResponse DTOs.
+     *
+     * @param drones Set of Drone entities.
+     * @return Set of DroneResponse DTOs.
+     */
     public Set<DroneResponse> toDroneResponseSet(Set<Drone> drones) {
         return drones == null ? null : drones.stream()
                 .map(this::toDroneResponse)
                 .collect(Collectors.toSet());
     }
 
-    public Drone toDrone(DroneResponse droneResponse){
+    /**
+     * Converts DroneResponse DTO to Drone entity.
+     *
+     * @param droneResponse DroneResponse DTO.
+     * @return Drone entity.
+     */
+    public Drone toDrone(DroneResponse droneResponse) {
         return Drone.builder()
                 .droneServiceId(droneResponse.droneServiceId())
                 .build();
     }
 
-    public Drone toDrone(ExternalDroneResponse externalDroneResponse){
+    /**
+     * Converts ExternalDroneResponse DTO to Drone entity.
+     *
+     * @param externalDroneResponse ExternalDroneResponse DTO.
+     * @return Drone entity.
+     */
+    public Drone toDrone(ExternalDroneResponse externalDroneResponse) {
         return Drone.builder()
                 .droneServiceId(externalDroneResponse.droneServiceId())
                 .droneStatus(externalDroneResponse.droneStatus())
                 .build();
     }
 
-    public DroneResponse toDroneResponse(ExternalDroneResponse externalDroneResponse){
+    /**
+     * Converts ExternalDroneResponse DTO to DroneResponse DTO.
+     *
+     * @param externalDroneResponse ExternalDroneResponse DTO.
+     * @return DroneResponse DTO.
+     */
+    public DroneResponse toDroneResponse(ExternalDroneResponse externalDroneResponse) {
         return DroneResponse.builder()
                 .droneServiceId(externalDroneResponse.droneServiceId())
                 .status(externalDroneResponse.droneStatus())
