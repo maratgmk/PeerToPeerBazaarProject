@@ -31,7 +31,8 @@ public class DeliveryMapper {
         return DeliveryResponse.builder()
                 .id(delivery.getId())
                 .deliveryStatus(delivery.getDeliveryStatus())
-                .timeSlot(timeSlotMapper.toTimeSlotResponse(delivery.getTimeSlot()))
+                .timeSlot(delivery.getTimeSlot() != null ?
+                        timeSlotMapper.toTimeSlotResponse(delivery.getTimeSlot()) : null)
                 .orderId(delivery.getBuyerOrder().getId())
                 .addressId(delivery.getToAddress().getId())
                 .build();

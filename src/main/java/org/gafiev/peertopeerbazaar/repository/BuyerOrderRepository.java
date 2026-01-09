@@ -53,9 +53,9 @@ public interface BuyerOrderRepository extends JpaRepository<BuyerOrder, Long>, J
      * @param id Unique BuyerOrder identifier.
      * @return Optional containing BuyerOrder entity if found, otherwise empty.
      */
-    @EntityGraph(attributePaths = {"partOfferToBuySet", "partOfferToBuySet.sellerOffer", "partOfferToBuySet.sellerOffer.address", "payment"})
+    @EntityGraph(attributePaths = {"partOfferToBuySet", "partOfferToBuySet.sellerOffer", "partOfferToBuySet.sellerOffer.address", "payment", "deliverySet"})
     @Query("SELECT o FROM BuyerOrder o  WHERE o.id = :id")
-    Optional<BuyerOrder> findByIdWithPartOfferToBuyAndWithSellerOfferWithAddress(Long id);
+    Optional<BuyerOrder> findByIdWithPartOfferToBuyAndWithSellerOfferWithAddressAndDeliverySet(Long id);
 
     /**
      * Retrieves a BuyerOrder by identifier, eagerly fetching the associated set of PartOfferToBuy entities

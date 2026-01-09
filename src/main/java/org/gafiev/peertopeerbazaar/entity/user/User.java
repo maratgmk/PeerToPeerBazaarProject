@@ -37,8 +37,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Сущность User является пользователем приложения,
- * пользователь может быть продавцом(он же создатель продукта), покупателем
+ * Represents the core User entity within the Peer-to-Peer Bazaar application.
+ * A user can operate in multiple roles, such as a Seller (product creator) or a Buyer.
+ *
+ * This entity implements UserDetails for seamless integration with
+ * Spring Security's authentication and authorization mechanisms.
  */
 @Getter
 @Setter
@@ -50,7 +53,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements UserDetails {
     /**
-     * id является уникальным идентификатором пользователя
+     * Unique identifier for the user.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,150 +61,139 @@ public class User implements UserDetails {
     private Long id;
 
     /**
-     * firstName есть имя пользователя
+     * The first name of the user
      */
     @Column(name = "first_name")
     private String firstName;
 
     /**
-     * lastName есть фамилия пользователя
+     * The last name of the user.
      */
     @Column(name = "last_name")
     private String lastName;
 
     /**
-     * email электронная почта пользователя
+     * The user's email address, which serves as a unique identifier
+     * for login purposes across the entire system.
      */
     @Column(name = "email", unique = true)
     private String email;
 
     /**
-     * password есть пароль пользователя
+     * The hashed password used for authentication.
+     * Excluded from toString() for security compliance.
      */
     @Column(name = "password")
     private String password;
 
     /**
-     * phone номер телефона пользователя
+     * Contact phone number of the user.
      */
     @Column(name = "phone")
     private String phone;
 
     /**
-     * roles указывает, что у пользователя может быть множество ролей.
+     * A collection of roles assigned to the user, defining their permissions.
+     * Stored in the 'user_roles' join table and fetched eagerly for security checks.
      */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")) // FK: user_id -> users.id
-    @Column(name = "roles")  // Value-колонка: role (VARCHAR для enum)
+    @Column(name = "roles")
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
     /**
-     * ratingSeller показывает рейтинг продавца от 0 до 100;
+     * Represents the seller's performance rating, ranging from 0 to 100.
+     * Higher values indicate better reputation and reliability as a vendor.
      */
     @Column(name = "rating_seller")
     private Integer ratingSeller;
 
     /**
-     * ratingBuyer показывает рейтинг покупателя от 0 до 100;
+     * Represents the buyer's reliability rating, ranging from 0 to 100.
+     * Used to assess the user's trustworthiness in transactions and payments.
      */
     @Column(name = "rating_buyer")
     private Integer ratingBuyer;
 
     /**
-     * basket устанавливает связь с покупателем, который заполняет корзину
+     * The shopping basket associated with the user for pending purchases.
      */
     @OneToOne(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Basket basket;
 
-
+    /**
+     * Automatic timestamp indicating the moment of user registration.
+     */
     @CreationTimestamp
     @Column(name = "created_at")
     private Instant createdAt;
 
     /**
-     * productSet является коллекцией дочерних сущностей, которая содержит внешний ключ (id) продавца (автора).
-     * mappedBy = "author" указывает, что в классе Product есть поле author, которое является родительской сущностью.
-     * User является управляющей (родительской) стороной, управляет жизненным циклом связанных сущностей Product в контексте каскадирования (персистентности).
-     * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
-     * все связанные Product также будут затронуты каскадно.
-     * orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей Product из БД,
-     * что означает, если продукт будет удален из коллекции productSet методом productSet.remove(product),
-     * product также будет удален из базы данных. Это заслуга Hibernate.
+     * A set of products cataloged or owned by the user.
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Product> productSet = new HashSet<>();
 
 
     /**
-     * buyerOrderSet представляет собой множество заказов, созданных покупателем
-     * является дочерней сущностью и владеющей стороной, которая содержит внешний ключ (id) покупателя.
-     * mappedBy = "buyer" указывает, что в классе BuyerOrder есть поле buyer, которое является родительской сущностью.
-     * Это создает связь "один ко многим" (OneToMany) между User и BuyerOrder, где User порождает множество заказов.
-     * Каскадирование указано на стороне User, что делает User управляющей (родительской) стороной,
-     * которая управляет жизненным циклом связанных сущностей buyerOrderDrone в контексте каскадирования (персистентности).
-     * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
-     * все связанные buyerOrder также будут затронуты каскадно.
-     * orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей BuyerOrder из БД,
-     * что означает, если buyerOrder будет удален из коллекции buyerOrderSet методом buyerOrderSet.remove(buyerOrderDrone),
-     * buyerOrderDrone также будет удален из базы данных. Это заслуга Hibernate.
+     * A set of orders placed by the user acting as a Buyer..
      */
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BuyerOrder> buyerOrderSet = new HashSet<>();
 
     /**
-     * sellerOfferSet представляет собой множество предложений, созданных продавцом.
-     * SellerOffer является владеющей стороной, которая содержит внешний ключ (id) покупателя.
-     * mappedBy = "seller" указывает, что в классе SellerOffer есть поле buyer, которое является родительской сущностью.
-     * Это создает связь "один ко многим" (OneToMany) между User и SellerOffer, где User порождает множество заказов.
-     * Каскадирование указано на стороне User, что делает User управляющей стороной,
-     * которая управляет жизненным циклом связанных сущностей SellerOffer в контексте каскадирования (персистентности).
-     * Это означает, что при выполнении операций (например, PERSIST, MERGE, REMOVE) на User
-     * все связанные SellerOffer также будут затронуты каскадно.
-     * orphanRemoval = true позволяет автоматически управлять удалением дочерних сущностей BuyerOrder из БД,
-     * что означает, если sellerOffer будет удален из коллекции sellerOffer методом sellerOfferSet.remove(sellerOffer),
-     * sellerOffer также будет удален из базы данных. Это заслуга Hibernate.
+     * A set of offers initiated by the user acting as a Seller
      */
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SellerOffer> sellerOfferSet = new HashSet<>();
 
-
     /**
-     * метод добавляет указанный продукт в коллекцию продуктов
-     * и устанавливает автора для данного продукта.
+     * Adds a product to the user's collection and establishes a bidirectional link
+     * by setting this user as the product's author.
      *
-     * @param product продукт, который нужно добавить
+     * @param product the product to be added.
      */
     public void addProduct(@NonNull Product product) {
         productSet.add(product);
         product.setAuthor(this);
     }
 
-
     /**
-     * Этот метод удаляет указанный продукт из коллекции продуктов
-     * и сбрасывает автора для данного продукта.
+     * Removes a product from the user's collection and breaks the bidirectional link
+     * by clearing the product's author.
      *
-     * @param product продукт, который нужно удалить
+     * @param product the product to be removed.
      */
     public void removeProduct(@NonNull Product product) {
         productSet.remove(product);
         product.setAuthor(null);
     }
 
+    /**
+     * Assigns a new security role to the user.
+     *
+     * @param role the role to be granted.
+     */
     public void addRole(@NonNull Role role) {
         roles.add(role);
     }
 
+    /**
+     * Revokes a specific security role from the user.
+     *
+     * @param role the role to be removed.
+     */
     public void removeRole(@NonNull Role role) {
         roles.remove(role);
     }
 
 
     /**
-     * метод добавления предложение продавца в коллекцию sellerOfferSet
+     * Adds a seller's offer to the user's offer set and links this user
+     * as the seller of the offer.
      *
-     * @param sellerOffer предложение продавца, которое нужно добавить
+     * @param sellerOffer the seller offer to be associated.
      */
     public void addSellerOffer(@NonNull SellerOffer sellerOffer) {
         sellerOfferSet.add(sellerOffer);
@@ -209,9 +201,10 @@ public class User implements UserDetails {
     }
 
     /**
-     * метод удаления предложения продавца из коллекции sellerOfferSet
+     * Removes a seller's offer from the user's collection and dissociates
+     * the user from the offer.
      *
-     * @param sellerOffer предложение, который нужно удалить
+     * @param sellerOffer the seller offer to be detached.
      */
     public void removeSellerOrder(@NonNull SellerOffer sellerOffer) {
         sellerOfferSet.remove(sellerOffer);
@@ -219,10 +212,10 @@ public class User implements UserDetails {
     }
 
     /**
-     * метод добавляет указанный заказ в коллекцию заказов покупателя
-     * и устанавливает покупателя для данного заказа.
+     * Adds a buyer's order to the user's order collection and sets this user
+     * as the buyer for the specified order.
      *
-     * @param buyerOrder заказ, который нужно добавить
+     * @param buyerOrder the order to be added.
      */
     public void addBuyerOrder(@NonNull BuyerOrder buyerOrder) {
         buyerOrderSet.add(buyerOrder);
@@ -230,16 +223,22 @@ public class User implements UserDetails {
     }
 
     /**
-     * метод удаляет указанный заказ из коллекции заказов покупателя
-     * и сбрасывает покупателя для данного заказа
+     * Removes an order from the buyer's collection and clears the buyer
+     * association for that order.
      *
-     * @param buyerOrder заказ, который нужно удалить
+     * @param buyerOrder the order to be removed.
      */
     public void removeBuyerOrder(@NonNull BuyerOrder buyerOrder) {
         buyerOrderSet.remove(buyerOrder);
         buyerOrder.setBuyer(null);
     }
 
+    /**
+     * Converts the user's roles into Spring Security granted authorities.
+     * Each role is prefixed with "ROLE_".
+     *
+     * @return a collection of link GrantedAuthority
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
@@ -247,16 +246,33 @@ public class User implements UserDetails {
                 .toList();
     }
 
+    /**
+     * Checks whether the user account is enabled or disabled.
+     * In this implementation, the account is considered disabled if the user
+     * has been assigned the  Role BLOCKED status.
+     *
+     * @return true if the user is not blocked; false otherwise.
+     */
     @Override
     public boolean isEnabled() {
         return !this.roles.contains(Role.BLOCKED);
     }
 
+    /**
+     * Retrieves the hashed password for the authentication process.
+     *
+     * @return the encoded password string.
+     */
     @Override
     public String getPassword() {
         return password;
     }
 
+    /**
+     * Returns the identification string for authentication.
+     *
+     * @return the user's email address.
+     */
     @Override
     public String getUsername() {
         return this.email;

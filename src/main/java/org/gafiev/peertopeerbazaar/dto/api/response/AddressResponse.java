@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.time.Instant;
-
 /**
  * DTO AddressResponse represents a complete Address structure.
  * Used as response body in Address management API endpoints.
@@ -19,7 +17,7 @@ import java.time.Instant;
  * @param longitude      Longitude of address point.
  * @param altitude       Altitude of address point.
  * @param accuracy       The spatial accuracy of the coordinates (horizontal and vertical, in meters).
- * @param createdAt      Timestamp of address response creation.
+// * @param createdAt      Timestamp of address response creation.
  */
 @Schema(description = "Data transfer object (DTO) representing an address for API responses.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -42,8 +40,8 @@ public record AddressResponse(
         @Schema(description = "Altitude of address point.", example = "151.36")
         Double altitude,
         @Schema(description = "The spatial accuracy of the location (including altitude), in meters.", example = "5.36")
-        Double accuracy,
-        @Schema(description = "Time of address response creation.", example = "2025-10-15T14:30:45.123456Z")
-        Instant createdAt
+        Double accuracy
+//        @Schema(description = "Time of address response creation.", example = "2025-10-15T14:30:45.123456Z")
+//        Instant createdAt
 ) {
 }

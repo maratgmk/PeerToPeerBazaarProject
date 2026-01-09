@@ -6,13 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
-
-import java.time.Instant;
 
 /**
  * DTO AddressCreateRequest is data for address creation.
@@ -25,7 +22,7 @@ import java.time.Instant;
  * @param longitude Longitude of address point.
  * @param altitude  Altitude of address point.
  * @param accuracy   The spatial accuracy of the coordinates (horizontal and vertical, in meters).
- * @param createdAt Time when the address creation request was created.
+// * @param createdAt Time when the address creation request was created.
  */
 @Schema(description = "Data of address creation")
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -74,11 +71,11 @@ public record AddressCreateRequest(
         @PositiveOrZero(message = "Accuracy must be a not negative number.")
         @Digits(integer = 1, fraction = 2, message = "Accuracy must have at most 1 digit before the decimal point and exactly 2 after.")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "%.2f")
-        Double accuracy,
+        Double accuracy
 
-        @Schema(description = "Time when the address creation request was created.", example = "2025-10-15T14:30:45.123456Z")
-        @Nonnull @PastOrPresent
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
-        Instant createdAt
+//        @Schema(description = "Time when the address creation request was created.", example = "2025-10-15T14:30:45.123456Z")
+//        @Nonnull @PastOrPresent
+//        @JsonFormat(shape = JsonFormat.Shape.STRING)
+//        Instant createdAt
 ) {
 }

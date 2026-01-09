@@ -72,7 +72,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public AddressResponse createAddress(AddressCreateRequest createRequest) {
-        checkAddress(createRequest);
+//        checkAddress(createRequest);
 
         Address address = new Address();
         address.setTown(createRequest.town());
@@ -83,7 +83,7 @@ public class AddressServiceImpl implements AddressService {
         address.setLongitude(createRequest.longitude());
         address.setAltitude(createRequest.altitude());
         address.setAccuracy(createRequest.accuracy());
-        address.setCreatedAt(createRequest.createdAt());
+//        address.setCreatedAt(createRequest.createdAt());
 
         address = addressRepository.save(address);
         return addressMapper.toAddressResponse(address);

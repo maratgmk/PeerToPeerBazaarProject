@@ -34,7 +34,7 @@ public class AddressMapper {
                 .longitude(address.getLongitude())
                 .altitude(address.getAltitude())
                 .accuracy(address.getAccuracy())
-                .createdAt(address.getCreatedAt())
+//                .createdAt(address.getCreatedAt())
                 .build();
     }
 

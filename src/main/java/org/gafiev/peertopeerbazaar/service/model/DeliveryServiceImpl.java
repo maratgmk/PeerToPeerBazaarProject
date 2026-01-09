@@ -83,8 +83,14 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     public DeliveryResponse create(DeliveryCreateRequest request) {
-        BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithPartOfferToBuyAndWithSellerOfferWithAddress(request.buyerOrderId())
+        BuyerOrder buyerOrder = buyerOrderRepository.findByIdWithPartOfferToBuyAndWithSellerOfferWithAddressAndDeliverySet(request.buyerOrderId())
                 .orElseThrow(() -> new EntityNotFoundException(BuyerOrder.class, Map.of("id", String.valueOf(request.buyerOrderId()))));
+
+        // Проверяем, что список доставок пуст
+        if (!buyerOrder.getDeliverySet().isEmpty()) {
+            throw new IllegalBusinessStateException("Delivery for this order has already been created.");
+        }
+
         if (buyerOrder.getPayment().getPaymentStatus() != PaymentStatus.SUCCESS) {
             throw new PaymentStatusException("Delivery is impossible. Payment is not done");
         }
@@ -141,11 +147,21 @@ public class DeliveryServiceImpl implements DeliveryService {
             String error = (droneResponse == null) ? "Empty response" : droneResponse.errorMessage();
             throw new DroneException("Drone assignment failed for delivery %d. Reason: %s".formatted(id, error));
         }
-        Drone drone = droneMapper.toDrone(droneResponse);
+
+        // 2. ИЩЕМ дрон в своей базе по внешнему ID, чтобы не создавать дубликат
+        Drone drone = droneRepository.findByDroneServiceId(droneResponse.droneServiceId())
+                .map(existingDrone -> {
+                    // Если нашли — просто обновляем статус, если он изменился
+                    existingDrone.setDroneStatus(droneResponse.droneStatus());
+                    return existingDrone;
+                })
+                .orElseGet(() -> droneMapper.toDrone(droneResponse));// Если нет — мапим новый
+
         drone.addDelivery(delivery);
 
         delivery.setDeliveryStatus(DeliveryStatus.DRONE_ASSIGNED);
 
+        // 4. Сохраняем дрон (он либо обновится, либо создастся один раз)
         droneRepository.save(drone);
         return deliveryMapper.toDeliveryResponse(deliveryRepository.save(delivery));
     }

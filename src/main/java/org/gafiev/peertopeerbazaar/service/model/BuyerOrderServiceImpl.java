@@ -273,12 +273,6 @@ public class BuyerOrderServiceImpl implements BuyerOrderService {
                 part.setStatus(PartOfferToBuyStatus.RESERVED);
                 basket.removePartOfferToBuy(part);
             });
-
-            SellerOffer offer = entry.getKey();
-            if (offer.getActualUnitCount() <= 0) {
-                offer.setOfferStatus(OfferStatus.CLOSED);
-                log.info("SellerOffer ID {} is now closed.", offer.getId());
-            }
         }
 
         payment = Objects.requireNonNullElse(payment, new Payment());

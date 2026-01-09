@@ -24,4 +24,10 @@ public interface DroneRepository extends JpaRepository<Drone, Long>, JpaSpecific
     @EntityGraph(attributePaths = {"deliverySet", "deliverySet.buyerOrder"})
     @Query("SELECT d FROM Drone d WHERE d.id = :id")
     Optional<Drone> findByIdWithDeliveriesAndBuyerOrder(Long id);
+
+    /**
+     * Поиск дрона по идентификатору из внешнего сервиса.
+     * Используется для предотвращения дубликатов при назначении доставок.
+     */
+    Optional<Drone> findByDroneServiceId(Long droneServiceId);
 }
